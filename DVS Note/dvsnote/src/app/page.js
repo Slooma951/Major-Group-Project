@@ -1,95 +1,70 @@
+'use client'
+
+import * as React from 'react';
+import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
 import Image from "next/image";
-import styles from "./page.module.css";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+export default function AuthPage() {
+    return (
+        <Container maxWidth="xs" sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            bgcolor: '#e6eaf8',
+            padding: 3,
+        }}>
             <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+                src="/images/logo.png"
+                alt="DVS Note logo"
+                width={260}
+                height={200}
+                priority
+                style={{ marginBottom: '2rem' }}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+            <Box component="form" sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                border: 'none',
+            }}>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Username"
+                    margin="normal"
+                    sx={{
+                        bgcolor: 'white',
+                    }}
+                />
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Password"
+                    type="password"
+                    margin="normal"
+                    sx={{
+                        bgcolor: 'white',
+                    }}
+                />
+                <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{
+                        marginTop: 2,
+                        bgcolor: '#6272e3',
+                        color: 'white',
+                        ':hover': { bgcolor: '#556bd8' },
+                    }}
+                >
+                    Login
+                </Button>
+                <Typography variant="body2" sx={{ marginTop: 2, color: '#6b6b6b' }}>
+                    Don't have an account? <Link href="/signup" underline="hover" color="#6272e3">Sign up</Link>
+                </Typography>
+            </Box>
+        </Container>
+    );
 }
