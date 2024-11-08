@@ -1,13 +1,15 @@
-'use client'
+'use client';
 
 import { useState } from 'react';
 import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 
 export default function AuthPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const router = useRouter();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -26,9 +28,9 @@ export default function AuthPage() {
 
             if (response.ok) {
                 setMessage('Login successful');
-                // Redirect or perform other actions upon success
+                router.push('../dashboard');
             } else {
-                setMessage(data.message || 'Login failed');
+                setMessage(data.message || 'Invalid username or password');
             }
         } catch (error) {
             setMessage('An error occurred. Please try again.');
