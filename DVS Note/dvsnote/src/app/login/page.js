@@ -62,7 +62,7 @@ export default function AuthPage() {
                     Login
                 </Button>
                 <Typography variant="body2" sx={{ marginTop: 2, color: '#6b6b6b' }}>
-                    Don't have an account? <Link href="/signup" underline="hover" color="#6272e3">Sign up</Link>
+                    Don't have an account? <Link href="/signup" underline="hover" color="#6272e3">Sign Up here</Link>
                 </Typography>
             </Box>
         </Container>
