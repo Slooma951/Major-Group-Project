@@ -1,10 +1,40 @@
 'use client'
 
-import * as React from 'react';
+import { useState } from 'react';
 import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
 import Image from "next/image";
 
 export default function AuthPage() {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setMessage('');
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setMessage('Login successful');
+                // Redirect or perform other actions upon success
+            } else {
+                setMessage(data.message || 'Login failed');
+            }
+        } catch (error) {
+            setMessage('An error occurred. Please try again.');
+        }
+    };
+
     return (
         <Container maxWidth="xs" sx={{
             display: 'flex',
@@ -23,7 +53,7 @@ export default function AuthPage() {
                 priority
                 style={{ marginBottom: '2rem' }}
             />
-            <Box component="form" sx={{
+            <Box component="form" onSubmit={handleLogin} sx={{
                 width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
@@ -35,9 +65,9 @@ export default function AuthPage() {
                     variant="outlined"
                     label="Username"
                     margin="normal"
-                    sx={{
-                        bgcolor: 'white',
-                    }}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    sx={{ bgcolor: 'white' }}
                 />
                 <TextField
                     fullWidth
@@ -45,11 +75,12 @@ export default function AuthPage() {
                     label="Password"
                     type="password"
                     margin="normal"
-                    sx={{
-                        bgcolor: 'white',
-                    }}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    sx={{ bgcolor: 'white' }}
                 />
                 <Button
+                    type="submit"
                     fullWidth
                     variant="contained"
                     sx={{
@@ -61,8 +92,13 @@ export default function AuthPage() {
                 >
                     Login
                 </Button>
+                {message && (
+                    <Typography variant="body2" sx={{ marginTop: 2, color: '#6b6b6b' }}>
+                        {message}
+                    </Typography>
+                )}
                 <Typography variant="body2" sx={{ marginTop: 2, color: '#6b6b6b' }}>
-                    Don't have an account? <Link href="/signup" underline="hover" color="#6272e3">Sign Up here</Link>
+                    Don't have an account? <Link href="/register" underline="hover" color="#6272e3">Sign Up here</Link>
                 </Typography>
             </Box>
         </Container>

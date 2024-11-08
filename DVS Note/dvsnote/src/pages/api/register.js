@@ -5,11 +5,12 @@ import bcrypt from 'bcryptjs';
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
-            const db = await connectToDatabase(); // Ensure this is awaited properly
-            const { email, password } = req.body;
+            const db = await connectToDatabase();
+            const { username, email, password } = req.body;
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const result = await db.collection('users').insertOne({
+                username,
                 email,
                 password: hashedPassword,
             });

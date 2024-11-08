@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
+import Image from "next/image";
 
 export default function Register() {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -17,7 +20,7 @@ export default function Register() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ username, email, password }),
             });
 
             const data = await response.json();
@@ -25,6 +28,7 @@ export default function Register() {
 
             if (response.ok) {
                 setMessage(data.message || 'Registration successful');
+                setUsername('');
                 setEmail('');
                 setPassword('');
             } else {
@@ -37,44 +41,84 @@ export default function Register() {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem' }}>
-            <h1>Register</h1>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                <label htmlFor="email">Email:</label>
-                <input
-                    type="email"
-                    id="email"
+        <Container maxWidth="xs" sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            bgcolor: '#e6eaf8',
+            padding: 3,
+        }}>
+            <Image
+                src="/images/logo.png"
+                alt="DVS Note logo"
+                width={260}
+                height={200}
+                priority
+                style={{ marginBottom: '2rem' }}
+            />
+            <Box component="form" onSubmit={handleSubmit} sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                border: 'none',
+            }}>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    margin="normal"
+                    sx={{ bgcolor: 'white' }}
+                />
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    required
-                    style={{ padding: '0.5rem', marginBottom: '1rem' }}
+                    margin="normal"
+                    sx={{ bgcolor: 'white' }}
                 />
-
-                <label htmlFor="password">Password:</label>
-                <input
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Password"
                     type="password"
-                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
-                    style={{ padding: '0.5rem', marginBottom: '1rem' }}
+                    margin="normal"
+                    sx={{ bgcolor: 'white' }}
                 />
-
-                <button
+                <Button
+                    fullWidth
                     type="submit"
-                    style={{
-                        padding: '0.75rem',
-                        backgroundColor: '#4CAF50',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer',
-                    }}
+                    variant="contained"
                     disabled={loading}
+                    sx={{
+                        marginTop: 2,
+                        bgcolor: '#6272e3',
+                        color: 'white',
+                        ':hover': { bgcolor: '#556bd8' },
+                    }}
                 >
                     {loading ? 'Registering...' : 'Register'}
-                </button>
-            </form>
-            {message && <p style={{ marginTop: '1rem', color: message.includes('successful') ? 'green' : 'red' }}>{message}</p>}
-        </div>
+                </Button>
+                {message && (
+                    <Typography variant="body2" sx={{
+                        marginTop: 2,
+                        color: message.includes('successful') ? 'red' : 'green',
+                    }}>
+                        {message}
+                    </Typography>
+                )}
+                <Typography variant="body2" sx={{ marginTop: 2, color: '#6b6b6b' }}>
+                    Already have an account? <Link href="/login" underline="hover" color="#6272e3">Login here</Link>
+                </Typography>
+            </Box>
+        </Container>
     );
 }

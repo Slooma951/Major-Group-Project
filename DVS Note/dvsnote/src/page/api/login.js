@@ -1,3 +1,4 @@
+// src/pages/api/login.js
 import connectToDatabase from '../../lib/mongoUtil';
 import bcrypt from 'bcryptjs';
 
@@ -6,11 +7,11 @@ export default async function handler(req, res) {
         return res.status(405).json({ success: false, message: 'Method not allowed' });
     }
 
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
         const db = await connectToDatabase();
-        const user = await db.collection('users').findOne({ email });
+        const user = await db.collection('users').findOne({ username });
 
         if (!user) {
             return res.status(400).json({ success: false, message: 'Invalid credentials' });
