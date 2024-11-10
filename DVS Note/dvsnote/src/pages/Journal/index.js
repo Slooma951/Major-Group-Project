@@ -6,28 +6,44 @@ import { useRouter } from 'next/router';
 
 export default function Journal() {
     const router = useRouter();
-    const [userName, setUserName] = useState('User');
+    const [userName, setUserName] = useState('User');  // Adjusted to be dynamic as needed
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [journalEntry, setJournalEntry] = useState('');
 
     useEffect(() => {
-        // Check for user authentication
-        if (!true) {
+        if (!userName) {
             router.push('/login');
         }
-    }, [router]);
+    }, [router, userName]);
 
     const toggleDrawer = (open) => () => {
         setDrawerOpen(open);
     };
 
-    const handleJournalSave = () => {
-        console.log('Journal entry saved:', journalEntry);
-        // Additional logic to save the journal entry to a database or state management
+    const saveJournalEntry = async () => {
+        try {
+            const response = await fetch('/api/saveJournalEntry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ journalEntry, userName }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert('Entry saved successfully!');
+                setJournalEntry('');
+            } else {
+                alert('Failed to save entry!');
+            }
+        } catch (error) {
+            console.error('Failed to save journal entry:', error);
+            alert('Error saving entry!');
+        }
     };
 
     const navItems = [
-        { text: 'Dashboard', link: '/' },
+        { text: 'Dashboard', link: '/dashboard' },
         { text: 'Notes', link: '/notes' },
         { text: 'To-Do List', link: '/todo' },
         { text: 'Account Details', link: '/account' },
@@ -45,21 +61,21 @@ export default function Journal() {
             padding: 3
         }}>
             <Container sx={{
-                width: 290, // Fixed width for phone simulation
+                width: 290,
                 height: 500,
                 bgcolor: 'background.paper',
-                boxShadow: '3',
+                boxShadow: 3,
                 borderRadius: '25px',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative',
-                border: '1px solid #505c75' // Adds a subtle border
             }}>
                 <AppBar position="static" sx={{
                     bgcolor: '#505c75',
                     borderTopLeftRadius: '25px',
                     borderTopRightRadius: '25px',
+                    width: '800px',
                     boxShadow: 'none',
                 }}>
                     <Toolbar sx={{ width: 200 }}>
@@ -79,8 +95,8 @@ export default function Journal() {
                     sx={{
                         '& .MuiDrawer-paper': {
                             position: 'absolute',
-                            left: '50%',
-                            top: '50%',
+                            left: '41.3%',
+                            top: '32%',
                             transform: 'translate(-50%, -50%)',
                             width: '250px',
                             height: '50vh',
@@ -131,11 +147,11 @@ export default function Journal() {
                             width: '80%',
                             fontSize: '16px',
                             padding: '10px',
-                            borderRadius: '8px', // Rounded corners for the textarea
-                            border: '2px solid #505c75', // Matching border color
-                            outline: 'none', // Removes default focus outline
-                            resize: 'none', // Prevents resizing
-                            boxShadow: 'inset 0px 0px 8px rgba(0,0,0,0.1)' // Subtle inner shadow
+                            borderRadius: '8px',
+                            border: '2px solid #505c75',
+                            outline: 'none',
+                            resize: 'none',
+                            boxShadow: 'inset 0px 0px 8px rgba(0,0,0,0.1)'
                         }}
                         placeholder="Write about your day..."
                         value={journalEntry}
@@ -143,6 +159,7 @@ export default function Journal() {
                     />
 
                     <Button
+                        onClick={saveJournalEntry}
                         variant="contained"
                         sx={{
                             bgcolor: '#505c75',
@@ -155,7 +172,6 @@ export default function Journal() {
                             boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
                             mt: 2
                         }}
-                        onClick={handleJournalSave}
                     >
                         Save Entry
                     </Button>

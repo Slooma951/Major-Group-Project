@@ -37,24 +37,24 @@ export default function Dashboard() {
             minHeight: '100vh',
             background: 'linear-gradient(to right, #a1c4fd, #c2e9fb)',
             padding: 3
+        }}><Container sx={{
+            width: 290,
+            height: 500,
+            bgcolor: 'background.paper',
+            boxShadow: 3,
+            borderRadius: '25px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
         }}>
-            <Container sx={{
-                width: 290, // Fixed width for phone simulation
-                height: 500,
-                bgcolor: 'background.paper',
-                boxShadow: 3,
-                borderRadius: '25px',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
+            <AppBar position="static" sx={{
+                bgcolor: '#505c75',
+                borderTopLeftRadius: '25px',
+                borderTopRightRadius: '25px',
+                width: '800px',
+                boxShadow: 'none',
             }}>
-                <AppBar position="static" sx={{
-                    bgcolor: '#505c75',
-                    borderTopLeftRadius: '25px',
-                    borderTopRightRadius: '25px',
-                    boxShadow: 'none',
-                }}>
                     <Toolbar sx={{ width: '200px' }}>  {/* Width specified here */}
                         <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)} sx={{ mr: 2 }}>
                             <MenuIcon />
