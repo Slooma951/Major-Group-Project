@@ -1,10 +1,8 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { Container, Typography, Box, AppBar, Toolbar, IconButton, Drawer, List, ListItem, ListItemText, Divider, Button } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import MenuIcon from '@mui/icons-material/Menu';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, List, ListItem, ListItemText, Toolbar, Typography } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useRouter } from 'next/router';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -12,21 +10,18 @@ export default function Dashboard() {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     useEffect(() => {
-        const isLoggedIn = true;
-        if (!isLoggedIn) {
+        // Check for user authentication
+        if (!true) {
             router.push('/login');
         }
     }, [router]);
 
-    const toggleDrawer = (open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
+    const toggleDrawer = (open) => () => {
         setDrawerOpen(open);
     };
 
     const navItems = [
-        { text: 'Journal', link: '/journal' },
+        { text: 'Journal', link: '/Journal' },
         { text: 'Notes', link: '/notes' },
         { text: 'To-Do List', link: '/todo' },
         { text: 'Account Details', link: '/account' },
@@ -36,122 +31,108 @@ export default function Dashboard() {
     return (
         <Box sx={{
             display: 'flex',
-            alignItems: 'center',
+            flexDirection: 'column',
             justifyContent: 'center',
+            alignItems: 'center',
             minHeight: '100vh',
-            bgcolor: 'linear-gradient(180deg, #e6f1ff, #a1c4fd)',
+            background: 'linear-gradient(to right, #a1c4fd, #c2e9fb)',
+            padding: 3
         }}>
-            <Container maxWidth="xs" sx={{
+            <Container sx={{
+                width: 290, // Fixed width for phone simulation
+                height: 500,
+                bgcolor: 'background.paper',
+                boxShadow: 3,
+                borderRadius: '25px',
+                overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
-                bgcolor: '#f8f9fa',
-                height: '700px', // Fixed height to resemble a phone screen
-                width: '380px', // Fixed width for mobile size
-                borderRadius: '20px',
-                boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)',
-                overflow: 'hidden',
                 position: 'relative',
             }}>
                 <AppBar position="static" sx={{
-                    bgcolor: '#6272e3',
-                    width: '100%',
-                    borderTopLeftRadius: '20px',
-                    borderTopRightRadius: '20px',
+                    bgcolor: '#505c75',
+                    borderTopLeftRadius: '25px',
+                    borderTopRightRadius: '25px',
                     boxShadow: 'none',
                 }}>
-                    <Toolbar sx={{ justifyContent: 'space-between' }}>
-                        <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
+                    <Toolbar sx={{ width: '200px' }}>  {/* Width specified here */}
+                        <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)} sx={{ mr: 2 }}>
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" sx={{ color: 'white' }}>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'center', color: 'common.white' }}>
                             Dashboard
                         </Typography>
                     </Toolbar>
                 </AppBar>
 
-                {/* Centered Drawer as a Modal within the Container */}
                 <Drawer
-                    anchor="top"
+                    anchor="left"
                     open={drawerOpen}
                     onClose={toggleDrawer(false)}
                     sx={{
                         '& .MuiDrawer-paper': {
-                            width: '380px', // Same as container width
-                            height: '700px', // Same as container height
-                            margin: 'auto', // Centered within the viewport
-                            borderRadius: '20px', // Match container border radius
-                            boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)', // Same shadow as container
                             position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            overflow: 'hidden', // Remove scroll bar
+                            left: '41.3%',
+                            top: '32%',
+                            transform: 'translate(-50%, -50%)', // Ensures perfect centering
+                            width: '250px',
+                            height: '50vh',
+                            bgcolor: 'background.paper',
+                            borderRadius: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)'
                         },
                     }}
-                    variant="temporary" // Overlay the content
+                    ModalProps={{
+                        keepMounted: true, // Enhances performance on mobile
+                    }}
                 >
-                    <Box
-                        sx={{ width: '100%', fontFamily: 'YourFontFamily', p: 2 }}
-                        role="presentation"
-                        onClick={toggleDrawer(false)}
-                        onKeyDown={toggleDrawer(false)}
-                    >
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                            <Image src="/images/logo.png" alt="DVS Note Logo" width={55} height={60} />
-                        </Box>
-                        <Divider sx={{ borderColor: '#6272e3' }} />
-                        <List>
-                            {navItems.map((item) => (
-                                <ListItem button key={item.text} component="a" href={item.link}>
-                                    <ListItemText primary={item.text} sx={{
-                                        textAlign: 'center',
-                                        color: '#6272e3',
-                                        fontWeight: 'bold',
-                                    }} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Box>
+                    <Image src="/images/logo.png" alt="Logo" width={100} height={100} priority />
+                    <List sx={{ width: '100%' }}>
+                        {navItems.map((item) => (
+                            <ListItem button key={item.text} component="a" href={item.link} sx={{ textAlign: 'center', justifyContent: 'center' }}>
+                                <ListItemText primary={item.text} sx={{ textAlign: 'center', fontWeight: 'bold', color: '#505c75' }} />
+                            </ListItem>
+                        ))}
+                        <Divider />
+                    </List>
                 </Drawer>
 
-                {/* Main Content */}
                 <Box sx={{
+                    flexGrow: 1,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100%',
-                    padding: 3,
-                    mt: 2,
+                    p: 3
                 }}>
                     <Typography variant="h5" gutterBottom sx={{
-                        fontFamily: 'YourFontFamily',
-                        color: '#6272e3',
+                        fontFamily: 'Nunito, sans-serif',
                         fontWeight: 'bold',
-                        mt: 5, // Space below the AppBar
+                        color: '#505c75',
+                        mt: 5
                     }}>
                         Welcome, {userName}!
                     </Typography>
 
-                    <Box sx={{ mt: 3 }}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                bgcolor: '#6272e3',
-                                color: 'white',
-                                ':hover': { bgcolor: '#556bd8' },
-                                borderRadius: '20px',
-                                padding: '10px 20px',
-                                fontWeight: 'bold',
-                                textTransform: 'none',
-                                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-                            }}
-                        >
-                            Add New Task
-                        </Button>
-                    </Box>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            bgcolor: '#505c75',
+                            color: 'common.white',
+                            ':hover': { bgcolor: '#404f65' },
+                            borderRadius: '20px',
+                            padding: '10px 20px',
+                            fontWeight: 'bold',
+                            textTransform: 'none',
+                            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                        }}
+                    >
+                        Add New Task
+                    </Button>
                 </Box>
             </Container>
         </Box>
