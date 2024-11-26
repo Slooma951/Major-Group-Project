@@ -1,8 +1,8 @@
 // mongoUtil.js
 import { MongoClient } from 'mongodb';
 
-const uri = process.env.DB_URI; // Ensure this is correctly configured in your .env.local file
-const client = new MongoClient(uri);
+//const uri = process.env.DB_URI; // Ensure this is correctly configured in your .env.local file
+const client = new MongoClient('mongodb+srv://root:R5lcPSJm1egBE0Z1@dvsnotedb.lozto.mongodb.net/DVSDB?retryWrites=true&w=majority&appName=DVSNoteDB');
 
 let dbConnection;
 

@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 
 export default function Journal() {
     const router = useRouter();
-    const [userName, setUserName] = useState('User');  // Adjusted to be dynamic as needed
+    const [userName, setUserName] = useState('User'); 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [journalEntry, setJournalEntry] = useState('');
 

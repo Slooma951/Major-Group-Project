@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
+import { DiscFullSharp } from '@mui/icons-material';
 
 export default function AuthPage() {
     const [username, setUsername] = useState('');
@@ -28,7 +29,7 @@ export default function AuthPage() {
 
             if (response.ok) {
                 setMessage('Login successful');
-                router.push('../dashboard');
+                router.push('/dashboard/');
             } else {
                 setMessage(data.message || 'Invalid username or password');
             }
