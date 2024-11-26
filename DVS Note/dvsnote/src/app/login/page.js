@@ -1,20 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
-import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { DiscFullSharp } from '@mui/icons-material';
+import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
+import Image from 'next/image';
 
 export default function AuthPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false); // Added loading state
     const router = useRouter();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setMessage('');
+        setLoading(true);
 
         try {
             const response = await fetch('/api/login', {
@@ -26,28 +27,34 @@ export default function AuthPage() {
             });
 
             const data = await response.json();
+            setLoading(false);
 
             if (response.ok) {
                 setMessage('Login successful');
-                router.push('/dashboard/');
+                localStorage.setItem('userId', data.userId); // Save user ID to localStorage
+                router.push('/dashboard');
             } else {
                 setMessage(data.message || 'Invalid username or password');
             }
         } catch (error) {
+            setLoading(false);
             setMessage('An error occurred. Please try again.');
         }
     };
 
     return (
-        <Container maxWidth="xs" sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            bgcolor: '#e6eaf8',
-            padding: 3,
-        }}>
+        <Container
+            maxWidth="xs"
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                bgcolor: '#e6eaf8',
+                padding: 3,
+            }}
+        >
             <Image
                 src="/images/logo.png"
                 alt="DVS Note logo"
@@ -56,13 +63,16 @@ export default function AuthPage() {
                 priority
                 style={{ marginBottom: '2rem' }}
             />
-            <Box component="form" onSubmit={handleLogin} sx={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                border: 'none',
-            }}>
+            <Box
+                component="form"
+                onSubmit={handleLogin}
+                sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -86,6 +96,7 @@ export default function AuthPage() {
                     type="submit"
                     fullWidth
                     variant="contained"
+                    disabled={loading} // Disable button during loading
                     sx={{
                         marginTop: 2,
                         bgcolor: '#6272e3',
@@ -93,15 +104,30 @@ export default function AuthPage() {
                         ':hover': { bgcolor: '#556bd8' },
                     }}
                 >
-                    Login
+                    {loading ? 'Logging in...' : 'Login'} {/* Display loading state */}
                 </Button>
                 {message && (
-                    <Typography variant="body2" sx={{ marginTop: 2, color: '#6b6b6b' }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            marginTop: 2,
+                            color: message === 'Login successful' ? 'green' : 'red',
+                        }}
+                    >
                         {message}
                     </Typography>
                 )}
-                <Typography variant="body2" sx={{ marginTop: 2, color: '#6b6b6b' }}>
-                    Don't have an account? <Link href="/register" underline="hover" color="#6272e3">Sign Up here</Link>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        marginTop: 2,
+                        color: '#6b6b6b',
+                    }}
+                >
+                    Don't have an account?{' '}
+                    <Link href="/register" underline="hover" color="#6272e3">
+                        Sign Up here
+                    </Link>
                 </Typography>
             </Box>
         </Container>
