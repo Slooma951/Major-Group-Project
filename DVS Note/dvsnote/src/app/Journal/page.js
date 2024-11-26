@@ -56,20 +56,24 @@ export default function Journal() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ journalEntry, userName }),
+                body: JSON.stringify({
+                    userId: localStorage.getItem('userId'), // Or session ID
+                    journalEntry,
+                }),
             });
             const data = await response.json();
             if (data.success) {
                 alert('Entry saved successfully!');
                 setJournalEntry('');
             } else {
-                alert('Failed to save entry!');
+                alert(data.message || 'Failed to save entry!');
             }
         } catch (error) {
-            console.error('Failed to save journal entry:', error);
+            console.error('Error saving journal entry:', error);
             alert('Error saving entry!');
         }
     };
+    
 
     const navItems = [
         { text: 'Dashboard', link: '/dashboard' },
@@ -141,8 +145,8 @@ export default function Journal() {
                 onClose={toggleDrawer(false)}
                 sx={{
                     '& .MuiDrawer-paper': {
-                        width: '70%',
-                        maxWidth: '250px',
+                        width: '100%',
+                        maxWidth: '190px',
                         bgcolor: 'background.paper',
                         display: 'flex',
                         flexDirection: 'column',
@@ -222,6 +226,8 @@ export default function Journal() {
                         resize: 'none',
                         boxShadow: 'inset 0px 4px 12px rgba(0, 0, 0, 0.1)',
                         backgroundColor: '#f9f9f9',
+                        color: '#505c75',
+
                     }}
                     placeholder="Write about your day..."
                     value={journalEntry}

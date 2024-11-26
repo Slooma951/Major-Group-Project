@@ -121,8 +121,8 @@ export default function Dashboard() {
                     onClose={toggleDrawer(false)}
                     sx={{
                         '& .MuiDrawer-paper': {
-                            width: '70%', // Reduced drawer width
-                            maxWidth: '250px',
+                            width: '100%', 
+                            maxWidth: '200px',
                             bgcolor: 'background.paper',
                             display: 'flex',
                             flexDirection: 'column',
