@@ -1,11 +1,15 @@
-// src/pages/api/login.js
 import connectToDatabase from '../../lib/mongoUtil';
 import bcrypt from 'bcryptjs';
+import { getCustomSession } from '../../lib/session';
 
 export default async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ success: false, message: 'Method not allowed' });
+    }
+
     const { username, password } = req.body;
 
-    // Check if both username and password are provided
+    // Validate input
     if (!username || !password) {
         return res.status(400).json({ success: false, message: 'Username and password are required.' });
     }
@@ -18,20 +22,26 @@ export default async function handler(req, res) {
         // Check if user exists
         const user = await usersCollection.findOne({ username });
         if (!user) {
-            return res.status(400).json({ success: false, message: 'User does not exist.' });
+            return res.status(404).json({ success: false, message: 'User does not exist.' });
         }
 
         // Validate the password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ success: false, message: 'Invalid password.' });
+            return res.status(401).json({ success: false, message: 'Invalid password.' });
         }
 
-        // If login is successful
+        // Initialize session and store user data
+        const session = await getCustomSession(req, res);
+        session.user = {username: user.username };
+        await session.save();
+
+
+        // Respond with success
         res.status(200).json({
             success: true,
             message: 'Login successful',
-            userId: user._id,
+            user: {username: user.username },
         });
     } catch (error) {
         console.error('Error in login:', error);

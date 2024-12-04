@@ -14,18 +14,13 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            try {
-                const response = await fetch(`/api/user?userId=${localStorage.getItem('userId')}`);
+                const response = await fetch('/api/checkSession');
                 if (response.ok) {
                     const data = await response.json();
-                    setUserName(data.username);
+                    setUserName(data.user.username);
                 } else {
                     router.push('/login');
                 }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                router.push('/login');
-            }
         };
 
         fetchUserData();

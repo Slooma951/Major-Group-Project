@@ -25,6 +25,7 @@ export default function AuthPage() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ username, password }),
+                credentials: 'include',
             });
 
             const data = await response.json();
@@ -32,7 +33,6 @@ export default function AuthPage() {
 
             if (response.ok) {
                 setMessage('Login successful');
-                localStorage.setItem('userId', data.userId);
                 router.push('/dashboard');
             } else {
                 setMessage(data.message || 'Invalid username or password');
