@@ -1,22 +1,53 @@
 import connectToDatabase from '../../lib/mongoUtil';
 import { ObjectId } from 'mongodb';
 
-// Emotion analysis helper (simple example, replace with ML for accuracy)
-const detectEmotion = (text) => {
+const detectEmotions = (text) => {
+    const emotionKeywords = {
+        Happy: ['happy', 'joy', 'excited', 'cheerful', 'thrilled', 'love', 'laugh', 'smile'],
+        Sad: ['sad', 'unhappy', 'down', 'depressed', 'cry', 'heartbroken', 'tears', 'blue'],
+        Angry: ['angry', 'mad', 'frustrated', 'annoyed', 'furious', 'upset', 'irritated', 'hate'],
+        Fearful: ['scared', 'afraid', 'nervous', 'worried', 'anxious', 'terrified', 'uneasy', 'tense'],
+        Calm: ['calm', 'relaxed', 'peaceful', 'serene', 'content', 'chill', 'still', 'quiet'],
+    };
+
+    const detectedEmotions = [];
     const lowerCaseText = text.toLowerCase();
-    if (lowerCaseText.includes('happy') || lowerCaseText.includes('excited')) return 'Happy';
-    if (lowerCaseText.includes('sad') || lowerCaseText.includes('depressed')) return 'Sad';
-    if (lowerCaseText.includes('angry') || lowerCaseText.includes('frustrated')) return 'Angry';
-    return 'Neutral';
+
+    for (const [emotion, keywords] of Object.entries(emotionKeywords)) {
+        if (keywords.some((keyword) => lowerCaseText.includes(keyword))) {
+            detectedEmotions.push(emotion);
+        }
+    }
+
+    return detectedEmotions.length > 0 ? detectedEmotions : ['Neutral'];
 };
 
-// Extract keywords (basic keyword extraction)
 const extractKeywords = (text) => {
-    const stopWords = ['is', 'the', 'and', 'a', 'an', 'of', 'to', 'with', 'on', 'in', 'at', 'for'];
+    const stopWords = [
+        'is', 'the', 'and', 'a', 'an', 'of', 'to', 'with', 'on', 'in',
+        'at', 'for', 'it', 'this', 'that', 'but', 'too', 'make',
+    ];
     return text
         .split(/\s+/)
         .map((word) => word.toLowerCase().replace(/[^a-z]/g, ''))
         .filter((word) => word.length > 2 && !stopWords.includes(word));
+};
+
+const calculateSentimentScore = (text) => {
+    const positiveWords = ['happy', 'joy', 'love', 'smile', 'excited', 'peaceful', 'calm', 'content'];
+    const negativeWords = ['sad', 'angry', 'hate', 'cry', 'down', 'depressed', 'nervous', 'tense'];
+
+    const lowerCaseText = text.toLowerCase();
+    let score = 0;
+
+    positiveWords.forEach((word) => {
+        if (lowerCaseText.includes(word)) score += 1;
+    });
+    negativeWords.forEach((word) => {
+        if (lowerCaseText.includes(word)) score -= 1;
+    });
+
+    return score;
 };
 
 export default async function handler(req, res) {
@@ -28,35 +59,47 @@ export default async function handler(req, res) {
         const { userId, journalEntry } = req.body;
 
         if (!userId || !journalEntry) {
-            return res.status(400).json({ success: false, message: 'User ID and journal entry are required.' });
+            return res.status(400).json({
+                success: false,
+                message: 'User ID and journal entry are required.',
+            });
         }
 
         const db = await connectToDatabase();
         const journalCollection = db.collection('journalEntries');
 
-        // Detect emotion and extract keywords
-        const detectedEmotion = detectEmotion(journalEntry);
+        const detectedEmotions = detectEmotions(journalEntry);
         const keywords = extractKeywords(journalEntry);
+        const sentimentScore = calculateSentimentScore(journalEntry);
 
-        // Create the journal entry document
         const newEntry = {
-            userId: new ObjectId(userId), // Ensure userId is a valid ObjectId
+            userId: new ObjectId(userId),
             journalEntry,
-            detectedEmotion,
+            detectedEmotions,
             keywords,
+            sentimentScore,
             createdAt: new Date(),
         };
 
-        // Insert the document into the database
         const result = await journalCollection.insertOne(newEntry);
 
         if (result.acknowledged) {
-            res.status(200).json({ success: true, message: 'Journal entry saved successfully.', entryId: result.insertedId });
+            return res.status(200).json({
+                success: true,
+                message: 'Journal entry saved successfully.',
+                entryId: result.insertedId,
+            });
         } else {
-            res.status(500).json({ success: false, message: 'Failed to save journal entry.' });
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to save journal entry.',
+            });
         }
     } catch (error) {
         console.error('Error saving journal entry:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+        });
     }
 }
