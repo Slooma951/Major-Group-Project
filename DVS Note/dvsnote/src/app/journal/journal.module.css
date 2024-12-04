@@ -1,0 +1,98 @@
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    padding: 16px;
+    color: black;
+}
+
+.appBar {
+    background-color: #505c75;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 5px;
+    margin-bottom: 20px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 1.25rem;
+    color: white;
+}
+
+.drawerPaper {
+    width: 80%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.listItem {
+    text-align: left;
+    justify-content: left;
+    padding: 10px 0;
+}
+
+.listItemText {
+    text-align: center;
+    font-weight: bold;
+    color: #505c75;
+}
+
+.contentContainer {
+    width: 90%;
+    background-color: white;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.promptText {
+    text-align: center;
+    font-weight: bold;
+    color: #505c75;
+}
+
+.dateSelector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #505c75;
+    resize: none;
+    background-color: #f9f9f9;
+}
+
+.saveButton {
+    background-color: #505c75;
+    color: white;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 1rem;
+    text-transform: none;
+}
+
+.saveButton:hover {
+    background-color: #404f65;
+}

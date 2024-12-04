@@ -21,6 +21,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useRouter } from 'next/navigation';
+import styles from './Journal.module.css'; // Import the CSS module
 
 export default function Journal() {
     const router = useRouter();
@@ -93,52 +94,13 @@ export default function Journal() {
     ];
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '100vh',
-                background: 'linear-gradient(to right, #a1c4fd, #c2e9fb)',
-                color: 'black',
-                padding: 2,
-            }}
-        >
-            <AppBar
-                position="static"
-                sx={{
-                    bgcolor: '#505c75',
-                    width: '100%',
-                    borderRadius: '20px',
-                    boxShadow: 5,
-                    marginBottom: '20px',
-                }}
-            >
-                <Toolbar
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        paddingX: '20px',
-                    }}
-                >
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        onClick={toggleDrawer(true)}
-                    >
+        <Box className={styles.mainContainer}>
+            <AppBar position="static" className={styles.appBar}>
+                <Toolbar className={styles.toolbar}>
+                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            flexGrow: 1,
-                            textAlign: 'center',
-                            fontSize: '1.25rem',
-                            color: 'white',
-                        }}
-                    >
+                    <Typography variant="h6" className={styles.title}>
                         Journal
                     </Typography>
                 </Toolbar>
@@ -148,16 +110,7 @@ export default function Journal() {
                 anchor="left"
                 open={drawerOpen}
                 onClose={toggleDrawer(false)}
-                sx={{
-                    '& .MuiDrawer-paper': {
-                        width: '80%',
-                        bgcolor: 'background.paper',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    },
-                }}
+                classes={{ paper: styles.drawerPaper }}
             >
                 <Image src="/images/logo.png" alt="Logo" width={70} height={55} priority />
                 <List>
@@ -167,56 +120,21 @@ export default function Journal() {
                             button
                             component="a"
                             href={item.link}
-                            sx={{
-                                textAlign: 'left',
-                                justifyContent: 'left',
-                                paddingY: '10px',
-                            }}
+                            className={styles.listItem}
                         >
-                            <ListItemText
-                                primary={item.text}
-                                sx={{
-                                    textAlign: 'center',
-                                    fontWeight: 'bold',
-                                    color: '#505c75',
-                                }}
-                            />
+                            <ListItemText primary={item.text} className={styles.listItemText} />
                         </ListItem>
                     ))}
                     <Divider />
                 </List>
             </Drawer>
 
-            <Container
-                sx={{
-                    width: '90%',
-                    bgcolor: 'white',
-                    boxShadow: 5,
-                    borderRadius: '20px',
-                    padding: 3,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                }}
-            >
-                <Typography
-                    variant="h6"
-                    sx={{
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        color: '#505c75',
-                    }}
-                >
+            <Container className={styles.contentContainer}>
+                <Typography variant="h6" className={styles.promptText}>
                     How was your day, {userName}?
                 </Typography>
 
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}
-                >
+                <Box className={styles.dateSelector}>
                     <IconButton onClick={() => adjustDate(-1)}>
                         <ArrowBackIosIcon />
                     </IconButton>
@@ -228,31 +146,13 @@ export default function Journal() {
 
                 <TextareaAutosize
                     minRows={8}
-                    style={{
-                        width: '100%',
-                        fontSize: '16px',
-                        padding: '16px',
-                        borderRadius: '12px',
-                        border: '1px solid #505c75',
-                        resize: 'none',
-                        backgroundColor: '#f9f9f9',
-                        color:'black',
-                    }}
+                    className={styles.textarea}
                     placeholder="Write about your day..."
                     value={journalEntry}
                     onChange={(e) => setJournalEntry(e.target.value)}
                 />
 
-                <Button
-                    onClick={saveJournalEntry}
-                    variant="contained"
-                    sx={{
-                        bgcolor: '#505c75',
-                        color: 'white',
-                        borderRadius: '12px',
-                        padding: '10px',
-                    }}
-                >
+                <Button onClick={saveJournalEntry} variant="contained" className={styles.saveButton}>
                     Save Entry
                 </Button>
             </Container>
