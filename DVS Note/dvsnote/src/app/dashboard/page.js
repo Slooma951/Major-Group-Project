@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import {AppBar, Box, Button,Container,Divider,Drawer,IconButton,List, ListItem, ListItemText,  Toolbar,Typography,} from '@mui/material';
+import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, List, ListItem, ListItemText, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/navigation';
+import styles from './dashboard.module.css';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -19,11 +20,11 @@ export default function Dashboard() {
                     const data = await response.json();
                     setUserName(data.username);
                 } else {
-                    router.push('/login'); // Redirect to login if user data is not available
+                    router.push('/login');
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
-                router.push('/login'); // Redirect to login on error
+                router.push('/login');
             }
         };
 
@@ -41,167 +42,53 @@ export default function Dashboard() {
         { text: 'Account Details', link: '/account' },
         { text: 'Logout', link: '/logout' },
     ];
-    
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '100vh',
-                background: 'linear-gradient(to right, #a1c4fd, #c2e9fb)',
-                padding: 2,
-            }}
-        >
+        <Box className={styles.mainContainer}>
             {/* AppBar */}
-            <AppBar
-                position="static"
-                sx={{
-                    bgcolor: '#505c75',
-                    width: '110%',
-                    maxWidth: '600px',
-                    borderRadius: '20px',
-                    boxShadow: 5,
-                    marginBottom: '10px',
-                }}
-            >
-                <Toolbar
-                    sx={{
-                        minHeight: '50px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        paddingX: '20px',
-                    }}
-                >
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        onClick={toggleDrawer(true)}
-                    >
+            <AppBar position="static" className={styles.appBar}>
+                <Toolbar className={styles.toolbar}>
+                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{
-                            flexGrow: 1,
-                            textAlign: 'center',
-                            fontSize: '1.25rem',
-                            color: 'common.white',
-                        }}
-                    >
-                        Dashboard	
+                    <Typography variant="h6" component="div" className={styles.title}>
+                        Dashboard
                     </Typography>
                 </Toolbar>
             </AppBar>
 
             {/* Main Container */}
-            <Container
-                sx={{
-                    width: '100%',
-                    maxWidth: '500px',
-                    bgcolor: 'background.paper',
-                    boxShadow: 3,
-                    borderRadius: '20px',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: '80vh',
-                    justifyContent: 'space-between',
-                    padding: 2,
-                }}
-            >
+            <Container className={styles.contentContainer}>
                 {/* Drawer */}
                 <Drawer
                     anchor="left"
                     open={drawerOpen}
                     onClose={toggleDrawer(false)}
-                    sx={{
-                        '& .MuiDrawer-paper': {
-                            width: '100%', 
-                            maxWidth: '200px',
-                            bgcolor: 'background.paper',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
-                            borderRadius: '0 20px 20px 0', // Optional rounded corners
-                        },
-                    }}
+                    classes={{ paper: styles.drawerPaper }}
                 >
                     <Image src="/images/logo.png" alt="Logo" width={70} height={55} priority />
-                    <List sx={{ width: '50%' }}>
+                    <List className={styles.drawerList}>
                         {navItems.map((item) => (
-                           <ListItem
-                           key={item.text}
-                           button 
-                           component="a"
-                           href={item.link}
-                           sx={{
-                               textAlign: 'left',
-                               justifyContent: 'left',
-                               paddingY: '10px',
-                           }}
-                       >
-                           <ListItemText
-                               primary={item.text}
-                               sx={{
-                                   textAlign: 'center',
-                                   fontWeight: 'bold',
-                                   color: '#505c75',
-                                   fontSize: '1rem',
-                               }}
-                           />
-                       </ListItem>
-                       
+                            <ListItem
+                                key={item.text}
+                                button
+                                component="a"
+                                href={item.link}
+                                className={styles.listItem}
+                            >
+                                <ListItemText primary={item.text} className={styles.listItemText} />
+                            </ListItem>
                         ))}
                         <Divider />
                     </List>
                 </Drawer>
 
                 {/* Main Content */}
-                <Box
-                    sx={{
-                        flexGrow: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '16px 24px',
-                        rowGap: '16px',
-                    }}
-                >
-                    <Typography
-                        variant="h5"
-                        sx={{
-                            fontFamily: 'Nunito, sans-serif',
-                            fontWeight: 'bold',
-                            color: '#505c75',
-                            fontSize: '1.5rem',
-                            marginBottom: '8px',
-                        }}
-                    >
+                <Box className={styles.mainContent}>
+                    <Typography variant="h5" className={styles.welcomeText}>
                         Welcome, {userName}
                     </Typography>
-
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                            bgcolor: '#505c75',
-                            color: 'common.white',
-                            ':hover': { bgcolor: '#404f65' },
-                            borderRadius: '12px',
-                            padding: '12px 16px',
-                            fontWeight: 'bold',
-                            textTransform: 'none',
-                            fontSize: '1rem',
-                        }}
-                    >
+                    <Button variant="contained" fullWidth className={styles.addButton}>
                         Add New Task
                     </Button>
                 </Box>
