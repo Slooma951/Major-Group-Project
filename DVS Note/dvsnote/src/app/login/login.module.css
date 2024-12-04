@@ -1,0 +1,65 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #e6eaf8;
+    padding: 24px;
+}
+
+.logo {
+    margin-bottom: 2rem;
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input {
+    background-color: white;
+    margin-bottom: 16px;
+    border-radius: 4px;
+}
+
+.loginButton {
+    margin-top: 16px;
+    background-color: #6272e3;
+    color: white;
+    text-transform: none;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+.loginButton:hover {
+    background-color: #556bd8;
+}
+
+.successMessage {
+    margin-top: 16px;
+    color: green;
+}
+
+.errorMessage {
+    margin-top: 16px;
+    color: red;
+}
+
+.signUpText {
+    margin-top: 16px;
+    color: #6b6b6b;
+    text-align: center;
+}
+
+.signUpLink {
+    color: #6272e3;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.signUpLink:hover {
+    text-decoration: underline;
+}

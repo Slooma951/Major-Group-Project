@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
 import Image from 'next/image';
+import styles from './login.module.css';
 
 export default function AuthPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false); // Added loading state
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleLogin = async (e) => {
@@ -31,7 +32,7 @@ export default function AuthPage() {
 
             if (response.ok) {
                 setMessage('Login successful');
-                localStorage.setItem('userId', data.userId); // Save user ID to localStorage
+                localStorage.setItem('userId', data.userId);
                 router.push('/dashboard');
             } else {
                 setMessage(data.message || 'Invalid username or password');
@@ -43,36 +44,16 @@ export default function AuthPage() {
     };
 
     return (
-        <Container
-            maxWidth="xs"
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '100vh',
-                bgcolor: '#e6eaf8',
-                padding: 3,
-            }}
-        >
+        <Container className={styles.container}>
             <Image
                 src="/images/logo.png"
                 alt="DVS Note logo"
                 width={260}
                 height={200}
                 priority
-                style={{ marginBottom: '2rem' }}
+                className={styles.logo}
             />
-            <Box
-                component="form"
-                onSubmit={handleLogin}
-                sx={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
+            <Box component="form" onSubmit={handleLogin} className={styles.form}>
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -80,7 +61,7 @@ export default function AuthPage() {
                     margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    sx={{ bgcolor: 'white' }}
+                    className={styles.input}
                 />
                 <TextField
                     fullWidth
@@ -90,42 +71,32 @@ export default function AuthPage() {
                     margin="normal"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    sx={{ bgcolor: 'white' }}
+                    className={styles.input}
                 />
                 <Button
                     type="submit"
                     fullWidth
                     variant="contained"
-                    disabled={loading} // Disable button during loading
-                    sx={{
-                        marginTop: 2,
-                        bgcolor: '#6272e3',
-                        color: 'white',
-                        ':hover': { bgcolor: '#556bd8' },
-                    }}
+                    disabled={loading}
+                    className={styles.loginButton}
                 >
-                    {loading ? 'Logging in...' : 'Login'} {/* Display loading state */}
+                    {loading ? 'Logging in...' : 'Login'}
                 </Button>
                 {message && (
                     <Typography
                         variant="body2"
-                        sx={{
-                            marginTop: 2,
-                            color: message === 'Login successful' ? 'green' : 'red',
-                        }}
+                        className={
+                            message === 'Login successful'
+                                ? styles.successMessage
+                                : styles.errorMessage
+                        }
                     >
                         {message}
                     </Typography>
                 )}
-                <Typography
-                    variant="body2"
-                    sx={{
-                        marginTop: 2,
-                        color: '#6b6b6b',
-                    }}
-                >
+                <Typography variant="body2" className={styles.signUpText}>
                     Don't have an account?{' '}
-                    <Link href="/register" underline="hover" color="#6272e3">
+                    <Link href="/register" underline="hover" className={styles.signUpLink}>
                         Sign Up here
                     </Link>
                 </Typography>
