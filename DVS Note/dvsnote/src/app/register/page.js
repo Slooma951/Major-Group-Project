@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
 import Image from 'next/image';
+import styles from './Register.module.css';
 
 export default function Register() {
     const [username, setUsername] = useState('');
@@ -43,36 +44,16 @@ export default function Register() {
     };
 
     return (
-        <Container
-            maxWidth="xs"
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '100vh',
-                bgcolor: '#e6eaf8',
-                padding: 3,
-            }}
-        >
+        <Container className={styles.container}>
             <Image
                 src="/images/logo.png"
                 alt="DVS Note logo"
                 width={200}
                 height={150}
                 priority
-                style={{ marginBottom: '2rem' }}
+                className={styles.logo}
             />
-            <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
+            <Box component="form" onSubmit={handleSubmit} className={styles.form}>
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -80,7 +61,7 @@ export default function Register() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     margin="normal"
-                    sx={{ bgcolor: 'white' }}
+                    className={styles.input}
                 />
                 <TextField
                     fullWidth
@@ -89,7 +70,7 @@ export default function Register() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     margin="normal"
-                    sx={{ bgcolor: 'white' }}
+                    className={styles.input}
                 />
                 <TextField
                     fullWidth
@@ -99,42 +80,32 @@ export default function Register() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     margin="normal"
-                    sx={{ bgcolor: 'white' }}
+                    className={styles.input}
                 />
                 <Button
                     fullWidth
                     type="submit"
                     variant="contained"
                     disabled={loading}
-                    sx={{
-                        marginTop: 2,
-                        bgcolor: '#6272e3',
-                        color: 'white',
-                        ':hover': { bgcolor: '#556bd8' },
-                    }}
+                    className={styles.registerButton}
                 >
                     {loading ? 'Registering...' : 'Register'}
                 </Button>
                 {message && (
                     <Typography
                         variant="body2"
-                        sx={{
-                            marginTop: 2,
-                            color: message.includes('successful') ? 'red' : 'green',
-                        }}
+                        className={
+                            message.includes('successful')
+                                ? styles.successMessage
+                                : styles.errorMessage
+                        }
                     >
                         {message}
                     </Typography>
                 )}
-                <Typography
-                    variant="body2"
-                    sx={{
-                        marginTop: 2,
-                        color: '#6b6b6b',
-                    }}
-                >
+                <Typography variant="body2" className={styles.loginText}>
                     Already have an account?{' '}
-                    <Link href="/login" underline="hover" color="#6272e3">
+                    <Link href="/login" underline="hover" className={styles.loginLink}>
                         Login here
                     </Link>
                 </Typography>
