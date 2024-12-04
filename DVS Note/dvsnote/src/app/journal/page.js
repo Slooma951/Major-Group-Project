@@ -21,7 +21,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useRouter } from 'next/navigation';
-import styles from './Journal.module.css'; // Import the CSS module
+import styles from './journal.module.css';
 
 export default function Journal() {
     const router = useRouter();

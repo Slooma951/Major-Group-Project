@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
 import Image from 'next/image';
-import styles from './Register.module.css';
+import styles from './register.module.css';
 
 export default function Register() {
     const [username, setUsername] = useState('');
