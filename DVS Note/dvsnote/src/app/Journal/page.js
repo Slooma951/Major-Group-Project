@@ -18,13 +18,16 @@ import {
     Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useRouter } from 'next/navigation';
 
 export default function Journal() {
     const router = useRouter();
-    const [userName, setUserName] = useState('User'); 
+    const [userName, setUserName] = useState('User');
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [journalEntry, setJournalEntry] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -34,7 +37,7 @@ export default function Journal() {
                     const data = await response.json();
                     setUserName(data.username);
                 } else {
-                    router.push('/login'); // Redirect to login if user is not logged in
+                    router.push('/login');
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -57,8 +60,9 @@ export default function Journal() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId: localStorage.getItem('userId'), // Or session ID
+                    userId: localStorage.getItem('userId'),
                     journalEntry,
+                    date: selectedDate,
                 }),
             });
             const data = await response.json();
@@ -73,7 +77,12 @@ export default function Journal() {
             alert('Error saving entry!');
         }
     };
-    
+
+    const adjustDate = (days) => {
+        const currentDate = new Date(selectedDate);
+        currentDate.setDate(currentDate.getDate() + days);
+        setSelectedDate(currentDate.toISOString().split('T')[0]);
+    };
 
     const navItems = [
         { text: 'Dashboard', link: '/dashboard' },
@@ -92,24 +101,22 @@ export default function Journal() {
                 alignItems: 'center',
                 minHeight: '100vh',
                 background: 'linear-gradient(to right, #a1c4fd, #c2e9fb)',
+                color: 'black',
                 padding: 2,
             }}
         >
-            {/* AppBar */}
             <AppBar
                 position="static"
                 sx={{
                     bgcolor: '#505c75',
-                    width: '110%',
-                    maxWidth: '600px',
+                    width: '100%',
                     borderRadius: '20px',
                     boxShadow: 5,
-                    marginBottom: '100px',
+                    marginBottom: '20px',
                 }}
             >
                 <Toolbar
                     sx={{
-                        minHeight: '50px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         paddingX: '20px',
@@ -125,95 +132,100 @@ export default function Journal() {
                     </IconButton>
                     <Typography
                         variant="h6"
-                        component="div"
                         sx={{
                             flexGrow: 1,
                             textAlign: 'center',
                             fontSize: '1.25rem',
-                            color: 'common.white',
+                            color: 'white',
                         }}
                     >
                         Journal
                     </Typography>
                 </Toolbar>
             </AppBar>
-    
-            {/* Drawer */}
+
             <Drawer
                 anchor="left"
                 open={drawerOpen}
                 onClose={toggleDrawer(false)}
                 sx={{
                     '& .MuiDrawer-paper': {
-                        width: '100%',
-                        maxWidth: '190px',
+                        width: '80%',
                         bgcolor: 'background.paper',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
                     },
                 }}
             >
-               <Image src="/images/logo.png" alt="Logo" width={70} height={55} priority />
-                    <List sx={{ width: '50%' }}>
-                        {navItems.map((item) => (
-                            <ListItem
-                                key={item.text}
-                                button 
-                                component="a"
-                                href={item.link}
+                <Image src="/images/logo.png" alt="Logo" width={70} height={55} priority />
+                <List>
+                    {navItems.map((item) => (
+                        <ListItem
+                            key={item.text}
+                            button
+                            component="a"
+                            href={item.link}
+                            sx={{
+                                textAlign: 'left',
+                                justifyContent: 'left',
+                                paddingY: '10px',
+                            }}
+                        >
+                            <ListItemText
+                                primary={item.text}
                                 sx={{
-                                    textAlign: 'left',
-                                    justifyContent: 'left',
-                                    paddingY: '10px',
+                                    textAlign: 'center',
+                                    fontWeight: 'bold',
+                                    color: '#505c75',
                                 }}
-                            >
-                                <ListItemText
-                                    primary={item.text}
-                                    sx={{
-                                        textAlign: 'center',
-                                        fontWeight: 'bold',
-                                        color: '#505c75',
-                                        fontSize: '1rem',
-                                    }}
                             />
                         </ListItem>
                     ))}
                     <Divider />
                 </List>
             </Drawer>
-    
-            {/* Main Content */}
+
             <Container
                 sx={{
-                    width: '95%',
-                    maxWidth: '500px',
-                    bgcolor: 'background.paper',
+                    width: '90%',
+                    bgcolor: 'white',
                     boxShadow: 5,
                     borderRadius: '20px',
-                    overflow: 'hidden',
+                    padding: 3,
                     display: 'flex',
                     flexDirection: 'column',
-                    padding: 3,
-                    gap: 3,
+                    gap: 2,
                 }}
             >
-                {/* Greeting */}
                 <Typography
-                    variant="h5"
+                    variant="h6"
                     sx={{
-                        fontFamily: 'Nunito, sans-serif',
+                        textAlign: 'center',
                         fontWeight: 'bold',
                         color: '#505c75',
-                        textAlign: 'center',
                     }}
                 >
                     How was your day, {userName}?
                 </Typography>
-    
-                {/* Textarea */}
+
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <IconButton onClick={() => adjustDate(-1)}>
+                        <ArrowBackIosIcon />
+                    </IconButton>
+                    <Typography>{selectedDate}</Typography>
+                    <IconButton onClick={() => adjustDate(1)}>
+                        <ArrowForwardIosIcon />
+                    </IconButton>
+                </Box>
+
                 <TextareaAutosize
                     minRows={8}
                     style={{
@@ -221,33 +233,24 @@ export default function Journal() {
                         fontSize: '16px',
                         padding: '16px',
                         borderRadius: '12px',
-                        border: '1.5px solid #505c75',
-                        outline: 'none',
+                        border: '1px solid #505c75',
                         resize: 'none',
-                        boxShadow: 'inset 0px 4px 12px rgba(0, 0, 0, 0.1)',
                         backgroundColor: '#f9f9f9',
-                        color: '#505c75',
-
+                        color:'black',
                     }}
                     placeholder="Write about your day..."
                     value={journalEntry}
                     onChange={(e) => setJournalEntry(e.target.value)}
                 />
-    
-                {/* Save Button */}
+
                 <Button
                     onClick={saveJournalEntry}
                     variant="contained"
                     sx={{
                         bgcolor: '#505c75',
-                        color: 'common.white',
-                        ':hover': { bgcolor: '#404f65' },
+                        color: 'white',
                         borderRadius: '12px',
-                        padding: '14px',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-                        fontSize: '1rem',
+                        padding: '10px',
                     }}
                 >
                     Save Entry
@@ -255,4 +258,4 @@ export default function Journal() {
             </Container>
         </Box>
     );
-}    
+}
