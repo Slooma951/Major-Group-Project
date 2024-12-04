@@ -35,7 +35,7 @@ export default function Dashboard() {
     };
 
     const navItems = [
-        { text: 'Journal', link: '/journal' },
+        { text: 'Journal', link: '/Journal' },
         { text: 'Notes', link: '/notes' },
         { text: 'To-Do List', link: '/todo' },
         { text: 'Account Details', link: '/account' },
@@ -136,27 +136,28 @@ export default function Dashboard() {
                     <Image src="/images/logo.png" alt="Logo" width={70} height={55} priority />
                     <List sx={{ width: '50%' }}>
                         {navItems.map((item) => (
-                            <ListItem
-                                key={item.text}
-                                button 
-                                component="a"
-                                href={item.link}
-                                sx={{
-                                    textAlign: 'left',
-                                    justifyContent: 'left',
-                                    paddingY: '10px',
-                                }}
-                            >
-                                <ListItemText
-                                    primary={item.text}
-                                    sx={{
-                                        textAlign: 'center',
-                                        fontWeight: 'bold',
-                                        color: '#505c75',
-                                        fontSize: '1rem',
-                                    }}
-                                />
-                            </ListItem>
+                           <ListItem
+                           key={item.text}
+                           button 
+                           component="a"
+                           href={item.link}
+                           sx={{
+                               textAlign: 'left',
+                               justifyContent: 'left',
+                               paddingY: '10px',
+                           }}
+                       >
+                           <ListItemText
+                               primary={item.text}
+                               sx={{
+                                   textAlign: 'center',
+                                   fontWeight: 'bold',
+                                   color: '#505c75',
+                                   fontSize: '1rem',
+                               }}
+                           />
+                       </ListItem>
+                       
                         ))}
                         <Divider />
                     </List>
