@@ -1,24 +1,13 @@
-// src/pages/api/register.js
-import connectToDatabase from '../../lib/mongoUtil';
+import { connectToDatabase } from '../../lib/mongoUtil';
 import bcrypt from 'bcryptjs';
-// mongoUtil.js
-import { MongoClient } from 'mongodb';
 
 export default async function handler(req, res) {
-
-    const client = new MongoClient('mongodb+srv://root:R5lcPSJm1egBE0Z1@dvsnotedb.lozto.mongodb.net/DVSDB?retryWrites=true&w=majority&appName=DVSNoteDB');
-
-   
-      let dbConnection=  await client.connect();
-        dbConnection = client.db('DVSDB'); // Make sure 'DVSDB' is the correct database name
-   
-
-    
     if (req.method === 'POST') {
         try {
-           
             const { username, email, password } = req.body;
             const hashedPassword = await bcrypt.hash(password, 10);
+
+            const dbConnection = await connectToDatabase();
 
             const result = await dbConnection.collection('users').insertOne({
                 username,
