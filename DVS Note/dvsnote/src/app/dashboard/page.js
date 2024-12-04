@@ -35,7 +35,7 @@ export default function Dashboard() {
     };
 
     const navItems = [
-        { text: 'Journal', link: '/Journal' },
+        { text: 'journal', link: '/journal' },
         { text: 'Notes', link: '/notes' },
         { text: 'To-Do List', link: '/todo' },
         { text: 'Account Details', link: '/account' },

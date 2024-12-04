@@ -86,7 +86,7 @@ export default async function handler(req, res) {
         if (result.acknowledged) {
             return res.status(200).json({
                 success: true,
-                message: 'Journal entry saved successfully.',
+                message: 'journal entry saved successfully.',
                 entryId: result.insertedId,
             });
         } else {

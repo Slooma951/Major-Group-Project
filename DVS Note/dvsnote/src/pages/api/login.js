@@ -3,11 +3,6 @@ import connectToDatabase from '../../lib/mongoUtil';
 import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {
-    // Allow only POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ success: false, message: 'Method not allowed' });
-    }
-
     const { username, password } = req.body;
 
     // Check if both username and password are provided
