@@ -63,7 +63,7 @@ export default function Journal() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId: localStorage.getItem('userId'),
+                    username: userName,
                     journalEntry,
                     date: selectedDate,
                 }),

@@ -1,5 +1,4 @@
 import connectToDatabase from '../../lib/mongoUtil';
-import { ObjectId } from 'mongodb';
 
 const detectEmotions = (text) => {
     const emotionKeywords = {
@@ -56,24 +55,28 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { userId, journalEntry } = req.body;
+        const { username, journalEntry } = req.body;
 
-        if (!userId || !journalEntry) {
+        // Ensure username and journal entry are provided
+        if (!username || !journalEntry) {
             return res.status(400).json({
                 success: false,
-                message: 'User ID and journal entry are required.',
+                message: 'Username and journal entry are required.',
             });
         }
 
+        // Connect to the database
         const db = await connectToDatabase();
         const journalCollection = db.collection('journalEntries');
 
+        // Process journal entry for emotions, keywords, and sentiment score
         const detectedEmotions = detectEmotions(journalEntry);
         const keywords = extractKeywords(journalEntry);
         const sentimentScore = calculateSentimentScore(journalEntry);
 
+        // Prepare the journal entry for saving
         const newEntry = {
-            userId: new ObjectId(userId),
+            username,
             journalEntry,
             detectedEmotions,
             keywords,
@@ -81,12 +84,13 @@ export default async function handler(req, res) {
             createdAt: new Date(),
         };
 
+        // Insert the journal entry into the MongoDB collection
         const result = await journalCollection.insertOne(newEntry);
 
         if (result.acknowledged) {
             return res.status(200).json({
                 success: true,
-                message: 'journal entry saved successfully.',
+                message: 'Journal entry saved successfully.',
                 entryId: result.insertedId,
             });
         } else {
