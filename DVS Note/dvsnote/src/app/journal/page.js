@@ -30,13 +30,15 @@ export default function Journal() {
     const [journalEntry, setJournalEntry] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
+    // Fetch user data and session
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`/api/user?userId=${localStorage.getItem('userId')}`);
+                // Fetch session information from the server
+                const response = await fetch('/api/checkSession');
                 if (response.ok) {
                     const data = await response.json();
-                    setUserName(data.username);
+                    setUserName(data.user.username);
                 } else {
                     router.push('/login');
                 }
