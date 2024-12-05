@@ -1,126 +1,89 @@
+/* dashboard.module.css */
+
 .mainContainer {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
     background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    padding: 16px;
-}
-
-.appBar {
-    background-color: #505c75;
-    width: 110%;
-    max-width: 600px;
-    border-radius: 20px;
-    box-shadow: 5px;
-    margin-bottom: 10px;
-}
-
-.toolbar {
-    min-height: 50px;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-}
-
-.title {
-    flex-grow: 1;
-    text-align: center;
-    font-size: 1.25rem;
-    color: white;
+    color: black;
+    padding-bottom: 60px;
+    overflow: hidden;
 }
 
 .contentContainer {
-    width: 100%;
-    max-width: 500px;
-    background-color: white;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
-    min-height: 80vh;
-    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     padding: 16px;
-}
-
-.drawerPaper {
-    width: 100%;
-    max-width: 200px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-    border-radius: 0 20px 20px 0;
-}
-
-.drawerList {
-    width: 50%;
-}
-
-.listItem {
-    text-align: left;
-    justify-content: left;
-    padding: 10px 0;
-}
-
-.listItemText {
-    text-align: center;
-    font-weight: bold;
-    color: #505c75;
-    font-size: 1rem;
-}
-
-.mainContent {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 24px;
-    row-gap: 16px;
 }
 
 .welcomeText {
     font-family: 'Nunito, sans-serif';
     font-weight: bold;
-    color: #505c75;
-    font-size: 1.5rem;
-    margin-bottom: 8px;
+    color: #001858;
+    font-size: 1.8rem;
+    margin: 20px 0;
 }
 
 .addButton {
-    background-color: #505c75;
-    color: white;
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-weight: bold;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    color: #001858;
     text-transform: none;
-    font-size: 1rem;
+    padding: 12px;
+    margin: 8px auto;
+    border-radius: 30px;
+    font-weight: bold;
+    width: 200px;
+    display: block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .addButton:hover {
-    background-color: #404f65;
+    background: linear-gradient(to right, #90caf9, #a1c4fd);
 }
 
-.logoutButton {
-    background-color: transparent;
-    color: black;
-    padding: 10px 20px;
-    text-align: center;
-    margin-top: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-weight: bold;
-    text-transform: uppercase;
+.bottomNav {
+    position: fixed;
+    bottom: 0;
     width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 12px 0;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 30px 30px 0 0;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.logoutButton:hover {
-    background-color: red;
-    color: white;
-    border-color: red;
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #001858;
+    text-transform: none;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.navIcon {
+    font-size: 22px;
+    margin-bottom:3px;
+}
+
+.navItem:hover {
+    color: #f582ae;
+}
+
+.navText {
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+    .navItem {
+        font-size: 9px;
+    }
+    .navIcon {
+        font-size: 18px;
+    }
 }
