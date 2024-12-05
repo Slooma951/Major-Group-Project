@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, List, ListItem, ListItemText, Toolbar, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Box, Button, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import HomeIcon from '@mui/icons-material/Home';
+import BookIcon from '@mui/icons-material/Book';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import PersonIcon from '@mui/icons-material/Person';
 import styles from './dashboard.module.css';
 
 export default function Dashboard() {
     const router = useRouter();
     const [userName, setUserName] = useState('User');
-    const [drawerOpen, setDrawerOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -26,88 +27,42 @@ export default function Dashboard() {
         fetchUserData();
     }, [router]);
 
-    const toggleDrawer = (open) => () => {
-        setDrawerOpen(open);
-    };
-
-    const handleLogout = async () => {
-        try {
-            const response = await fetch('/api/logout', {
-                method: 'POST',
-            });
-            const data = await response.json();
-            if (data.message === 'Logged out successfully') {
-                router.push('/login');
-            } else {
-                alert('Logout failed!');
-            }
-        } catch (error) {
-            console.error('Logout error:', error);
-            alert('An error occurred during logout.');
-        }
-    };
-
     const navItems = [
-        { text: 'Journal', link: '/journal' },
-        { text: 'Notes', link: '/notes' },
-        { text: 'To-Do List', link: '/todo' },
-        { text: 'Account Details', link: '/account' },
+        { text: 'Home', icon: <HomeIcon className={styles.navIcon} />, link: '/dashboard' },
+        { text: 'Journal', icon: <BookIcon className={styles.navIcon} />, link: '/journal' },
+        { text: 'To-Do List', icon: <ChecklistIcon className={styles.navIcon} />, link: '/todo' },
+        { text: 'Profile', icon: <PersonIcon className={styles.navIcon} />, link: '/profile' },
     ];
 
     return (
         <Box className={styles.mainContainer}>
-            {/* AppBar */}
-            <AppBar position="static" className={styles.appBar}>
-                <Toolbar className={styles.toolbar}>
-                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" component="div" className={styles.title}>
-                        Dashboard
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-
-            {/* Main Container */}
-            <Container className={styles.contentContainer}>
-                {/* Drawer */}
-                <Drawer
-                    anchor="left"
-                    open={drawerOpen}
-                    onClose={toggleDrawer(false)}
-                    classes={{ paper: styles.drawerPaper }}
+            {/* Main Content */}
+            <Box className={styles.contentContainer}>
+                <Typography variant="h5" className={styles.welcomeText}>
+                    Welcome, {userName}
+                </Typography>
+                <Button
+                    variant="contained"
+                    className={styles.addButton}
+                    onClick={() => alert('Add New Task functionality')}
                 >
-                    <Image src="/images/logo.png" alt="Logo" width={70} height={55} priority />
-                    <List className={styles.drawerList}>
-                        {navItems.map((item) => (
-                            <ListItem
-                                key={item.text}
-                                button
-                                component="a"
-                                href={item.link}
-                                className={styles.listItem}
-                            >
-                                <ListItemText primary={item.text} className={styles.listItemText} />
-                            </ListItem>
-                        ))}
-                        <Divider />
-                        {/* Logout button with className applied */}
-                        <ListItem button onClick={handleLogout} className={styles.logoutButton}>
-                            <ListItemText primary="Logout" className={styles.listItemText} />
-                        </ListItem>
-                    </List>
-                </Drawer>
+                    Add New Task
+                </Button>
+            </Box>
 
-                {/* Main Content */}
-                <Box className={styles.mainContent}>
-                    <Typography variant="h5" className={styles.welcomeText}>
-                        Welcome, {userName}
-                    </Typography>
-                    <Button variant="contained" fullWidth className={styles.addButton}>
-                        Add New Task
+            {/* Bottom Navigation */}
+            <Box className={styles.bottomNav}>
+                {navItems.map((item) => (
+                    <Button
+                        key={item.text}
+                        onClick={() => router.push(item.link)}
+                        className={styles.navItem}
+                    >
+                        {item.icon}
+                        <Typography className={styles.navText}>{item.text}</Typography>
                     </Button>
-                </Box>
-            </Container>
+                ))}
+            </Box>
         </Box>
     );
 }
