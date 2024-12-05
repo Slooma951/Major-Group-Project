@@ -4,48 +4,82 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-color: #e6eaf8;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb); /* Gradient background */
     padding: 24px;
+    color: #404f65;
 }
 
 .logo {
-    margin-bottom: 2rem;
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
+    max-width: 120px; /* Adjusted logo size */
+    height: auto;
+    object-fit: contain;
+}
+
+.title {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #404f65;
+    text-align: center;
+    font-size: 1.8rem;
 }
 
 .form {
-    width: 100%;
+    width: 59%;
+    max-width: 360px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 10px; /* Spacing between fields */
 }
 
 .input {
-    background-color: white;
-    margin-bottom: 16px;
-    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 5px 5px; /* Adjusted padding */
+    font-size: 0.95rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.input::placeholder {
+    color: #6b6b6b;
+    text-align: center;
+}
+
+.input:focus {
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .loginButton {
-    margin-top: 16px;
-    background-color: #6272e3;
+    background-color: #505c75;
     color: white;
     text-transform: none;
     font-size: 1rem;
-    border-radius: 8px;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 12px 0; /* Adjusted padding */
+    transition: all 0.3s ease;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .loginButton:hover {
-    background-color: #556bd8;
+    background-color: #404f65;
 }
 
 .successMessage {
     margin-top: 16px;
     color: green;
+    text-align: center;
 }
 
 .errorMessage {
     margin-top: 16px;
     color: red;
+    text-align: center;
 }
 
 .signUpText {
@@ -55,11 +89,20 @@
 }
 
 .signUpLink {
-    color: #6272e3;
+    color: #505c75;
     font-weight: bold;
     text-decoration: none;
 }
 
 .signUpLink:hover {
     text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
