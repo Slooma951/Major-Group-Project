@@ -35,10 +35,10 @@ export default function Journal() {
         const fetchUserData = async () => {
             try {
                 // Fetch session information from the server
-                const response = await fetch('/api/checkSession');
+                const response = await fetch('/api/session');
                 if (response.ok) {
                     const data = await response.json();
-                    setUserName(data.user.username);
+                    setUserName(data.username);
                 } else {
                     router.push('/login');
                 }
@@ -57,6 +57,7 @@ export default function Journal() {
 
     const saveJournalEntry = async () => {
         try {
+            // Ensure that userId is properly fetched from session
             const response = await fetch('/api/saveJournalEntry', {
                 method: 'POST',
                 headers: {
