@@ -55,6 +55,23 @@ export default function Journal() {
         setDrawerOpen(open);
     };
 
+    const handleLogout = async () => {
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+            });
+            const data = await response.json();
+            if (data.message === 'Logged out successfully') {
+                router.push('/login');
+            } else {
+                alert('Logout failed!');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+            alert('An error occurred during logout.');
+        }
+    };
+
     const saveJournalEntry = async () => {
         try {
             const response = await fetch('/api/saveJournalEntry', {
@@ -92,7 +109,6 @@ export default function Journal() {
         { text: 'Notes', link: '/notes' },
         { text: 'To-Do List', link: '/todo' },
         { text: 'Account Details', link: '/account' },
-        { text: 'Logout', link: '/logout' },
     ];
 
     return (
@@ -128,6 +144,10 @@ export default function Journal() {
                         </ListItem>
                     ))}
                     <Divider />
+                    {/* Logout button with className applied */}
+                    <ListItem button onClick={handleLogout} className={styles.logoutButton}>
+                        <ListItemText primary="Logout" className={styles.listItemText} />
+                    </ListItem>
                 </List>
             </Drawer>
 

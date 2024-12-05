@@ -97,3 +97,22 @@
 .saveButton:hover {
     background-color: #404f65;
 }
+
+.logoutButton {
+    background-color: transparent;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.logoutButton:hover {
+    background-color: red;
+    color: white;
+    border-color: red;
+}

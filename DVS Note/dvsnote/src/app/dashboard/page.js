@@ -14,13 +14,13 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fetchUserData = async () => {
-                const response = await fetch('/api/checkSession');
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserName(data.user.username);
-                } else {
-                    router.push('/login');
-                }
+            const response = await fetch('/api/checkSession');
+            if (response.ok) {
+                const data = await response.json();
+                setUserName(data.user.username);
+            } else {
+                router.push('/login');
+            }
         };
 
         fetchUserData();
@@ -30,12 +30,28 @@ export default function Dashboard() {
         setDrawerOpen(open);
     };
 
+    const handleLogout = async () => {
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+            });
+            const data = await response.json();
+            if (data.message === 'Logged out successfully') {
+                router.push('/login');
+            } else {
+                alert('Logout failed!');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+            alert('An error occurred during logout.');
+        }
+    };
+
     const navItems = [
         { text: 'Journal', link: '/journal' },
         { text: 'Notes', link: '/notes' },
         { text: 'To-Do List', link: '/todo' },
         { text: 'Account Details', link: '/account' },
-        { text: 'Logout', link: '/logout' },
     ];
 
     return (
@@ -75,6 +91,10 @@ export default function Dashboard() {
                             </ListItem>
                         ))}
                         <Divider />
+                        {/* Logout button with className applied */}
+                        <ListItem button onClick={handleLogout} className={styles.logoutButton}>
+                            <ListItemText primary="Logout" className={styles.listItemText} />
+                        </ListItem>
                     </List>
                 </Drawer>
 
