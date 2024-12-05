@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Button, TextField, Typography, Link, Container } from '@mui/material';
+import { Box, Button, TextField, Typography, Link } from '@mui/material';
 import Image from 'next/image';
 import styles from './register.module.css';
 
@@ -44,15 +44,18 @@ export default function Register() {
     };
 
     return (
-        <Container className={styles.container}>
+        <Box className={styles.container}>
             <Image
                 src="/images/logo.png"
                 alt="DVS Note logo"
-                width={200}
-                height={150}
+                width={150}
+                height={100}
                 priority
                 className={styles.logo}
             />
+            <Typography variant="h5" className={styles.title}>
+                Create Your Account
+            </Typography>
             <Box component="form" onSubmit={handleSubmit} className={styles.form}>
                 <TextField
                     fullWidth
@@ -110,6 +113,6 @@ export default function Register() {
                     </Link>
                 </Typography>
             </Box>
-        </Container>
+        </Box>
     );
 }

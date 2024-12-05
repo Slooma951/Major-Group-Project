@@ -5,18 +5,50 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
             const { username, email, password } = req.body;
-            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Ensure all fields are provided
+            if (!username || !email || !password) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'All fields are required',
+                });
+            }
 
             const dbConnection = await connectToDatabase();
+            const usersCollection = dbConnection.collection('users');
 
-            const result = await dbConnection.collection('users').insertOne({
+            // Check if username or email already exists
+            const existingUser = await usersCollection.findOne({
+                $or: [{ username }, { email }],
+            });
+
+            if (existingUser) {
+                if (existingUser.username === username) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Username is already taken',
+                    });
+                }
+                if (existingUser.email === email) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Email is already registered',
+                    });
+                }
+            }
+
+            // Hash the password
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Insert the new user
+            const result = await usersCollection.insertOne({
                 username,
                 email,
                 password: hashedPassword,
             });
 
             if (result.acknowledged) {
-                res.status(200).json({ success: true, message: 'User registered' });
+                res.status(200).json({ success: true, message: 'User registered successfully' });
             } else {
                 res.status(400).json({ success: false, message: 'Registration failed' });
             }
