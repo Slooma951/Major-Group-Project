@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Button, TextField, Typography, Link } from '@mui/material';
 import Image from 'next/image';
 import styles from './register.module.css';
@@ -11,6 +12,28 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
+    // Check session on component mount
+    useEffect(() => {
+        const checkSession = async () => {
+            try {
+                const response = await fetch('/api/checkSession', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+
+                    router.push('/dashboard');
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+            }
+        };
+
+        checkSession();
+    }, [router]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
