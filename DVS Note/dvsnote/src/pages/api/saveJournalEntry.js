@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     const sentimentScore = calculateSentimentScore(content);
 
     // Save the analysis to the 'journalEntries' collection
-    await db.collection('journalEntries').updateOne(
+    const updateResult = await db.collection('journalEntries').updateOne(
       { username, date },
       {
         $set: {
@@ -81,10 +81,26 @@ export default async function handler(req, res) {
       { upsert: true }
     );
 
-    console.log('Emotion analysis saved successfully:', { username, detectedEmotions, sentimentScore });
-    return res.status(200).json({ success: true, message: 'Emotion analysis saved successfully' });
+    if (updateResult.acknowledged) {
+      console.log('Journal entry saved with emotion analysis:', {
+        username,
+        date,
+        detectedEmotions,
+        sentimentScore,
+      });
+      return res.status(200).json({
+        success: true,
+        message: 'Emotion analysis saved successfully!',
+      });
+    } else {
+      console.error('Failed to update journal entry in journalEntries collection');
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to save journal entry with emotion analysis',
+      });
+    }
   } catch (error) {
     console.error('Error saving emotion analysis:', error);
-    return res.status(500).json({ success: false, message: 'Error saving emotion analysis' });
+    return res.status(500).json({ success: false, message: 'Error saving journal entry' });
   }
 }

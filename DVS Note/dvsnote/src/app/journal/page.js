@@ -58,27 +58,20 @@ export default function Journal() {
             date: selectedDate.format('YYYY-MM-DD'),
           }),
         });
-
-        const data = await response.json();
-        if (data.success) {
+        if (response.ok) {
+          const data = await response.json();
           if (data.journal) {
-            // Update title and content if journal is found
             setJournalTitle(data.journal.title || '');
             setJournalEntry(data.journal.content || '');
           } else {
-            // Reset title and content if no journal is found for the date
             setJournalTitle('');
             setJournalEntry('');
           }
         } else {
-          console.error('Failed to fetch journal entry:', data.message);
-          setJournalTitle('');
-          setJournalEntry('');
+          console.error('Failed to fetch journal entry:', await response.json());
         }
       } catch (error) {
         console.error('Error fetching journal:', error);
-        setJournalTitle('');
-        setJournalEntry('');
       }
     };
     fetchJournal();
@@ -86,8 +79,12 @@ export default function Journal() {
 
   const saveJournal = async () => {
     try {
-      if (!userName) {
-        router.push('/login');
+      if (!userName || !journalEntry || !selectedDate) {
+        console.error('Missing required fields:', {
+          username: userName,
+          content: journalEntry,
+          date: selectedDate.format('YYYY-MM-DD'),
+        });
         return;
       }
 
@@ -107,6 +104,8 @@ export default function Journal() {
 
       if (!response.ok) {
         console.error('Error saving journal to journals collection');
+      } else {
+        console.log('Journal saved successfully!');
       }
     } catch (error) {
       console.error('Error saving journal:', error);
@@ -115,8 +114,12 @@ export default function Journal() {
 
   const saveJournalEntry = async () => {
     try {
-      if (!userName) {
-        router.push('/login');
+      if (!userName || !journalEntry || !selectedDate) {
+        console.error('Missing required fields:', {
+          username: userName,
+          content: journalEntry,
+          date: selectedDate.format('YYYY-MM-DD'),
+        });
         return;
       }
 
@@ -125,36 +128,26 @@ export default function Journal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: userName,
-          journalEntry,
+          content: journalEntry,
           date: selectedDate.format('YYYY-MM-DD'),
         }),
       });
 
       const data = await response.json();
-      if (data.success) {
-        console.log('Entry saved successfully to journalEntries!');
+      if (!response.ok) {
+        console.error('Failed to save journal entry:', data.message);
       } else {
-        console.error(data.message || 'Failed to save entry to journalEntries!');
+        console.log('Emotion analysis saved successfully:', data.message);
       }
     } catch (error) {
-      console.error('Error saving journal entry to journalEntries:', error);
+      console.error('Error saving journal entry:', error);
     }
   };
 
-  const handleSave = () => {
-    // Save to journals table (title & content)
-    saveJournal();
-
-    // Save to journalEntries table (emotions, keywords)
-    saveJournalEntry();
+  const handleSave = async () => {
+    await saveJournal(); // Save title and content
+    await saveJournalEntry(); // Save emotions, keywords, and sentiment
   };
-
-  const navItems = [
-    { text: 'Home', icon: <HomeIcon />, link: '/dashboard' },
-    { text: 'Journal', icon: <BookIcon />, link: '/journal' },
-    { text: 'To-Do List', icon: <ChecklistIcon />, link: '/todo' },
-    { text: 'Profile', icon: <PersonIcon />, link: '/profile' },
-  ];
 
   const goToPreviousDay = () => {
     setSelectedDate(selectedDate.subtract(1, 'day'));
@@ -166,6 +159,13 @@ export default function Journal() {
       setSelectedDate(selectedDate.add(1, 'day'));
     }
   };
+
+  const navItems = [
+    { text: 'Home', icon: <HomeIcon />, link: '/dashboard' },
+    { text: 'Journal', icon: <BookIcon />, link: '/journal' },
+    { text: 'To-Do List', icon: <ChecklistIcon />, link: '/todo' },
+    { text: 'Profile', icon: <PersonIcon />, link: '/profile' },
+  ];
 
   return (
     <Box className={styles.mainContainer}>
@@ -195,7 +195,7 @@ export default function Journal() {
         </Box>
       </Box>
 
-      {/* Display the title if available */}
+      {/* Display Title */}
       {journalTitle && (
         <Typography
           variant="h5"
