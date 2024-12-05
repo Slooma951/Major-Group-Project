@@ -1,183 +1,237 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
-    AppBar,
-    Box,
-    Button,
-    Container,
-    Divider,
-    Drawer,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
-    TextareaAutosize,
-    Toolbar,
-    Typography,
+  Box,
+  Button,
+  TextareaAutosize,
+  Typography,
+  IconButton,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import dayjs from 'dayjs';
+import HomeIcon from '@mui/icons-material/Home';
+import BookIcon from '@mui/icons-material/Book';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import PersonIcon from '@mui/icons-material/Person';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useRouter } from 'next/navigation';
 import styles from './journal.module.css';
 
 export default function Journal() {
-    const router = useRouter();
-    const [userName, setUserName] = useState('User');
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [journalEntry, setJournalEntry] = useState('');
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const router = useRouter();
+  const [userName, setUserName] = useState('');
+  const [journalTitle, setJournalTitle] = useState('');
+  const [journalEntry, setJournalEntry] = useState('');
+  const [selectedDate, setSelectedDate] = useState(dayjs());
 
-    // Fetch user data and session
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                // Fetch session information from the server
-                const response = await fetch('/api/checkSession');
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserName(data.user.username);
-                } else {
-                    router.push('/login');
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                router.push('/login');
-            }
-        };
-
-        fetchUserData();
-    }, [router]);
-
-    const toggleDrawer = (open) => () => {
-        setDrawerOpen(open);
-    };
-
-    const handleLogout = async () => {
-        try {
-            const response = await fetch('/api/logout', {
-                method: 'POST',
-            });
-            const data = await response.json();
-            if (data.message === 'Logged out successfully') {
-                router.push('/login');
-            } else {
-                alert('Logout failed!');
-            }
-        } catch (error) {
-            console.error('Logout error:', error);
-            alert('An error occurred during logout.');
+  // Fetch user data and session
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/checkSession');
+        if (response.ok) {
+          const data = await response.json();
+          setUserName(data.user.username);
+        } else {
+          router.push('/login');
         }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        router.push('/login');
+      }
     };
+    fetchUserData();
+  }, [router]);
 
-    const saveJournalEntry = async () => {
-        try {
-            const response = await fetch('/api/saveJournalEntry', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: userName,
-                    journalEntry,
-                    date: selectedDate,
-                }),
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert('Entry saved successfully!');
-                setJournalEntry('');
-            } else {
-                alert(data.message || 'Failed to save entry!');
-            }
-        } catch (error) {
-            console.error('Error saving journal entry:', error);
-            alert('Error saving entry!');
+  // Fetch the journal for the selected date
+  useEffect(() => {
+    const fetchJournal = async () => {
+      try {
+        if (!userName) return;
+
+        const response = await fetch('/api/getJournal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: userName,
+            date: selectedDate.format('YYYY-MM-DD'),
+          }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          if (data.journal) {
+            // Update title and content if journal is found
+            setJournalTitle(data.journal.title || '');
+            setJournalEntry(data.journal.content || '');
+          } else {
+            // Reset title and content if no journal is found for the date
+            setJournalTitle('');
+            setJournalEntry('');
+          }
+        } else {
+          console.error('Failed to fetch journal entry:', data.message);
+          setJournalTitle('');
+          setJournalEntry('');
         }
+      } catch (error) {
+        console.error('Error fetching journal:', error);
+        setJournalTitle('');
+        setJournalEntry('');
+      }
     };
+    fetchJournal();
+  }, [selectedDate, userName]);
 
-    const adjustDate = (days) => {
-        const currentDate = new Date(selectedDate);
-        currentDate.setDate(currentDate.getDate() + days);
-        setSelectedDate(currentDate.toISOString().split('T')[0]);
-    };
+  const saveJournal = async () => {
+    try {
+      if (!userName) {
+        router.push('/login');
+        return;
+      }
 
-    const navItems = [
-        { text: 'Dashboard', link: '/dashboard' },
-        { text: 'Notes', link: '/notes' },
-        { text: 'To-Do List', link: '/todo' },
-        { text: 'Account Details', link: '/account' },
-    ];
+      const firstLine = journalEntry.split('\n')[0];
+      const title = firstLine.trim().length > 0 ? firstLine.trim() : 'Untitled';
 
-    return (
-        <Box className={styles.mainContainer}>
-            <AppBar position="static" className={styles.appBar}>
-                <Toolbar className={styles.toolbar}>
-                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={styles.title}>
-                        Journal
-                    </Typography>
-                </Toolbar>
-            </AppBar>
+      const response = await fetch('/api/saveJournal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: userName,
+          title,
+          content: journalEntry,
+          date: selectedDate.format('YYYY-MM-DD'),
+        }),
+      });
 
-            <Drawer
-                anchor="left"
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-                classes={{ paper: styles.drawerPaper }}
-            >
-                <Image src="/images/logo.png" alt="Logo" width={70} height={55} priority />
-                <List>
-                    {navItems.map((item) => (
-                        <ListItem
-                            key={item.text}
-                            button
-                            component="a"
-                            href={item.link}
-                            className={styles.listItem}
-                        >
-                            <ListItemText primary={item.text} className={styles.listItemText} />
-                        </ListItem>
-                    ))}
-                    <Divider />
-                    {/* Logout button with className applied */}
-                    <ListItem button onClick={handleLogout} className={styles.logoutButton}>
-                        <ListItemText primary="Logout" className={styles.listItemText} />
-                    </ListItem>
-                </List>
-            </Drawer>
+      if (!response.ok) {
+        console.error('Error saving journal to journals collection');
+      }
+    } catch (error) {
+      console.error('Error saving journal:', error);
+    }
+  };
 
-            <Container className={styles.contentContainer}>
-                <Typography variant="h6" className={styles.promptText}>
-                    How was your day, {userName}?
-                </Typography>
+  const saveJournalEntry = async () => {
+    try {
+      if (!userName) {
+        router.push('/login');
+        return;
+      }
 
-                <Box className={styles.dateSelector}>
-                    <IconButton onClick={() => adjustDate(-1)}>
-                        <ArrowBackIosIcon />
-                    </IconButton>
-                    <Typography>{selectedDate}</Typography>
-                    <IconButton onClick={() => adjustDate(1)}>
-                        <ArrowForwardIosIcon />
-                    </IconButton>
-                </Box>
+      const response = await fetch('/api/saveJournalEntry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: userName,
+          journalEntry,
+          date: selectedDate.format('YYYY-MM-DD'),
+        }),
+      });
 
-                <TextareaAutosize
-                    minRows={8}
-                    className={styles.textarea}
-                    placeholder="Write about your day..."
-                    value={journalEntry}
-                    onChange={(e) => setJournalEntry(e.target.value)}
-                />
+      const data = await response.json();
+      if (data.success) {
+        console.log('Entry saved successfully to journalEntries!');
+      } else {
+        console.error(data.message || 'Failed to save entry to journalEntries!');
+      }
+    } catch (error) {
+      console.error('Error saving journal entry to journalEntries:', error);
+    }
+  };
 
-                <Button onClick={saveJournalEntry} variant="contained" className={styles.saveButton}>
-                    Save Entry
-                </Button>
-            </Container>
+  const handleSave = () => {
+    // Save to journals table (title & content)
+    saveJournal();
+
+    // Save to journalEntries table (emotions, keywords)
+    saveJournalEntry();
+  };
+
+  const navItems = [
+    { text: 'Home', icon: <HomeIcon />, link: '/dashboard' },
+    { text: 'Journal', icon: <BookIcon />, link: '/journal' },
+    { text: 'To-Do List', icon: <ChecklistIcon />, link: '/todo' },
+    { text: 'Profile', icon: <PersonIcon />, link: '/profile' },
+  ];
+
+  const goToPreviousDay = () => {
+    setSelectedDate(selectedDate.subtract(1, 'day'));
+  };
+
+  const goToNextDay = () => {
+    const today = dayjs();
+    if (!selectedDate.isSame(today, 'day')) {
+      setSelectedDate(selectedDate.add(1, 'day'));
+    }
+  };
+
+  return (
+    <Box className={styles.mainContainer}>
+      {/* Header with Date Navigation */}
+      <Box className={styles.header}>
+        <Typography variant="h6" className={styles.promptText}>
+          Dear Future Me
+        </Typography>
+        <Box className={styles.datePickerContainer}>
+          <IconButton
+            className={styles.dateNavigationButton}
+            onClick={goToPreviousDay}
+            disabled={selectedDate.isBefore(dayjs('2000-01-01'), 'day')}
+          >
+            <ArrowBackIosIcon />
+          </IconButton>
+          <Typography className={styles.datePickerInput}>
+            {selectedDate.format('YYYY-MM-DD')}
+          </Typography>
+          <IconButton
+            className={styles.dateNavigationButton}
+            onClick={goToNextDay}
+            disabled={selectedDate.isSame(dayjs(), 'day')}
+          >
+            <ArrowForwardIosIcon />
+          </IconButton>
         </Box>
-    );
+      </Box>
+
+      {/* Display the title if available */}
+      {journalTitle && (
+        <Typography
+          variant="h5"
+          style={{ marginTop: '16px', textAlign: 'center', fontWeight: 'bold' }}
+        >
+          {journalTitle}
+        </Typography>
+      )}
+
+      {/* Text Area */}
+      <TextareaAutosize
+        minRows={15}
+        className={styles.textarea}
+        placeholder="Write your day and express your emotions..."
+        value={journalEntry}
+        onChange={(e) => setJournalEntry(e.target.value)}
+      />
+
+      {/* Save Button */}
+      <Button className={styles.saveButton} onClick={handleSave}>
+        Save Entry
+      </Button>
+
+      {/* Bottom Navigation Bar */}
+      <Box className={styles.bottomNav}>
+        {navItems.map((item) => (
+          <Button
+            key={item.text}
+            className={styles.navItem}
+            onClick={() => router.push(item.link)}
+          >
+            {item.icon}
+            <Typography variant="caption">{item.text}</Typography>
+          </Button>
+        ))}
+      </Box>
+    </Box>
+  );
 }
