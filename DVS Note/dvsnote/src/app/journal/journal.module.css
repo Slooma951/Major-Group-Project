@@ -1,118 +1,136 @@
+/* journal.module.css */
+
 .mainContainer {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
     background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    padding: 16px;
     color: black;
+    padding-bottom: 60px;
+    overflow: hidden;
 }
 
-.appBar {
-    background-color: #505c75;
-    width: 100%;
-    border-radius: 20px;
-    box-shadow: 5px;
-    margin-bottom: 20px;
-}
-
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-}
-
-.title {
-    flex-grow: 1;
-    text-align: center;
-    font-size: 1.25rem;
-    color: white;
-}
-
-.drawerPaper {
-    width: 80%;
-    background-color: white;
+.header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-}
-
-.listItem {
-    text-align: left;
-    justify-content: left;
-    padding: 10px 0;
-}
-
-.listItemText {
-    text-align: center;
-    font-weight: bold;
-    color: #505c75;
-}
-
-.contentContainer {
-    width: 90%;
-    background-color: white;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 0 0 30px 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .promptText {
-    text-align: center;
     font-weight: bold;
-    color: #505c75;
+    color: #001858;
+    margin-bottom: 4px;
+    font-size: 20px;
 }
 
-.dateSelector {
+.datePickerContainer {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 8px;
+}
+
+.datePickerInput {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #001858;
+    outline: none;
+    width: 140px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dateNavigationButton {
+    background-color: transparent;
+    border: none;
+    color: #001858;
+    font-size: 24px;
+    cursor: pointer;
 }
 
 .textarea {
-    width: 100%;
+    flex: 1;
     font-size: 16px;
     padding: 16px;
-    border-radius: 12px;
-    border: 1px solid #505c75;
+    border: none;
     resize: none;
-    background-color: #f9f9f9;
-    color:black;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #001858;
+    width: 90%;
+    margin: 8px auto;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-height: calc(100vh - 250px);
 }
 
 .saveButton {
-    background-color: #505c75;
-    color: white;
-    border-radius: 12px;
-    padding: 10px;
-    font-size: 1rem;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    color: #001858;
     text-transform: none;
-}
-
-.saveButton:hover {
-    background-color: #404f65;
-}
-
-.logoutButton {
-    background-color: transparent;
-    color: black;
-    padding: 10px 20px;
-    text-align: center;
-    margin-top: 10px;
-    cursor: pointer;
-    border-radius: 5px;
+    padding: 12px;
+    margin: 8px auto;
+    border-radius: 30px;
     font-weight: bold;
-    text-transform: uppercase;
-    width: 100%;
+    width: 200px;
+    display: block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.logoutButton:hover {
-    background-color: red;
-    color: white;
-    border-color: red;
+.bottomNav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 12px 0;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 30px 30px 0 0;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #001858;
+    text-transform: none;
+    min-width: 0;
+}
+
+.navItem:hover {
+    color: #f582ae;
+}
+
+.navItem .MuiTypography-caption {
+    font-size: 10px;
+}
+
+@media (max-width: 600px) {
+    .promptText {
+        font-size: 18px;
+    }
+
+    .textarea {
+        font-size: 14px;
+        min-height: calc(100vh - 220px);
+    }
+
+    .navItem .MuiTypography-caption {
+        font-size: 9px;
+    }
+
+    .datePickerInput {
+        width: 120px;
+        font-size: 12px;
+    }
 }
