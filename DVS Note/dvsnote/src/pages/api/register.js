@@ -14,6 +14,15 @@ export default async function handler(req, res) {
                 });
             }
 
+            // Validate email format using regex
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid email format. Please use a valid email address.',
+                });
+            }
+
             const dbConnection = await connectToDatabase();
             const usersCollection = dbConnection.collection('users');
 
