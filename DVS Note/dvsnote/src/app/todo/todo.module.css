@@ -1,0 +1,95 @@
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    color: black;
+    padding-bottom: 60px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 0 0 30px 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.promptText {
+    font-weight: bold;
+    color: #001858;
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.centerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 16px;
+    text-align: center;
+}
+
+.taskInput {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 12px;
+    border-radius: 20px;
+    font-size: 16px;
+    color: #001858;
+    width: 85%;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    outline: none;
+}
+
+.addButton {
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    color: #001858;
+    padding: 12px;
+    border-radius: 30px;
+    font-weight: bold;
+    width: 200px;
+    display: block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-transform: none;
+}
+
+.addButton:hover {
+    background: linear-gradient(to right, #90caf9, #a1c4fd);
+}
+
+.bottomNav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 12px 0;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 30px 30px 0 0;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #001858;
+    text-transform: none;
+}
+
+.navItem:hover {
+    color: #f582ae;
+}
+
+.navText {
+    font-size: 12px;
+}
