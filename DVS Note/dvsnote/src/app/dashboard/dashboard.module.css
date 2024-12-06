@@ -6,25 +6,25 @@
     color: black;
     padding-bottom: 60px;
     overflow: hidden;
-}
-
-.contentContainer {
+  }
+  
+  .contentContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     padding: 16px;
-}
-
-.welcomeText {
+  }
+  
+  .welcomeText {
     font-family: 'Nunito, sans-serif';
     font-weight: bold;
     color: #001858;
     font-size: 1.8rem;
     margin: 20px 0;
-}
-
-.addButton {
+  }
+  
+  .addButton {
     background: linear-gradient(to right, #a1c4fd, #c2e9fb);
     color: #001858;
     text-transform: none;
@@ -35,13 +35,13 @@
     width: 200px;
     display: block;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.addButton:hover {
+  }
+  
+  .addButton:hover {
     background: linear-gradient(to right, #90caf9, #a1c4fd);
-}
-
-.quotesContainer {
+  }
+  
+  .quotesContainer {
     margin: 20px 0;
     padding: 16px;
     background: var(--card-background);
@@ -52,22 +52,37 @@
     text-align: center;
 }
 
+.quoteContainer {
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin: 16px auto;
+}
+
 .quotesHeader {
-    font-family: var(--font-family);
     font-weight: bold;
-    color: var(--primary-color);
+    color: #001858;
+    font-size: 1.5rem;
     margin-bottom: 10px;
-    font-size: 1.2rem;
 }
 
 .quote {
-    font-family: var(--font-family);
     font-style: italic;
     color: #555;
+    font-size: 1.2rem;
     margin: 8px 0;
-    font-size: 1rem;
 }
-.bottomNav {
+
+.quoteAuthor {
+    font-weight: bold;
+    color: #333;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+  .bottomNav {
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -78,36 +93,51 @@
     background: rgba(255, 255, 255, 0.7);
     border-radius: 30px 30px 0 0;
     box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.navItem {
+  }
+  
+  .navItem {
     display: flex;
     flex-direction: column;
     align-items: center;
     color: #001858;
     text-transform: none;
-    font-size: 10px;
     font-weight: bold;
-}
-
-.navIcon {
+  }
+  
+  .navIcon {
     font-size: 22px;
     margin-bottom: 3px;
-}
-
-.navItem:hover {
+  }
+  
+  .navItem:hover {
     color: #f582ae;
-}
-
-.navText {
+  }
+  
+  .navText {
     font-size: 12px;
-}
-
-@media (max-width: 600px) {
-    .navItem {
-        font-size: 9px;
-    }
-    .navIcon {
-        font-size: 18px;
-    }
-}
+  }
+  
+  .quoteContainer {
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    text-align: center;
+    margin: 16px auto;
+  }
+  
+  .motivationalText {
+    font-family: 'Nunito, sans-serif';
+    font-weight: bold;
+    color: #001858;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  
+  .quoteAuthor {
+    font-style: italic;
+    color: #555;
+    margin-top: 8px;
+  }
+  
