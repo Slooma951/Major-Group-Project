@@ -56,9 +56,11 @@ export default function Dashboard() {
           Welcome, {userName}
         </Typography>
 
-        <Typography variant="h6" className={styles.motivationalText}>
-          Today's Quote ({emotion}): "{motivationalQuote}"
-        </Typography>
+        {/* Motivational Quotes Section */}
+        <Box className={styles.quotesContainer}>
+          <Typography className={styles.quotesHeader}>Today's Quote ({emotion}):</Typography>
+          <Typography className={styles.quote}>"{motivationalQuote}"</Typography>
+        </Box>
 
         <Button
           variant="contained"
