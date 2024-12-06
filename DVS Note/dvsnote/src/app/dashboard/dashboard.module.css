@@ -79,6 +79,15 @@
     font-size: 12px;
 }
 
+.motivationalText {
+    font-family: 'Nunito, sans-serif';
+    font-size: 1.2rem;
+    margin: 16px 0;
+    text-align: center;
+    color: #001858;
+  }
+  
+
 @media (max-width: 600px) {
     .navItem {
         font-size: 9px;
