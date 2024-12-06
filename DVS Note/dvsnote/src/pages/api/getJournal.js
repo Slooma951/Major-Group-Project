@@ -9,7 +9,6 @@ export default async function handler(req, res) {
     const { username, date } = req.body;
 
     if (!username || !date) {
-      console.error('Missing required fields:', { username, date });
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
@@ -17,10 +16,13 @@ export default async function handler(req, res) {
     const journal = await db.collection('journals').findOne({ username, date });
 
     if (!journal) {
-      return res.status(404).json({ success: false, message: 'Journal not found' });
+      // Return a successful response with an empty journal structure
+      return res.status(200).json({
+        success: true,
+        journal: null,
+      });
     }
 
-    console.log('Journal fetched successfully:', { username, date });
     return res.status(200).json({
       success: true,
       journal: { title: journal.title, content: journal.content },
