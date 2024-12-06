@@ -52,28 +52,29 @@
     text-align: center;
 }
 
-.quoteContainer {
-    padding: 20px;
+.quotesContainer {
+    margin: 20px 0;
+    padding: 16px;
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
     text-align: center;
-    margin: 16px auto;
-}
-
-.quotesHeader {
+  }
+  
+  .quotesHeader {
     font-weight: bold;
     color: #001858;
     font-size: 1.5rem;
     margin-bottom: 10px;
-}
-
-.quote {
+  }
+  
+  .quote {
     font-style: italic;
     color: #555;
     font-size: 1.2rem;
-    margin: 8px 0;
-}
+  }
+  
 
 .quoteAuthor {
     font-weight: bold;
