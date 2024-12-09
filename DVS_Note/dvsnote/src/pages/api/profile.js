@@ -54,6 +54,20 @@ export default async function handler(req, res) {
                 return res.status(400).json({ success: false, message: 'New username is required.' });
             }
 
+            // Check if the new username is the same as the current username
+            if (newUsername === user.username) {
+                return res.status(400).json({ success: false, message: 'New username cannot be the same as the current username.' });
+            }
+
+            // Check if the new username is already taken
+            const existingUsername = await usersCollection.findOne({ username: newUsername });
+            if (existingUsername) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Username is already taken.',
+                });
+            }
+
             await usersCollection.updateOne(
                 { username: user.username },
                 { $set: { username: newUsername } }
@@ -67,6 +81,24 @@ export default async function handler(req, res) {
             // Validate the new email
             if (!newEmail) {
                 return res.status(400).json({ success: false, message: 'New email is required.' });
+            }
+
+            // Validate email format using regex
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(newEmail)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid email format. Please use a valid email address.',
+                });
+            }
+
+            // Check if the email is already in use
+            const emailExists = await usersCollection.findOne({ email: newEmail });
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email is already registered.',
+                });
             }
 
             await usersCollection.updateOne(
