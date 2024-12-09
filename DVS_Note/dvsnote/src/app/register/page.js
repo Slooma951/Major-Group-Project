@@ -71,8 +71,8 @@ export default function Register() {
             <Image
                 src="/images/logo.png"
                 alt="DVS Note logo"
-                width={150}
-                height={100}
+                width={260}
+                height={200}
                 priority
                 className={styles.logo}
             />

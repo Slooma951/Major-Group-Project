@@ -1,13 +1,17 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import HomeIcon from '@mui/icons-material/Home';
+import BookIcon from '@mui/icons-material/Book';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import PersonIcon from '@mui/icons-material/Person';
 import styles from './profile.module.css';
 
 export default function Profile() {
     const router = useRouter();
-    const [userData, setUserData] = useState({ username: '' });
+    const [userData, setUserData] = useState({ username: 'User' });
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -44,6 +48,13 @@ export default function Profile() {
         }
     };
 
+    const navItems = [
+        { text: 'Home', icon: <HomeIcon className={styles.navIcon} />, link: '/dashboard' },
+        { text: 'Journal', icon: <BookIcon className={styles.navIcon} />, link: '/journal' },
+        { text: 'To-Do List', icon: <ChecklistIcon className={styles.navIcon} />, link: '/todo' },
+        { text: 'Profile', icon: <PersonIcon className={styles.navIcon} />, link: '/profile' },
+    ];
+
     return (
         <Box className={styles.container}>
             <Typography variant="h5" className={styles.title}>
@@ -53,8 +64,7 @@ export default function Profile() {
                 <Typography variant="body1" className={styles.info}>
                     <strong>Username:</strong> {userData.username}
                 </Typography>
-            
-            </Box>
+                  </Box>
             <Button
                 variant="contained"
                 className={styles.logoutButton}
@@ -62,6 +72,19 @@ export default function Profile() {
             >
                 Logout
             </Button>
+            {/* Bottom Navigation */}
+            <Box className={styles.bottomNav}>
+                {navItems.map((item, index) => (
+                    <Box
+                        key={index}
+                        className={styles.navItem}
+                        onClick={() => router.push(item.link)}
+                    >
+                        {item.icon}
+                        <Typography className={styles.navText}>{item.text}</Typography>
+                    </Box>
+                ))}
+            </Box>
         </Box>
     );
 }

@@ -74,6 +74,9 @@ export default function AuthPage() {
                 priority
                 className={styles.logo}
             />
+            <Typography variant="h4" component="h1" className={styles.title}>
+                Login
+            </Typography>
             <Box component="form" onSubmit={handleLogin} className={styles.form}>
                 <TextField
                     fullWidth
