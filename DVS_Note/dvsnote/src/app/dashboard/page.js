@@ -1,12 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Typography,
+  CircularProgress
+} from '@mui/material';
+import {
+  Home as HomeIcon,
+  Book as BookIcon,
+  Checklist as ChecklistIcon,
+  Person as PersonIcon,
+} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import HomeIcon from '@mui/icons-material/Home';
-import BookIcon from '@mui/icons-material/Book';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import PersonIcon from '@mui/icons-material/Person';
 import styles from './dashboard.module.css';
 
 export default function Dashboard() {
@@ -14,31 +21,28 @@ export default function Dashboard() {
   const [userName, setUserName] = useState('User');
   const [motivationalQuote, setMotivationalQuote] = useState('');
   const [emotion, setEmotion] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const response = await fetch('/api/checkSession');
-      if (response.ok) {
-        const data = await response.json();
-        setUserName(data.user.username);
-      } else {
-        router.push('/login');
-      }
-    };
+    (async () => {
+      try {
+        const userRes = await fetch('/api/checkSession');
+        if (!userRes.ok) return router.push('/login');
+        const userData = await userRes.json();
+        setUserName(userData.user.username);
 
-    const fetchMotivationalQuote = async () => {
-      const response = await fetch('/api/getMotivationalQuotes');
-      if (response.ok) {
-        const data = await response.json();
-        setMotivationalQuote(data.quote);
-        setEmotion(data.emotion);
-      } else {
-        console.error('Failed to fetch motivational quote');
+        const quoteRes = await fetch('/api/getMotivationalQuotes');
+        if (quoteRes.ok) {
+          const quoteData = await quoteRes.json();
+          setMotivationalQuote(quoteData.quote);
+          setEmotion(quoteData.emotion);
+        }
+      } catch {
+        // If errors occur, user stays "User" and quotes remain empty.
+      } finally {
+        setLoading(false);
       }
-    };
-
-    fetchUserData();
-    fetchMotivationalQuote();
+    })();
   }, [router]);
 
   const navItems = [
@@ -50,28 +54,26 @@ export default function Dashboard() {
 
   return (
     <Box className={styles.mainContainer}>
-      {/* Main Content */}
-      <Box className={styles.contentContainer}>
-        <Typography variant="h5" className={styles.welcomeText}>
-          Welcome, {userName}
-        </Typography>
+      {/* Header with Logo */}
+      <Box className={styles.header}>
+        <img src="/images/logo.png" alt="Logo" className={styles.logo} />
+     
+    {(
+          <>
+            <Typography variant="h5" className={styles.welcomeText}>
+              Welcome, {userName}
+            </Typography>
 
-        {/* Motivational Quotes Section */}
-        <Box className={styles.quotesContainer}>
-          <Typography className={styles.quotesHeader}>Today's Quote ({emotion}):</Typography>
-          <Typography className={styles.quote}>"{motivationalQuote}"</Typography>
-        </Box>
+            <Box className={styles.quotesContainer}>
+              <Typography className={styles.quotesHeader}>Today's Quote ({emotion}):</Typography>
+              <Typography className={styles.quote}>"{motivationalQuote}"</Typography>
+            </Box>
 
-        <Button
-          variant="contained"
-          className={styles.addButton}
-          onClick={() => alert('Add New Task functionality')}
-        >
-          Add New Task
-        </Button>
+        
+          </>
+        )}
       </Box>
 
-      {/* Bottom Navigation */}
       <Box className={styles.bottomNav}>
         {navItems.map((item) => (
           <Button
