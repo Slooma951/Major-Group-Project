@@ -11,19 +11,20 @@ import styles from './profile.module.css';
 
 export default function Profile() {
     const router = useRouter();
-    const [userData, setUserData] = useState({ username: 'User' });
+    const [userData, setUserData] = useState({ username: 'User', email: 'user@example.com' });
     const [newUsername, setNewUsername] = useState('');
     const [newEmail, setNewEmail] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
 
+    // Fetch user data (including email)
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const response = await fetch('/api/checkSession');
                 if (response.ok) {
                     const data = await response.json();
-                    setUserData({ username: data.user.username });
+                    setUserData({ username: data.user.username, email: data.user.email });
                 } else {
                     router.push('/login');
                 }
@@ -36,6 +37,7 @@ export default function Profile() {
         fetchUserData();
     }, [router]);
 
+    // Logout function
     const handleLogout = async () => {
         try {
             const response = await fetch('/api/logout', {
@@ -52,6 +54,7 @@ export default function Profile() {
         }
     };
 
+    // Update user profile (username, email, password)
     const handleUpdate = async (action, payload) => {
         try {
             const response = await fetch('/api/profile', {
@@ -66,6 +69,9 @@ export default function Profile() {
                 if (action === 'updateUsername') {
                     setUserData({ ...userData, username: payload.newUsername });
                 }
+                if (action === 'updateEmail') {
+                    setUserData({ ...userData, email: payload.newEmail });
+                }
             } else {
                 alert(data.message);
             }
@@ -75,6 +81,7 @@ export default function Profile() {
         }
     };
 
+    // Navigation items
     const navItems = [
         { text: 'Home', icon: <HomeIcon className={styles.navIcon} />, link: '/dashboard' },
         { text: 'Journal', icon: <BookIcon className={styles.navIcon} />, link: '/journal' },
@@ -90,6 +97,9 @@ export default function Profile() {
             <Box className={styles.infoContainer}>
                 <Typography variant="body1" className={styles.info}>
                     <strong>Username:</strong> {userData.username}
+                </Typography>
+                <Typography variant="body1" className={styles.info}>
+                    <strong>Email:</strong> {userData.email}
                 </Typography>
             </Box>
             <Box className={styles.formContainer}>

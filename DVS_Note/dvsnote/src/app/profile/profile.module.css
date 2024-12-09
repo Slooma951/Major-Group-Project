@@ -103,12 +103,14 @@
     color: white;
     text-transform: uppercase;
     font-weight: bold;
-    padding: 12px 20px;
+    padding: 12px 24px; /* Adjust padding to match the logout button */
     border-radius: 8px;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: fit-content; /* Ensure the button size is based on padding */
+    align-self: center; /* Center the button */
 }
 
 .updateButton:hover {
@@ -122,68 +124,12 @@
     color: white;
     text-transform: none;
     font-weight: bold;
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    align-self: center;
-    width: fit-content;
-}
-
-.logoutButton:hover {
-    background-color: #d32f2f;
-}
-
-.bottomNav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 12px 0;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 30px 30px 0 0;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.navItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #001858;
-    text-transform: none;
-    font-weight: bold;
-}
-
-.navIcon {
-    font-size: 22px;
-    margin-bottom: 3px;
-}
-
-.navItem:hover {
-    color: #f582ae;
-}
-
-.navText {
-    font-size: 12px;
-}
-
-.info {
-    font-size: 1rem;
-    color: #001858;
-    line-height: 1.5;
-}
-
-.logoutButton {
-    margin-top: 20px;
-    background-color: #f44336;
-    color: white;
-    text-transform: none;
-    font-weight: bold;
-    padding: 12px 24px;
+    padding: 12px 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, transform 0.2s ease;
+    align-self: center;
+    width: fit-content;
 }
 
 .logoutButton:hover {
@@ -231,7 +177,6 @@
     color: inherit;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 600px) {
     .infoContainer {
         padding: 16px;
