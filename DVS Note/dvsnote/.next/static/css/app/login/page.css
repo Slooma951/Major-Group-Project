@@ -1,0 +1,112 @@
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./src/app/login/login.module.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
+.login_container__kitvQ {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb); /* Gradient background */
+    padding: 24px;
+    color: #404f65;
+}
+
+.login_logo__uuWzc {
+    margin-bottom: 20px;
+    animation: login_fadeIn__pJUG5 1s ease-in-out;
+    max-width: 120px; /* Adjusted logo size */
+    height: auto;
+    object-fit: contain;
+}
+
+.login_title__r1aBc {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #404f65;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.login_form__NY6Qf {
+    width: 59%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Spacing between fields */
+}
+
+.login_input__GK8Qo {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 5px 5px; /* Adjusted padding */
+    font-size: 0.95rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.login_input__GK8Qo::placeholder {
+    color: #6b6b6b;
+    text-align: center;
+}
+
+.login_input__GK8Qo:focus {
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.login_loginButton__ZAuNC {
+    background-color: #505c75;
+    color: white;
+    text-transform: none;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 12px 0; /* Adjusted padding */
+    transition: all 0.3s ease;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login_loginButton__ZAuNC:hover {
+    background-color: #404f65;
+}
+
+.login_successMessage__aeDlv {
+    margin-top: 16px;
+    color: green;
+    text-align: center;
+}
+
+.login_errorMessage____0Gr {
+    margin-top: 16px;
+    color: red;
+    text-align: center;
+}
+
+.login_signUpText__SZboi {
+    margin-top: 16px;
+    color: #6b6b6b;
+    text-align: center;
+}
+
+.login_signUpLink__ja5ov {
+    color: #505c75;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.login_signUpLink__ja5ov:hover {
+    text-decoration: underline;
+}
+
+@keyframes login_fadeIn__pJUG5 {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
