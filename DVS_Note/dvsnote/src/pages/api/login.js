@@ -31,17 +31,16 @@ export default async function handler(req, res) {
             return res.status(401).json({ success: false, message: 'Invalid password.' });
         }
 
-        // Initialize session and store user data
+        // Initialize session and store user data, including email
         const session = await getCustomSession(req, res);
-        session.user = {username: user.username };
+        session.user = { username: user.username, email: user.email };
         await session.save();
-
 
         // Respond with success
         res.status(200).json({
             success: true,
             message: 'Login successful',
-            user: {username: user.username },
+            user: { username: user.username, email: user.email },
         });
     } catch (error) {
         console.error('Error in login:', error);
