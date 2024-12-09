@@ -7,6 +7,7 @@ import {
   TextareaAutosize,
   Typography,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import dayjs from 'dayjs';
 import {
@@ -26,122 +27,71 @@ export default function Journal() {
   const [journalTitle, setJournalTitle] = useState('');
   const [journalEntry, setJournalEntry] = useState('');
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [loading, setLoading] = useState(false);
 
-  // Fetch user data and session
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('/api/checkSession');
-        if (response.ok) {
-          const data = await response.json();
-          setUserName(data.user.username);
-        } else {
-          router.push('/login');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error.message || error);
+    (async () => {
+      const res = await fetch('/api/checkSession');
+      if (res.ok) {
+        const data = await res.json();
+        setUserName(data.user.username);
+      } else {
         router.push('/login');
       }
-    };
-    fetchUserData();
+    })();
   }, [router]);
 
-  // Fetch the journal for the selected date
   useEffect(() => {
-    const fetchJournal = async () => {
-      if (!userName) return;
-
-      try {
-        const response = await fetch('/api/getJournal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: userName,
-            date: selectedDate.format('YYYY-MM-DD'),
-          }),
-        });
-
-        const data = await response.json();
-        if (response.ok && data.journal) {
-          setJournalTitle(data.journal.title || '');
-          setJournalEntry(data.journal.content || '');
-        } else {
-          setJournalTitle('');
-          setJournalEntry('');
-        }
-      } catch (error) {
-        console.error('Error fetching journal:', error.message || error);
+    if (!userName) return;
+    (async () => {
+      const res = await fetch('/api/getJournal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: userName, date: selectedDate.format('YYYY-MM-DD') }),
+      });
+      const data = await res.json();
+      if (res.ok && data.journal) {
+        setJournalTitle(data.journal.title || '');
+        setJournalEntry(data.journal.content || '');
+      } else {
+        setJournalTitle('');
+        setJournalEntry('');
       }
-    };
-    fetchJournal();
+    })();
   }, [selectedDate, userName]);
 
-  // Save the journal entry
   const saveJournal = async () => {
-    if (!userName || !journalEntry || !selectedDate) {
-      console.warn('Missing required fields for saving the journal.');
-      return;
-    }
-
+    if (!userName || !journalEntry || !selectedDate) return;
     const title = journalEntry.split('\n')[0].trim() || 'Untitled';
-
-    try {
-      const response = await fetch('/api/saveJournal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: userName,
-          title,
-          content: journalEntry,
-          date: selectedDate.format('YYYY-MM-DD'),
-        }),
-      });
-
-      if (!response.ok) {
-        console.warn('Error saving journal:', await response.text());
-      }
-    } catch (error) {
-      console.error('Error saving journal:', error.message || error);
-    }
+    await fetch('/api/saveJournal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: userName, title, content: journalEntry, date: selectedDate.format('YYYY-MM-DD') }),
+    });
   };
 
-  // Save journal entry for analysis
-  const saveJournalEntry = async () => {
-    if (!userName || !journalEntry || !selectedDate) {
-      console.warn('Missing required fields for saving journal entry.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/saveJournalEntry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: userName,
-          content: journalEntry,
-          date: selectedDate.format('YYYY-MM-DD'),
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        console.warn('Failed to save journal entry:', data.message);
-      }
-    } catch (error) {
-      console.error('Error saving journal entry:', error.message || error);
-    }
+  const saveJournalEntryAnalysis = async () => {
+    if (!userName || !journalEntry || !selectedDate) return;
+    await fetch('/api/saveJournalEntry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: userName, content: journalEntry, date: selectedDate.format('YYYY-MM-DD') }),
+    });
   };
 
   const handleSave = async () => {
-    await saveJournal();
-    await saveJournalEntry();
+    setLoading(true);
+    try {
+      await saveJournal();
+      await saveJournalEntryAnalysis();
+    } finally {
+      setLoading(false);
+    }
   };
 
   const goToPreviousDay = () => setSelectedDate(selectedDate.subtract(1, 'day'));
   const goToNextDay = () => {
-    if (!selectedDate.isSame(dayjs(), 'day')) {
-      setSelectedDate(selectedDate.add(1, 'day'));
-    }
+    if (!selectedDate.isSame(dayjs(), 'day')) setSelectedDate(selectedDate.add(1, 'day'));
   };
 
   const navItems = [
@@ -152,70 +102,53 @@ export default function Journal() {
   ];
 
   return (
-      <Box className={styles.mainContainer}>
-        {/* Header with Date Navigation */}
-        <Box className={styles.header}>
-          <Typography variant="h6" className={styles.promptText}>
-            Dear Future Me
-          </Typography>
-          <Box className={styles.datePickerContainer}>
-            <IconButton
-                className={styles.dateNavigationButton}
-                onClick={goToPreviousDay}
-                disabled={selectedDate.isBefore(dayjs('2000-01-01'), 'day')}
-            >
-              <ArrowBackIosIcon />
-            </IconButton>
-            <Typography className={styles.datePickerInput}>
-              {selectedDate.format('YYYY-MM-DD')}
-            </Typography>
-            <IconButton
-                className={styles.dateNavigationButton}
-                onClick={goToNextDay}
-                disabled={selectedDate.isSame(dayjs(), 'day')}
-            >
-              <ArrowForwardIosIcon />
-            </IconButton>
-          </Box>
-        </Box>
-
-        {/* Display Title */}
-        {journalTitle && (
-            <Typography
-                variant="h5"
-                style={{ marginTop: '16px', textAlign: 'center', fontWeight: 'bold' }}
-            >
-              {journalTitle}
-            </Typography>
-        )}
-
-        {/* Text Area */}
-        <TextareaAutosize
-            minRows={15}
-            className={styles.textarea}
-            placeholder="Write your day and express your emotions..."
-            value={journalEntry}
-            onChange={(e) => setJournalEntry(e.target.value)}
-        />
-
-        {/* Save Button */}
-        <Button className={styles.saveButton} onClick={handleSave}>
-          Save Entry
-        </Button>
-
-        {/* Bottom Navigation Bar */}
-        <Box className={styles.bottomNav}>
-          {navItems.map((item) => (
-              <Button
-                  key={item.text}
-                  className={styles.navItem}
-                  onClick={() => router.push(item.link)}
-              >
-                {item.icon}
-                <Typography variant="caption">{item.text}</Typography>
-              </Button>
-          ))}
+    <Box className={styles.mainContainer}>
+      <Box className={styles.header}>
+        <Typography variant="h6" className={styles.promptText}>Dear Me</Typography>
+        <Box className={styles.datePickerContainer}>
+          <IconButton className={styles.dateNavigationButton} onClick={goToPreviousDay} disabled={selectedDate.isBefore(dayjs('2000-01-01'), 'day')}>
+            <ArrowBackIosIcon />
+          </IconButton>
+          <Typography className={styles.datePickerInput}>{selectedDate.format('YYYY-MM-DD')}</Typography>
+          <IconButton className={styles.dateNavigationButton} onClick={goToNextDay} disabled={selectedDate.isSame(dayjs(), 'day')}>
+            <ArrowForwardIosIcon />
+          </IconButton>
         </Box>
       </Box>
+
+      {journalTitle && (
+        <Typography variant="h5" style={{ marginTop: '16px', textAlign: 'center', fontWeight: 'bold' }}>
+          {journalTitle}
+        </Typography>
+      )}
+
+      <TextareaAutosize
+        minRows={15}
+        className={styles.textarea}
+        placeholder="Write your day and express your emotions..."
+        value={journalEntry}
+        onChange={(e) => setJournalEntry(e.target.value)}
+      />
+
+      <Button className={styles.saveButton} onClick={handleSave} disabled={loading}>
+        {loading ? (
+          <>
+            <CircularProgress size={20} style={{ marginRight: 8 }} />
+            Saving...
+          </>
+        ) : (
+          'Save Entry'
+        )}
+      </Button>
+
+      <Box className={styles.bottomNav}>
+        {navItems.map((item) => (
+          <Button key={item.text} className={styles.navItem} onClick={() => router.push(item.link)}>
+            {item.icon}
+            <Typography variant="caption">{item.text}</Typography>
+          </Button>
+        ))}
+      </Box>
+    </Box>
   );
 }

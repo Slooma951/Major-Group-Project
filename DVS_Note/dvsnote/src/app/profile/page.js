@@ -1,23 +1,22 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, TextField } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import PersonIcon from '@mui/icons-material/Person';
+import EditIcon from '@mui/icons-material/Edit';
 import styles from './profile.module.css';
 
 export default function Profile() {
     const router = useRouter();
-    const [userData, setUserData] = useState({ username: 'User', email: 'user@example.com' });
-    const [newUsername, setNewUsername] = useState('');
-    const [newEmail, setNewEmail] = useState('');
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const [userData, setUserData] = useState({ username: '', email: '' });
+    const [editingField, setEditingField] = useState(null);
+    const [editValue, setEditValue] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
-    // Fetch user data (including email)
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -33,55 +32,61 @@ export default function Profile() {
                 router.push('/login');
             }
         };
-
         fetchUserData();
     }, [router]);
 
-    // Logout function
     const handleLogout = async () => {
         try {
-            const response = await fetch('/api/logout', {
-                method: 'POST',
-            });
+            const response = await fetch('/api/logout', { method: 'POST' });
             if (response.ok) {
                 router.push('/login');
             } else {
-                alert('Logout failed!');
+                console.log('Logout failed!');
             }
         } catch (error) {
             console.error('Error during logout:', error);
-            alert('An error occurred. Please try again.');
         }
     };
 
-    // Update user profile (username, email, password)
-    const handleUpdate = async (action, payload) => {
+    const startEditing = (field, currentValue) => {
+        setEditingField(field);
+        setEditValue(currentValue);
+        setErrorMessage('');
+    };
+
+    const saveEdit = async () => {
+        setErrorMessage('');
         try {
+            const action = editingField === 'username' ? 'updateUsername' : 'updateEmail';
+            const payload = editingField === 'username' ? { newUsername: editValue } : { newEmail: editValue };
             const response = await fetch('/api/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action, ...payload }),
             });
-
             const data = await response.json();
             if (response.ok) {
-                alert(data.message);
                 if (action === 'updateUsername') {
-                    setUserData({ ...userData, username: payload.newUsername });
+                    setUserData({ ...userData, username: editValue });
+                } else {
+                    setUserData({ ...userData, email: editValue });
                 }
-                if (action === 'updateEmail') {
-                    setUserData({ ...userData, email: payload.newEmail });
-                }
+                setEditingField(null);
+                setEditValue('');
             } else {
-                alert(data.message);
+                // If the server says username or email is taken, display a specific error message
+                if (data.message && (data.message.includes("taken") || data.message.includes("exists"))) {
+                    setErrorMessage(data.message); // e.g. "This username is already taken" or "This email is already taken"
+                } else {
+                    setErrorMessage('An error occurred. Please try again.');
+                }
             }
         } catch (error) {
-            console.error(`Error during ${action}:`, error);
-            alert('An error occurred. Please try again.');
+            console.error(`Error saving ${editingField}:`, error);
+            setErrorMessage('An error occurred. Please try again.');
         }
     };
 
-    // Navigation items
     const navItems = [
         { text: 'Home', icon: <HomeIcon className={styles.navIcon} />, link: '/dashboard' },
         { text: 'Journal', icon: <BookIcon className={styles.navIcon} />, link: '/journal' },
@@ -91,85 +96,55 @@ export default function Profile() {
 
     return (
         <Box className={styles.container}>
-            <Typography variant="h5" className={styles.title}>
-                Profile
-            </Typography>
-            <Box className={styles.infoContainer}>
-                <Typography variant="body1" className={styles.info}>
-                    <strong>Username:</strong> {userData.username}
-                </Typography>
-                <Typography variant="body1" className={styles.info}>
-                    <strong>Email:</strong> {userData.email}
-                </Typography>
-            </Box>
-            <Box className={styles.formContainer}>
-                <TextField
-                    label="New Username"
-                    value={newUsername}
-                    onChange={(e) => setNewUsername(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                    className={styles.inputField}
-                />
-                <Button
-                    variant="contained"
-                    className={styles.updateButton}
-                    onClick={() => handleUpdate('updateUsername', { newUsername })}
-                >
-                    Update Username
-                </Button>
+            <Typography className={styles.title}>Profile</Typography>
+            <Box className={styles.infoCard}>
+                <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Username</span>
+                    {editingField === 'username' ? (
+                        <div className={styles.inlineEditor}>
+                            <input
+                                className={styles.inputField}
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                            />
+                            <button className={styles.saveButton} onClick={saveEdit}>Save</button>
+                        </div>
+                    ) : (
+                        <>
+                            <span className={styles.infoValue}>{userData.username}</span>
+                            <EditIcon className={styles.editIcon} onClick={() => startEditing('username', userData.username)} />
+                        </>
+                    )}
+                </div>
+                {editingField === 'username' && errorMessage && (
+                    <div className={styles.errorMessage}>{errorMessage}</div>
+                )}
 
-                <TextField
-                    label="New Email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                    className={styles.inputField}
-                />
-                <Button
-                    variant="contained"
-                    className={styles.updateButton}
-                    onClick={() => handleUpdate('updateEmail', { newEmail })}
-                >
-                    Update Email
-                </Button>
-
-                <TextField
-                    label="Current Password"
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                    className={styles.inputField}
-                />
-                <TextField
-                    label="New Password"
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                    className={styles.inputField}
-                />
-                <Button
-                    variant="contained"
-                    className={styles.updateButton}
-                    onClick={() => handleUpdate('updatePassword', { currentPassword, newPassword })}
-                >
-                    Update Password
-                </Button>
+                <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Email</span>
+                    {editingField === 'email' ? (
+                        <div className={styles.inlineEditor}>
+                            <input
+                                className={styles.inputField}
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                            />
+                            <button className={styles.saveButton} onClick={saveEdit}>Save</button>
+                        </div>
+                    ) : (
+                        <>
+                            <span className={styles.infoValue}>{userData.email}</span>
+                            <EditIcon className={styles.editIcon} onClick={() => startEditing('email', userData.email)} />
+                        </>
+                    )}
+                </div>
+                {editingField === 'email' && errorMessage && (
+                    <div className={styles.errorMessage}>{errorMessage}</div>
+                )}
             </Box>
 
-            <Button
-                variant="contained"
-                className={styles.logoutButton}
-                onClick={handleLogout}
-            >
-                Logout
-            </Button>
-            {/* Bottom Navigation */}
+            <button className={`${styles.button} ${styles.logout}`} onClick={handleLogout}>Logout</button>
+
             <Box className={styles.bottomNav}>
                 {navItems.map((item, index) => (
                     <Box

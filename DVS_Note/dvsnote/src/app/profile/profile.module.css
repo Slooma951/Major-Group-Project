@@ -2,163 +2,158 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
     background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    padding: 16px;
-    color: #001858;
-}
-
-.title {
-    font-family: 'Nunito, sans-serif';
-    font-weight: bold;
-    font-size: 2rem;
-    margin-bottom: 20px;
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+    font-family: 'Nunito', sans-serif;
     text-align: center;
-    color: #001858;
+    color: #000;
 }
 
-.infoContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: left;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    padding: 16px;
-    color: #001858;
-}
-
-/* Title */
 .title {
-    font-family: 'Nunito, sans-serif';
     font-weight: bold;
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #001858;
+    font-size: 1.8rem;
+    color: #000; 
+    margin-bottom: 24px;
 }
 
-/* Profile Information Container */
-.infoContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.8);
+.infoCard {
+    background: rgba(255,255,255,0.9);
+    width: 100%;
+    max-width: 320px;
+    border-radius: 12px;
     padding: 16px;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     text-align: left;
+    margin-bottom: 20px;
+    color: #000;
 }
 
-.info {
-    font-size: 1rem;
-    color: #001858;
-}
-
-.formContainer {
+.infoRow {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: left;
-    margin-top: 20px;
+    align-items: center;
+    justify-content: space-between;
+    margin: 12px 0;
+    font-size: 1rem;
+    color: #000; 
+}
+
+.infoLabel {
+    font-weight: 600;
+    margin-right: 8px;
+    color: #000 !important; 
+}
+
+.infoValue {
+    flex: 1;
+    text-align: right;
+    margin-right: 8px;
+    color: #000 !important;
+}
+
+.editIcon {
+    font-size: 20px;
+    color: #1e90ff;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.2s;
+}
+
+.editIcon:hover {
+    color: #1565c0;
+    transform: scale(1.1);
+}
+
+.inlineEditor {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
 }
 
 .inputField {
-    width: 100%;
-    font-size: 1rem;
+    background: #fff;
+    border: none;
     border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.7);
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    padding: 8px;
+    font-size: 0.95rem;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s;
+    color: #000; 
 }
 
 .inputField:focus {
-    border-color: #6fa8dc;
-    box-shadow: 0 0 4px rgba(111, 168, 220, 0.8);
+    outline: none;
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.1);
 }
 
-.updateButton {
-    background-color: #1e90ff;
-    color: white;
-    text-transform: uppercase;
-    font-weight: bold;
-    padding: 12px 24px; /* Adjust padding to match the logout button */
-    border-radius: 8px;
+.saveButton {
+    background: #1e90ff;
+    color: #fff;
     border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: fit-content; /* Ensure the button size is based on padding */
-    align-self: center; /* Center the button */
-}
-
-.updateButton:hover {
-    background-color: #1565c0;
-    transform: scale(1.05);
-}
-
-.logoutButton {
-    margin-top: 20px;
-    background-color: #f44336;
-    color: white;
-    text-transform: none;
-    font-weight: bold;
-    padding: 12px 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    align-self: center;
-    width: fit-content;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.logoutButton:hover {
-    background-color: #d32f2f;
-    transform: scale(1.05);
+.saveButton:hover {
+    background: #1565c0;
+    transform: translateY(-1px);
+}
+
+.logout {
+    background: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.logout:hover {
+    background: #d32f2f;
+    transform: translateY(-1px);
 }
 
 .bottomNav {
     position: fixed;
     bottom: 0;
     width: 100%;
+    background: rgba(255,255,255,0.9);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 8px rgba(0,0,0,0.05);
     display: flex;
     justify-content: space-around;
     align-items: center;
     padding: 12px 0;
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
 }
+.errorMessage {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
 
 .navItem {
     display: flex;
     flex-direction: column;
     align-items: center;
     color: #001858;
-    text-transform: none;
-    font-weight: bold;
+    transition: color 0.3s, transform 0.2s;
+    font-weight: normal;
     cursor: pointer;
-    transition: color 0.3s ease, transform 0.2s ease;
 }
 
 .navItem:hover {
@@ -172,26 +167,13 @@
 }
 
 .navText {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: normal;
-    color: inherit;
 }
 
 @media (max-width: 600px) {
-    .infoContainer {
-        padding: 16px;
-    }
-
-    .logoutButton {
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-
-    .navIcon {
-        font-size: 20px;
-    }
-
-    .navText {
-        font-size: 11px;
-    }
+    .inputField { font-size: 0.95rem; }
+    .saveButton, .logout { font-size: 0.9rem; }
+    .navIcon { font-size: 20px; }
+    .navText { font-size: 11px; }
 }
