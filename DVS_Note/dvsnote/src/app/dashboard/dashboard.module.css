@@ -1,144 +1,102 @@
 .mainContainer {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    color: black;
-    padding-bottom: 60px;
-    overflow: hidden;
-  }
-  
-  .contentContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 16px;
-  }
-  
-  .welcomeText {
-    font-family: 'Nunito, sans-serif';
-    font-weight: bold;
-    color: #001858;
-    font-size: 1.8rem;
-    margin: 20px 0;
-  }
-  
-  .addButton {
-    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    color: #001858;
-    text-transform: none;
-    padding: 12px;
-    margin: 8px auto;
-    border-radius: 30px;
-    font-weight: bold;
-    width: 200px;
-    display: block;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .addButton:hover {
-    background: linear-gradient(to right, #90caf9, #a1c4fd);
-  }
-  
-  .quotesContainer {
-    margin: 20px 0;
-    padding: 16px;
-    background: var(--card-background);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+  color: black;
+  padding-bottom: 60px;
+  overflow: hidden;
+  align-items: center;
+  text-align: center;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  padding: 16px;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.logo {
+  width: 300px;
+  height: auto;
+  margin: 0 auto 8px;
+  display: block;
+  margin-bottom: -75px;
+}
+
+.welcomeText {
+  font-family: 'Nunito, sans-serif';
+  font-weight: bold;
+  color: #001858;
+  font-size: 1.8rem;
+  margin: 20px 0;
+  word-wrap: break-word;
+}
+
+.addButton {
+  background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+  color: #001858;
+  text-transform: none;
+  padding: 12px;
+  margin: 8px auto;
+  border-radius: 30px;
+  font-weight: bold;
+  width: 200px;
+  display: block;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.addButton:hover {
+  background: linear-gradient(to right, #90caf9, #a1c4fd);
 }
 
 .quotesContainer {
-    margin: 20px 0;
-    padding: 16px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    text-align: center;
-  }
-  
-  .quotesHeader {
-    font-weight: bold;
-    color: #001858;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-  }
-  
-  .quote {
-    font-style: italic;
-    color: #555;
-    font-size: 1.2rem;
-  }
-  
-
-.quoteAuthor {
-    font-weight: bold;
-    color: #333;
-    font-size: 1rem;
-    margin-top: 10px;
+  margin: 20px 0;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: center;
 }
 
-  .bottomNav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 12px 0;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 30px 30px 0 0;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .navItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #001858;
-    text-transform: none;
-    font-weight: bold;
-  }
-  
-  .navIcon {
-    font-size: 22px;
-    margin-bottom: 3px;
-  }
-  
-  .navItem:hover {
-    color: #f582ae;
-  }
-  
-  .navText {
-    font-size: 12px;
-  }
-  
-  .quoteContainer {
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    text-align: center;
-    margin: 16px auto;
-  }
-  
-  .motivationalText {
-    font-family: 'Nunito, sans-serif';
-    font-weight: bold;
-    color: #001858;
-    text-align: center;
-    font-size: 1.5rem;
-  }
-  
-  .quoteAuthor {
-    font-style: italic;
-    color: #555;
-    margin-top: 8px;
+.quotesHeader {
+  font-weight: bold;
+  color: #001858;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.quote {
+  font-style: italic;
+  color: #555;
+  font-size: 1.2rem;
+  margin: 0 auto;
+  max-width: 90%;
+}
+
+.quoteAuthor {
+  font-weight: bold;
+  color: #333;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 0;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 30px 30px 0 0;
   }
   
