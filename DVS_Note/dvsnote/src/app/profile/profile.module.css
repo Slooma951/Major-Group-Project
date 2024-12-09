@@ -14,8 +14,44 @@
     font-weight: bold;
     font-size: 2rem;
     margin-bottom: 20px;
+    text-align: center;
+    color: #001858;
 }
 
+.infoContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    padding: 16px;
+    color: #001858;
+}
+
+/* Title */
+.title {
+    font-family: 'Nunito, sans-serif';
+    font-weight: bold;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #001858;
+}
+
+/* Profile Information Container */
 .infoContainer {
     display: flex;
     flex-direction: column;
@@ -32,6 +68,52 @@
 .info {
     font-size: 1rem;
     color: #001858;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+    margin-top: 20px;
+}
+
+.inputField {
+    width: 100%;
+    font-size: 1rem;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.7);
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputField:focus {
+    border-color: #6fa8dc;
+    box-shadow: 0 0 4px rgba(111, 168, 220, 0.8);
+}
+
+.updateButton {
+    background-color: #1e90ff;
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.updateButton:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
 }
 
 .logoutButton {
@@ -43,35 +125,12 @@
     padding: 12px 24px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    align-self: center;
+    width: fit-content;
 }
 
 .logoutButton:hover {
     background-color: #d32f2f;
-}
-
-.title {
-    font-family: 'Nunito, sans-serif';
-    font-weight: bold;
-    font-size: 2rem;
-    margin-bottom: 20px;
-}
-
-.infoContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 16px;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: left;
-}
-
-.info {
-    font-size: 1rem;
-    color: #001858;
 }
 
 .bottomNav {
@@ -107,4 +166,87 @@
 
 .navText {
     font-size: 12px;
+}
+
+.info {
+    font-size: 1rem;
+    color: #001858;
+    line-height: 1.5;
+}
+
+.logoutButton {
+    margin-top: 20px;
+    background-color: #f44336;
+    color: white;
+    text-transform: none;
+    font-weight: bold;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logoutButton:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+.bottomNav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 12px 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #001858;
+    text-transform: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.navItem:hover {
+    color: #f582ae;
+    transform: translateY(-2px);
+}
+
+.navIcon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.navText {
+    font-size: 13px;
+    font-weight: normal;
+    color: inherit;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .infoContainer {
+        padding: 16px;
+    }
+
+    .logoutButton {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .navIcon {
+        font-size: 20px;
+    }
+
+    .navText {
+        font-size: 11px;
+    }
 }
