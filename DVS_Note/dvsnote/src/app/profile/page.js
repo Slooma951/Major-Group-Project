@@ -15,6 +15,8 @@ export default function Profile() {
     const [userData, setUserData] = useState({ username: '', email: '' });
     const [editingField, setEditingField] = useState(null);
     const [editValue, setEditValue] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
@@ -57,15 +59,25 @@ export default function Profile() {
     const cancelEdit = () => {
         setEditingField(null);
         setEditValue('');
+        setCurrentPassword('');
+        setNewPassword('');
         setErrorMessage('');
     };
 
     const saveEdit = async () => {
         setErrorMessage('');
         try {
-            const action = editingField === 'email' ? 'updateEmail' : 'updatePassword';
-            const payload =
-                editingField === 'email' ? { newEmail: editValue } : { newPassword: editValue };
+            let action;
+            let payload;
+
+            if (editingField === 'email') {
+                action = 'updateEmail';
+                payload = { newEmail: editValue };
+            } else if (editingField === 'password') {
+                action = 'updatePassword';
+                payload = { currentPassword, newPassword };
+            }
+
             const response = await fetch('/api/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -78,6 +90,8 @@ export default function Profile() {
                 }
                 setEditingField(null);
                 setEditValue('');
+                setCurrentPassword('');
+                setNewPassword('');
             } else {
                 setErrorMessage(data.message || 'An error occurred. Please try again.');
             }
@@ -136,8 +150,16 @@ export default function Profile() {
                             <input
                                 className={styles.inputField}
                                 type="password"
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
+                                placeholder="Current Password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+                            <input
+                                className={styles.inputField}
+                                type="password"
+                                placeholder="New Password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
                             />
                             <button className={styles.saveButton} onClick={saveEdit}>Save</button>
                             <button className={styles.cancelButton} onClick={cancelEdit}>Cancel</button>
