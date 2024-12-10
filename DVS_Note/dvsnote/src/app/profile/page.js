@@ -54,11 +54,18 @@ export default function Profile() {
         setErrorMessage('');
     };
 
+    const cancelEdit = () => {
+        setEditingField(null);
+        setEditValue('');
+        setErrorMessage('');
+    };
+
     const saveEdit = async () => {
         setErrorMessage('');
         try {
-            const action = editingField === 'username' ? 'updateUsername' : 'updateEmail';
-            const payload = editingField === 'username' ? { newUsername: editValue } : { newEmail: editValue };
+            const action = editingField === 'email' ? 'updateEmail' : 'updatePassword';
+            const payload =
+                editingField === 'email' ? { newEmail: editValue } : { newPassword: editValue };
             const response = await fetch('/api/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -66,20 +73,13 @@ export default function Profile() {
             });
             const data = await response.json();
             if (response.ok) {
-                if (action === 'updateUsername') {
-                    setUserData({ ...userData, username: editValue });
-                } else {
+                if (action === 'updateEmail') {
                     setUserData({ ...userData, email: editValue });
                 }
                 setEditingField(null);
                 setEditValue('');
             } else {
-                // If the server says username or email is taken, display a specific error message
-                if (data.message && (data.message.includes("taken") || data.message.includes("exists"))) {
-                    setErrorMessage(data.message); // e.g. "This username is already taken" or "This email is already taken"
-                } else {
-                    setErrorMessage('An error occurred. Please try again.');
-                }
+                setErrorMessage(data.message || 'An error occurred. Please try again.');
             }
         } catch (error) {
             console.error(`Error saving ${editingField}:`, error);
@@ -100,25 +100,8 @@ export default function Profile() {
             <Box className={styles.infoCard}>
                 <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>Username</span>
-                    {editingField === 'username' ? (
-                        <div className={styles.inlineEditor}>
-                            <input
-                                className={styles.inputField}
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                            />
-                            <button className={styles.saveButton} onClick={saveEdit}>Save</button>
-                        </div>
-                    ) : (
-                        <>
-                            <span className={styles.infoValue}>{userData.username}</span>
-                            <EditIcon className={styles.editIcon} onClick={() => startEditing('username', userData.username)} />
-                        </>
-                    )}
+                    <span className={styles.infoValue}>{userData.username}</span>
                 </div>
-                {editingField === 'username' && errorMessage && (
-                    <div className={styles.errorMessage}>{errorMessage}</div>
-                )}
 
                 <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>Email</span>
@@ -130,20 +113,53 @@ export default function Profile() {
                                 onChange={(e) => setEditValue(e.target.value)}
                             />
                             <button className={styles.saveButton} onClick={saveEdit}>Save</button>
+                            <button className={styles.cancelButton} onClick={cancelEdit}>Cancel</button>
                         </div>
                     ) : (
                         <>
                             <span className={styles.infoValue}>{userData.email}</span>
-                            <EditIcon className={styles.editIcon} onClick={() => startEditing('email', userData.email)} />
+                            <EditIcon
+                                className={styles.editIcon}
+                                onClick={() => startEditing('email', userData.email)}
+                            />
                         </>
                     )}
                 </div>
                 {editingField === 'email' && errorMessage && (
                     <div className={styles.errorMessage}>{errorMessage}</div>
                 )}
+
+                <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Password</span>
+                    {editingField === 'password' ? (
+                        <div className={styles.inlineEditor}>
+                            <input
+                                className={styles.inputField}
+                                type="password"
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                            />
+                            <button className={styles.saveButton} onClick={saveEdit}>Save</button>
+                            <button className={styles.cancelButton} onClick={cancelEdit}>Cancel</button>
+                        </div>
+                    ) : (
+                        <>
+                            <span className={styles.infoValue}>********</span>
+                            <EditIcon
+                                className={styles.editIcon}
+                                onClick={() => startEditing('password', '')}
+                            />
+                        </>
+                    )}
+                </div>
+                {editingField === 'password' && errorMessage && (
+                    <div className={styles.errorMessage}>{errorMessage}</div>
+                )}
             </Box>
 
-            <button className={`${styles.button} ${styles.logout}`} onClick={handleLogout}>Logout</button>
+            <button className={`${styles.button} ${styles.logout}`} onClick={handleLogout}>
+                Logout
+            </button>
 
             <Box className={styles.bottomNav}>
                 {navItems.map((item, index) => (
