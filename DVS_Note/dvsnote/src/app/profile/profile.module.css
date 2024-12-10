@@ -14,14 +14,14 @@
 .title {
     font-weight: bold;
     font-size: 1.8rem;
-    color: #000; 
+    color: #000;
     margin-bottom: 24px;
 }
 
 .infoCard {
     background: rgba(255,255,255,0.9);
     width: 100%;
-    max-width: 320px;
+    max-width: 500px; /* Adjusted for desktop and tablets */
     border-radius: 12px;
     padding: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -36,18 +36,21 @@
     justify-content: space-between;
     margin: 12px 0;
     font-size: 1rem;
-    color: #000; 
+    color: #000;
+    gap: 8px; /* Space between label and input */
+    flex-wrap: wrap; /* Ensure items wrap on smaller screens */
 }
 
 .infoLabel {
     font-weight: 600;
     margin-right: 8px;
-    color: #000 !important; 
+    color: #000 !important;
+    flex: 0 0 auto; /* Label remains sized based on content */
 }
 
 .infoValue {
     flex: 1;
-    text-align: right;
+    text-align: left;
     margin-right: 8px;
     color: #000 !important;
 }
@@ -66,9 +69,10 @@
 
 .inlineEditor {
     display: flex;
-    gap: 8px;
     align-items: center;
-    margin-top: 8px;
+    gap: 8px;
+    flex-wrap: wrap; /* Wrap elements for smaller screens */
+    width: 100%;
 }
 
 .inputField {
@@ -77,10 +81,11 @@
     border-radius: 8px;
     padding: 8px;
     font-size: 0.95rem;
-    text-align: center;
+    text-align: left;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
     transition: box-shadow 0.2s;
-    color: #000; 
+    color: #000;
+    flex: 1 1 60%; /* Input field takes a large portion of space */
 }
 
 .inputField:focus {
@@ -88,21 +93,35 @@
     box-shadow: inset 0 1px 5px rgba(0,0,0,0.1);
 }
 
-.saveButton {
+.saveButton, .cancelButton {
     background: #1e90ff;
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: 8px 12px;
+    padding: 6px 10px;
     font-weight: bold;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    flex: 0 0 auto; /* Buttons keep their size */
+}
+
+.saveButton {
+    background: #1e90ff;
 }
 
 .saveButton:hover {
     background: #1565c0;
+    transform: translateY(-1px);
+}
+
+.cancelButton {
+    background: #f44336;
+}
+
+.cancelButton:hover {
+    background: #d32f2f;
     transform: translateY(-1px);
 }
 
@@ -137,6 +156,7 @@
     align-items: center;
     padding: 12px 0;
 }
+
 .errorMessage {
     color: red;
     font-size: 0.9rem;
@@ -144,7 +164,6 @@
     text-align: center;
     font-weight: bold;
 }
-
 
 .navItem {
     display: flex;
@@ -171,9 +190,41 @@
     font-weight: normal;
 }
 
-@media (max-width: 600px) {
-    .inputField { font-size: 0.95rem; }
-    .saveButton, .logout { font-size: 0.9rem; }
-    .navIcon { font-size: 20px; }
-    .navText { font-size: 11px; }
+
+@media (max-width: 768px) {
+    .infoCard {
+        max-width: 90%;
+    }
+
+    .infoRow {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .inlineEditor {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .inputField {
+        width: 100%;
+    }
+
+    .saveButton, .cancelButton {
+        width: 30%;
+    }
+
+    .bottomNav {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .navText {
+        font-size: 10px;
+    }
+
+    .navIcon {
+        font-size: 18px;
+    }
 }
