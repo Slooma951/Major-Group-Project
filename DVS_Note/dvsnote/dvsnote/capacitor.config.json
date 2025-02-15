@@ -1,0 +1,10 @@
+{
+  "appId": "dvsnote.app",
+  "appName": "DVSNote",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}
