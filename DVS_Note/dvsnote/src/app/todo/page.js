@@ -1,8 +1,7 @@
-
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Button, TextareaAutosize, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import {
     Home as HomeIcon,
     Book as BookIcon,
@@ -14,11 +13,18 @@ import styles from './todo.module.css';
 
 export default function ToDoList() {
     const router = useRouter();
-    const [taskInput, setTaskInput] = useState('');
+    const [task, setTask] = useState('');
+    const [description, setDescription] = useState('');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
 
     const addTask = () => {
-        if (taskInput.trim()) {
-            setTaskInput('');
+        if (task.trim() && description.trim() && date.trim() && time.trim()) {
+            console.log({ task, description, date, time }); // Handle task submission logic here
+            setTask('');
+            setDescription('');
+            setDate('');
+            setTime('');
         }
     };
 
@@ -31,31 +37,61 @@ export default function ToDoList() {
 
     return (
         <Box className={styles.mainContainer}>
-            {/* Header with Date Navigation */}
             <Box className={styles.header}>
                 <Typography variant="h6" className={styles.promptText}>
                     Your To-Do List
                 </Typography>
             </Box>
 
-            {/* Centered Task Input directly in the center */}
             <Box className={styles.centerContent}>
                 <Typography variant="h6" className={styles.promptText}>
                     Add a Task
                 </Typography>
-                {/* Add task input */}
-                <TextareaAutosize
+                <TextField
                     className={styles.taskInput}
-                    placeholder="Add a new task..."
-                    value={taskInput}
-                    onChange={(e) => setTaskInput(e.target.value)}
+                    label="Task"
+                    variant="outlined"
+                    value={task}
+                    onChange={(e) => setTask(e.target.value)}
+                    fullWidth
+                    margin="normal"
                 />
-                <Button className={styles.addButton} onClick={addTask}>
+                <TextField
+                    className={styles.taskInput}
+                    label="Description"
+                    variant="outlined"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    className={styles.taskInput}
+                    label="Date"
+                    type="date"
+                    variant="outlined"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                    className={styles.taskInput}
+                    label="Time"
+                    type="time"
+                    variant="outlined"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{ shrink: true }}
+                />
+                <Button className={styles.addButton} onClick={addTask} variant="contained">
                     Add Task
                 </Button>
             </Box>
 
-            {/* Bottom Navigation Bar */}
             <Box className={styles.bottomNav}>
                 {navItems.map((item) => (
                     <Button
