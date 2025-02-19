@@ -20,7 +20,6 @@ export default async function handler(req, res) {
 
         if (req.method === "POST") {
             const { title, description, date, time } = req.body;
-
             if (!title || !description || !date || !time) {
                 return res.status(400).json({ success: false, message: "All fields are required." });
             }
@@ -38,6 +37,25 @@ export default async function handler(req, res) {
             return res.status(201).json({ success: true, task: { _id: result.insertedId, ...newTask } });
         }
 
+        if (req.method === "PUT") {
+            const { taskId, title, description, date, time } = req.body;
+
+            if (!ObjectId.isValid(taskId)) {
+                return res.status(400).json({ success: false, message: "Invalid task ID." });
+            }
+
+            const updateResult = await todoCollection.updateOne(
+                { _id: new ObjectId(taskId), userId },
+                { $set: { title, description, date, time } }
+            );
+
+            if (updateResult.matchedCount === 0) {
+                return res.status(404).json({ success: false, message: "Task not found." });
+            }
+
+            return res.status(200).json({ success: true, message: "Task updated successfully." });
+        }
+
         if (req.method === "DELETE") {
             const { taskId } = req.body;
 
@@ -53,7 +71,7 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true, message: "Task deleted successfully." });
         }
 
-        res.setHeader("Allow", ["GET", "POST", "DELETE"]);
+        res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
         return res.status(405).json({ success: false, message: `Method ${req.method} not allowed.` });
     } catch (error) {
         console.error("Error handling task:", error.message);
