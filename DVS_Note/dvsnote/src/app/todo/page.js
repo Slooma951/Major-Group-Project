@@ -17,14 +17,32 @@ export default function ToDoList() {
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-    const addTask = () => {
-        if (task.trim() && description.trim() && date.trim() && time.trim()) {
-            console.log({ task, description, date, time }); // Handle task submission logic here
+    const addTask = async () => {
+        if (!task.trim() || !description.trim() || !date.trim() || !time.trim()) {
+            setError("All fields are required.");
+            return;
+        }
+        setError('');
+        setSuccess('');
+
+        const response = await fetch('/api/todo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: task, description, date, time }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            setSuccess("Task added successfully!");
             setTask('');
             setDescription('');
             setDate('');
             setTime('');
+        } else {
+            setError(data.message || "Error adding task.");
         }
     };
 
@@ -47,6 +65,8 @@ export default function ToDoList() {
                 <Typography variant="h6" className={styles.promptText}>
                     Add a Task
                 </Typography>
+                {error && <Typography color="error">{error}</Typography>}
+                {success && <Typography color="primary">{success}</Typography>}
                 <TextField
                     className={styles.taskInput}
                     label="Task"
