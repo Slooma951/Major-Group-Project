@@ -5,17 +5,19 @@ import { useRouter } from 'next/navigation';
 import { Box, Button, Typography } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
 import StopIcon from '@mui/icons-material/Stop';
+import SaveIcon from '@mui/icons-material/Save';
 import styles from './voice.module.css';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import PersonIcon from '@mui/icons-material/Person';
-import Link from 'next/link'; // Import Link for navigation
+import Link from 'next/link';
 
 export default function VoiceToText() {
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
     const [userData, setUserData] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -63,6 +65,37 @@ export default function VoiceToText() {
         recognition.start();
     };
 
+    // Function to save the voice data
+    const saveVoiceData = async (username, transcript) => {
+        const date = new Date().toISOString();
+        setIsSaving(true);
+
+        const response = await fetch('/api/voice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, transcript, date }),
+        });
+
+        const data = await response.json();
+        setIsSaving(false); // End saving process
+
+        if (data.success) {
+            console.log('Voice data saved successfully!');
+        } else {
+            console.error('Failed to save voice data:', data.message);
+        }
+    };
+
+    const handleSaveClick = () => {
+        if (transcript && userData) {
+            saveVoiceData(userData.username, transcript);
+        } else {
+            alert('Please start speaking and ensure the transcript is available.');
+        }
+    };
+
     return (
         <Box className={styles.mainContainer}>
             <Typography variant="h5" className={styles.title}>
@@ -75,6 +108,16 @@ export default function VoiceToText() {
                     {isListening ? 'Listening...' : 'Start'}
                 </Button>
                 <Typography className={styles.transcript}>{transcript || 'Speak something...'}</Typography>
+
+                {/* Save Button */}
+                <Button
+                    className={styles.saveButton}
+                    onClick={handleSaveClick}
+                    disabled={isSaving || !transcript}
+                    startIcon={<SaveIcon />}
+                >
+                    {isSaving ? 'Saving...' : 'Save'}
+                </Button>
             </Box>
 
             {/* Bottom Navigation */}
