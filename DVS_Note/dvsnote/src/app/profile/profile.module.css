@@ -21,7 +21,7 @@
 .infoCard {
     background: rgba(255,255,255,0.9);
     width: 100%;
-    max-width: 500px; /* Adjusted for desktop and tablets */
+    max-width: 500px;
     border-radius: 12px;
     padding: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -37,15 +37,15 @@
     margin: 12px 0;
     font-size: 1rem;
     color: #000;
-    gap: 8px; /* Space between label and input */
-    flex-wrap: wrap; /* Ensure items wrap on smaller screens */
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .infoLabel {
     font-weight: 600;
     margin-right: 8px;
     color: #000 !important;
-    flex: 0 0 auto; /* Label remains sized based on content */
+    flex: 0 0 auto;
 }
 
 .infoValue {
@@ -71,7 +71,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap; /* Wrap elements for smaller screens */
+    flex-wrap: wrap;
     width: 100%;
 }
 
@@ -85,7 +85,7 @@
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
     transition: box-shadow 0.2s;
     color: #000;
-    flex: 1 1 60%; /* Input field takes a large portion of space */
+    flex: 1 1 60%;
 }
 
 .inputField:focus {
@@ -104,7 +104,7 @@
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    flex: 0 0 auto; /* Buttons keep their size */
+    flex: 0 0 auto;
 }
 
 .saveButton {
