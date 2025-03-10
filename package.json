@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@sendgrid/mail": "^8.1.4",
     "expo": "^52.0.11"
   }
 }
