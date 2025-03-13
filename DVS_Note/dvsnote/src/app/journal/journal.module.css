@@ -1,117 +1,165 @@
-/* journal.module.css */
-
 .mainContainer {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    color: black;
-    padding-bottom: 60px;
+    background-color: #0A021F;
+    color: white;
+    padding-bottom: 80px;
     overflow: hidden;
+    padding: 16px;
 }
 
 .header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 0 0 30px 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.promptText {
-    font-weight: bold;
-    color: #001858;
-    margin-bottom: 4px;
-    font-size: 20px;
+    padding: 12px 0;
+    background: transparent;
 }
 
 .datePickerContainer {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    background-color: #191544;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-top: 8px;
 }
 
 .datePickerInput {
-    border: none;
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 6px 10px;
-    border-radius: 20px;
-    font-size: 14px;
-    color: #001858;
-    outline: none;
-    width: 140px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .dateNavigationButton {
-    background-color: transparent;
+    color: white;
+    background: none;
     border: none;
-    color: #001858;
-    font-size: 24px;
     cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.dateNavigationButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.promptText {
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.inputContainer {
+    width: 100%;
+    margin-bottom: 16px;
 }
 
 .textarea {
-    flex: 1;
-    font-size: 16px;
-    padding: 16px;
+    font-size: 14px;
+    padding: 12px;
     border: none;
     resize: none;
     outline: none;
-    background-color: rgba(255, 255, 255, 0.7);
-    color: #001858;
-    width: 95%;
-    margin: 8px auto;
-    border-radius: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    min-height: calc(100vh - 250px);
+    background-color: #191544;
+    color: white;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+    min-height: 60px;
+}
+
+.feelingContainer {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.feelingButton {
+    background: #191544;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.feelingButton:hover {
+    background: #2a2a5a;
 }
 
 .saveButton {
-    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-    color: #001858;
-    text-transform: none;
-    padding: 12px;
-    margin: 8px auto;
-    border-radius: 30px;
+    background: linear-gradient(135deg, #6045E2, #8D5EF2);
+    color: white;
     font-weight: bold;
-    width: 200px;
-    display: block;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    margin: 16px auto;
+    border-radius: 30px;
+    width: 50%;
+    max-width: 200px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease-in-out;
+}
+
+.saveButton:hover {
+    background: linear-gradient(135deg, #8D5EF2, #A374F3);
 }
 
 .bottomNav {
     position: fixed;
     bottom: 0;
+    left: 0;
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     padding: 12px 0;
-    background: rgba(255, 255, 255, 0.7);
+    background: #191544;
     border-radius: 30px 30px 0 0;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -4px 6px rgba(255, 255, 255, 0.1);
+    z-index: 1000;
 }
-
 
 .navItem {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #001858;
-    text-transform: none;
-    min-width: 0;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 8px;
+    flex: 1;
+    transition: color 0.3s ease-in-out;
 }
 
 .navItem:hover {
     color: #f582ae;
 }
 
-.navItem .MuiTypography-caption {
-    font-size: 10px;
+.navItem svg {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.navItem Typography {
+    font-size: 12px;
 }
 
 @media (max-width: 600px) {
@@ -121,15 +169,24 @@
 
     .textarea {
         font-size: 14px;
-        min-height: calc(100vh - 220px);
+        min-height: 50px;
     }
 
-    .navItem .MuiTypography-caption {
-        font-size: 9px;
-    }
-
-    .datePickerInput {
-        width: 120px;
+    .feelingButton {
         font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .navItem {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .navItem svg {
+        font-size: 20px;
+    }
+
+    .navItem Typography {
+        font-size: 10px;
     }
 }
