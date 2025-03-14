@@ -6,23 +6,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { username, title, content, date } = req.body;
+    const { username, title, content, goals, date } = req.body;
 
-    if (!username || !date || !content) {
-      console.error('Missing required fields:', { username, date, content });
+    if (!username || !date || (!content && !goals)) {
+      console.error('Missing required fields:', { username, date, content, goals });
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
     const db = await connectToDatabase();
 
-    // Save the journal to the 'journals' collection
     await db.collection('journals').updateOne(
-      { username, date },
-      { $set: { title, content } },
-      { upsert: true }
+        { username, date },
+        { $set: { title, content, goals } },
+        { upsert: true }
     );
 
-    console.log('Journal saved successfully:', { username, title, content, date });
+    console.log('Journal saved successfully:', { username, title, content, goals, date });
     return res.status(200).json({ success: true, message: 'Journal saved successfully' });
   } catch (error) {
     console.error('Error saving journal:', error);
