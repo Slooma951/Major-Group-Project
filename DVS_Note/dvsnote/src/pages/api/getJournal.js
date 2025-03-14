@@ -16,16 +16,16 @@ export default async function handler(req, res) {
     const journal = await db.collection('journals').findOne({ username, date });
 
     if (!journal) {
-      // Return a successful response with an empty journal structure
-      return res.status(200).json({
-        success: true,
-        journal: null,
-      });
+      return res.status(200).json({ success: true, journal: null });
     }
 
     return res.status(200).json({
       success: true,
-      journal: { title: journal.title, content: journal.content },
+      journal: {
+        title: journal.title || '',
+        content: journal.content || '',
+        goals: journal.goals || '',
+      },
     });
   } catch (error) {
     console.error('Error fetching journal:', error);
