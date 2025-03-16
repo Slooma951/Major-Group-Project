@@ -19,7 +19,6 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
-import styles from '@/app/journal/journal.module.css';
 
 export default function Journal() {
   const router = useRouter();
@@ -111,27 +110,27 @@ export default function Journal() {
   };
 
   return (
-      <Box className={styles.mainContainer}>
+      <Box className="mainContainer">
         {/* Header with Date Navigation */}
-        <Box className={styles.header}>
-          <Typography variant="h6" className={styles.promptText}>Journal</Typography>
-          <Box className={styles.datePickerContainer}>
-            <IconButton className={styles.dateNavigationButton} onClick={goToPreviousDay}>
+        <Box className="header">
+          <Typography variant="h6" className="promptText">Journal</Typography>
+          <Box className="datePickerContainer">
+            <IconButton className="dateNavigationButton" onClick={goToPreviousDay}>
               <ArrowBackIosIcon />
             </IconButton>
-            <Typography className={styles.datePickerInput}>{selectedDate.format('MMMM D, YYYY')}</Typography>
-            <IconButton className={styles.dateNavigationButton} onClick={goToNextDay} disabled={selectedDate.isSame(dayjs(), 'day')}>
+            <Typography className="datePickerInput">{selectedDate.format('MMMM D, YYYY')}</Typography>
+            <IconButton className="dateNavigationButton" onClick={goToNextDay} disabled={selectedDate.isSame(dayjs(), 'day')}>
               <ArrowForwardIosIcon />
             </IconButton>
           </Box>
         </Box>
 
         {/* Gratitude Section */}
-        <Box className={styles.inputContainer}>
-          <Typography variant="body1" className={styles.promptText}>Today I'm grateful for...</Typography>
+        <Box className="inputContainer">
+          <Typography variant="body1" className="promptText">Today I'm grateful for...</Typography>
           <TextareaAutosize
               minRows={3}
-              className={styles.textarea}
+              className="textarea"
               placeholder="Write your thoughts here..."
               value={gratitudeEntry}
               onChange={(e) => setGratitudeEntry(e.target.value)}
@@ -139,11 +138,11 @@ export default function Journal() {
         </Box>
 
         {/* Goals Section */}
-        <Box className={styles.inputContainer}>
-          <Typography variant="body1" className={styles.promptText}>What would make today great?</Typography>
+        <Box className="inputContainer">
+          <Typography variant="body1" className="promptText">What would make today great?</Typography>
           <TextareaAutosize
               minRows={3}
-              className={styles.textarea}
+              className="textarea"
               placeholder="List 3 things that would make today great..."
               value={goalsEntry}
               onChange={(e) => setGoalsEntry(e.target.value)}
@@ -151,11 +150,11 @@ export default function Journal() {
         </Box>
 
         {/* Mood Section */}
-        <Box className={styles.inputContainer}>
-          <Typography variant="body1" className={styles.promptText}>How are you feeling today?</Typography>
-          <Box className={styles.feelingContainer}>
+        <Box className="inputContainer">
+          <Typography variant="body1" className="promptText">How are you feeling today?</Typography>
+          <Box className="feelingContainer">
             {feelings.map((feeling, index) => (
-                <Button key={index} className={styles.feelingButton}>
+                <Button key={index} className="feelingButton">
                   {feeling}
                 </Button>
             ))}
@@ -163,7 +162,7 @@ export default function Journal() {
         </Box>
 
         {/* Save Button */}
-        <Button className={styles.saveButton} onClick={saveJournalAndEmotions} disabled={loading}>
+        <Button className="saveButton" onClick={saveJournalAndEmotions} disabled={loading}>
           {loading ? (
               <>
                 <CircularProgress size={20} style={{ marginRight: 8 }} />
@@ -175,20 +174,20 @@ export default function Journal() {
         </Button>
 
         {/* Bottom Navigation */}
-        <Box className={styles.bottomNav}>
-          <Button className={styles.navItem} onClick={() => router.push('/dashboard')}>
+        <Box className="bottomNav">
+          <Button className="navItem" onClick={() => router.push('/dashboard')}>
             <HomeIcon />
             <Typography variant="caption">Home</Typography>
           </Button>
-          <Button className={styles.navItem} onClick={() => router.push('/journal')}>
+          <Button className="navItem" onClick={() => router.push('/journal')}>
             <BookIcon />
             <Typography variant="caption">Journal</Typography>
           </Button>
-          <Button className={styles.navItem} onClick={() => router.push('/todo')}>
+          <Button className="navItem" onClick={() => router.push('/todo')}>
             <HeartIcon />
             <Typography variant="caption">ToDo</Typography>
           </Button>
-          <Button className={styles.navItem} onClick={() => router.push('/profile')}>
+          <Button className="navItem" onClick={() => router.push('/profile')}>
             <PersonIcon />
             <Typography variant="caption">Profile</Typography>
           </Button>
