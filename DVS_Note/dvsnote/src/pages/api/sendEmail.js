@@ -1,10 +1,15 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+const brevoApiKey = process.env.BREVO_API_KEY;
+
+
 import { MongoClient } from 'mongodb';
 import brevo from '@getbrevo/brevo';
 
 const MONGO_URI = 'mongodb+srv://root:R5lcPSJm1egBE0Z1@dvsnotedb.lozto.mongodb.net/DVSDB?retryWrites=true&w=majority&appName=DVSNoteDB';
 const DB_NAME = 'DVSDB';
 const COLLECTION = 'todo';
-const brevoApiKey = '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';
 
 export default async function handler(req, res) {
   const client = new MongoClient(MONGO_URI);
