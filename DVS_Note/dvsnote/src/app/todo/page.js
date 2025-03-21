@@ -24,10 +24,6 @@ export default function ToDoList() {
 
     useEffect(() => {
         fetchTasks();
-            const interval = setInterval(() => {
-                fetch('/api/sendEmail');
-            }, 60000); // every 60 seconds
-            return () => clearInterval(interval);
         }, []);
 
     const fetchTasks = async () => {
