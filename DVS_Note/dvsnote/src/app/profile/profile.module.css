@@ -2,32 +2,32 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    background-color: #0A021F;
     min-height: 100vh;
     padding: 24px;
     box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
     text-align: center;
-    color: #000;
+    color: white;
 }
 
 .title {
     font-weight: bold;
     font-size: 1.8rem;
-    color: #000;
+    color: white;
     margin-bottom: 24px;
 }
 
 .infoCard {
-    background: rgba(255,255,255,0.9);
+    background: #191544;
     width: 100%;
     max-width: 500px;
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(255,255,255,0.05);
     text-align: left;
     margin-bottom: 20px;
-    color: #000;
+    color: white;
 }
 
 .infoRow {
@@ -36,7 +36,7 @@
     justify-content: space-between;
     margin: 12px 0;
     font-size: 1rem;
-    color: #000;
+    color: white;
     gap: 8px;
     flex-wrap: wrap;
 }
@@ -44,7 +44,7 @@
 .infoLabel {
     font-weight: 600;
     margin-right: 8px;
-    color: #000 !important;
+    color: white !important;
     flex: 0 0 auto;
 }
 
@@ -52,18 +52,18 @@
     flex: 1;
     text-align: left;
     margin-right: 8px;
-    color: #000 !important;
+    color: white !important;
 }
 
 .editIcon {
     font-size: 20px;
-    color: #1e90ff;
+    color: #8D5EF2;
     cursor: pointer;
     transition: color 0.3s, transform 0.2s;
 }
 
 .editIcon:hover {
-    color: #1565c0;
+    color: #A374F3;
     transform: scale(1.1);
 }
 
@@ -76,26 +76,27 @@
 }
 
 .inputField {
-    background: #fff;
+    background: #2a2a5a;
     border: none;
     border-radius: 8px;
     padding: 8px;
     font-size: 0.95rem;
     text-align: left;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
     transition: box-shadow 0.2s;
-    color: #000;
+    color: white;
     flex: 1 1 60%;
 }
 
 .inputField:focus {
     outline: none;
-    box-shadow: inset 0 1px 5px rgba(0,0,0,0.1);
+    box-shadow: inset 0 1px 5px rgba(255,255,255,0.1);
 }
 
-.saveButton, .cancelButton {
-    background: #1e90ff;
-    color: #fff;
+.saveButton,
+.cancelButton {
+    background: #6045E2;
+    color: white;
     border: none;
     border-radius: 8px;
     padding: 6px 10px;
@@ -103,16 +104,16 @@
     font-size: 0.85rem;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(255,255,255,0.05);
     flex: 0 0 auto;
 }
 
 .saveButton {
-    background: #1e90ff;
+    background: linear-gradient(135deg, #6045E2, #8D5EF2);
 }
 
 .saveButton:hover {
-    background: #1565c0;
+    background: linear-gradient(135deg, #8D5EF2, #A374F3);
     transform: translateY(-1px);
 }
 
@@ -127,7 +128,7 @@
 
 .logout {
     background: #f44336;
-    color: #fff;
+    color: white;
     border: none;
     border-radius: 8px;
     padding: 10px 20px;
@@ -136,7 +137,7 @@
     cursor: pointer;
     margin-top: 20px;
     transition: background 0.3s, transform 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(255,255,255,0.05);
 }
 
 .logout:hover {
@@ -148,17 +149,18 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    background: rgba(255,255,255,0.9);
+    background: #191544;
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 -4px 8px rgba(255,255,255,0.05);
     display: flex;
     justify-content: space-around;
     align-items: center;
     padding: 12px 0;
+    z-index: 1000;
 }
 
 .errorMessage {
-    color: red;
+    color: #f582ae;
     font-size: 0.9rem;
     margin-top: 8px;
     text-align: center;
@@ -169,7 +171,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #001858;
+    color: white;
     transition: color 0.3s, transform 0.2s;
     font-weight: normal;
     cursor: pointer;
@@ -190,7 +192,6 @@
     font-weight: normal;
 }
 
-
 @media (max-width: 768px) {
     .infoCard {
         max-width: 90%;
@@ -210,7 +211,8 @@
         width: 100%;
     }
 
-    .saveButton, .cancelButton {
+    .saveButton,
+    .cancelButton {
         width: 30%;
     }
 

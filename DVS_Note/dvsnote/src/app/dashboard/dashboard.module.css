@@ -2,12 +2,13 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-  color: black;
-  padding-bottom: 60px;
+  background-color: #0A021F;
+  color: white;
+  padding-bottom: 80px;
   overflow: hidden;
   align-items: center;
   text-align: center;
+  padding: 16px;
 }
 
 .contentContainer {
@@ -24,23 +25,22 @@
 .logo {
   width: 300px;
   height: auto;
-  margin: 0 auto 8px;
+  margin: 0 auto -75px;
   display: block;
-  margin-bottom: -75px;
 }
 
 .welcomeText {
   font-family: 'Nunito, sans-serif';
   font-weight: bold;
-  color: #001858;
+  color: #ffffff;
   font-size: 1.8rem;
   margin: 20px 0;
   word-wrap: break-word;
 }
 
 .addButton {
-  background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-  color: #001858;
+  background: linear-gradient(135deg, #6045E2, #8D5EF2);
+  color: white;
   text-transform: none;
   padding: 12px;
   margin: 8px auto;
@@ -48,34 +48,34 @@
   font-weight: bold;
   width: 200px;
   display: block;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  transition: background 0.3s ease-in-out;
 }
 
 .addButton:hover {
-  background: linear-gradient(to right, #90caf9, #a1c4fd);
+  background: linear-gradient(135deg, #8D5EF2, #A374F3);
 }
 
 .quotesContainer {
   margin: 20px 0;
   padding: 16px;
-  background: #ffffff;
+  background: #191544;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
   max-width: 600px;
-  margin: 20px auto;
   text-align: center;
 }
 
 .quotesHeader {
   font-weight: bold;
-  color: #001858;
+  color: white;
   font-size: 1.5rem;
   margin-bottom: 10px;
 }
 
 .quote {
   font-style: italic;
-  color: #555;
+  color: #ccc;
   font-size: 1.2rem;
   margin: 0 auto;
   max-width: 90%;
@@ -83,7 +83,7 @@
 
 .quoteAuthor {
   font-weight: bold;
-  color: #333;
+  color: #f582ae;
   font-size: 1rem;
   margin-top: 10px;
 }
@@ -96,7 +96,8 @@
   justify-content: space-around;
   align-items: center;
   padding: 12px 0;
-  background: rgba(255, 255, 255, 0.7);
+  background: #191544;
   border-radius: 30px 30px 0 0;
-  }
-  
+  box-shadow: 0 -4px 6px rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+}
