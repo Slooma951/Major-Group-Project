@@ -14,7 +14,7 @@ import {
   Person as PersonIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import styles from './dashboard.module.css';
+import '../globals.css';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function Dashboard() {
           setEmotion(quoteData.emotion);
         }
       } catch {
-        // If errors occur, user stays "User" and quotes remain empty.
+        // Leave defaults if errors occur
       } finally {
         setLoading(false);
       }
@@ -46,43 +46,36 @@ export default function Dashboard() {
   }, [router]);
 
   const navItems = [
-    { text: 'Home', icon: <HomeIcon className={styles.navIcon} />, link: '/dashboard' },
-    { text: 'Journal', icon: <BookIcon className={styles.navIcon} />, link: '/journal' },
-    { text: 'To-Do List', icon: <ChecklistIcon className={styles.navIcon} />, link: '/todo' },
-    { text: 'Profile', icon: <PersonIcon className={styles.navIcon} />, link: '/profile' },
+    { text: 'Home', icon: <HomeIcon />, link: '/dashboard' },
+    { text: 'Journal', icon: <BookIcon />, link: '/journal' },
+    { text: 'To-Do List', icon: <ChecklistIcon />, link: '/todo' },
+    { text: 'Profile', icon: <PersonIcon />, link: '/profile' },
   ];
 
   return (
-    <Box className={styles.mainContainer}>
-      {/* Header with Logo */}
-      <Box className={styles.header}>
-        <img src="/images/logo.png" alt="Logo" className={styles.logo} />
-     
-    {(
-          <>
-            <Typography variant="h5" className={styles.welcomeText}>
-              Welcome, {userName}
-            </Typography>
+    <Box className="mainContainer">
+      <img src="/images/logo.png" alt="Logo" className="logo" />
 
-            <Box className={styles.quotesContainer}>
-              <Typography className={styles.quotesHeader}>Today's Quote ({emotion}):</Typography>
-              <Typography className={styles.quote}>"{motivationalQuote}"</Typography>
-            </Box>
+      {loading ? (
+        <CircularProgress style={{ color: 'var(--primary-color)', marginTop: '20px' }} />
+      ) : (
+        <>
+          <Typography variant="h5" className="welcomeText">
+            Welcome, {userName}
+          </Typography>
 
-        
-          </>
-        )}
-      </Box>
+          <Box className="quotesContainer">
+            <Typography className="quotesHeader">Today's Quote ({emotion}):</Typography>
+            <Typography className="quote">"{motivationalQuote}"</Typography>
+          </Box>
+        </>
+      )}
 
-      <Box className={styles.bottomNav}>
+      <Box className="bottomNav">
         {navItems.map((item) => (
-          <Button
-            key={item.text}
-            onClick={() => router.push(item.link)}
-            className={styles.navItem}
-          >
+          <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
             {item.icon}
-            <Typography className={styles.navText}>{item.text}</Typography>
+            <Typography variant="caption">{item.text}</Typography>
           </Button>
         ))}
       </Box>
