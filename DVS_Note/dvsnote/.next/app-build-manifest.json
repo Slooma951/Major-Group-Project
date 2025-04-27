@@ -6,12 +6,6 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/voice/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/voice/page.css",
-      "static/chunks/app/voice/page.js"
-    ],
     "/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -24,23 +18,11 @@
       "static/css/app/dashboard/page.css",
       "static/chunks/app/dashboard/page.js"
     ],
-    "/journal/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/journal/page.css",
-      "static/chunks/app/journal/page.js"
-    ],
     "/todo/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/todo/page.css",
       "static/chunks/app/todo/page.js"
-    ],
-    "/profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/profile/page.css",
-      "static/chunks/app/profile/page.js"
     ]
   }
 }

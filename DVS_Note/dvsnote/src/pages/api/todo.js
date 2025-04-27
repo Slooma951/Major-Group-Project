@@ -19,15 +19,14 @@ export default async function handler(req, res) {
         }
 
         if (req.method === "POST") {
-            const { title, description, date, time } = req.body;
-            if (!title || !description || !date || !time) {
-                return res.status(400).json({ success: false, message: "All fields are required." });
+            const { title, date, time } = req.body;
+            if (!title || !date || !time) {
+                return res.status(400).json({ success: false, message: "Title, date, and time are required." });
             }
 
             const newTask = {
                 userId,
                 title,
-                description,
                 date,
                 time,
                 createdAt: new Date(),
@@ -38,7 +37,7 @@ export default async function handler(req, res) {
         }
 
         if (req.method === "PUT") {
-            const { taskId, title, description, date, time } = req.body;
+            const { taskId, title, date, time } = req.body;
 
             if (!ObjectId.isValid(taskId)) {
                 return res.status(400).json({ success: false, message: "Invalid task ID." });
@@ -46,7 +45,7 @@ export default async function handler(req, res) {
 
             const updateResult = await todoCollection.updateOne(
                 { _id: new ObjectId(taskId), userId },
-                { $set: { title, description, date, time } }
+                { $set: { title, date, time } }
             );
 
             if (updateResult.matchedCount === 0) {
