@@ -39,9 +39,11 @@
     "nodemailer": "^6.10.0",
     "nookies": "^2.5.2",
     "react": "^18.3.1",
+    "react-calendar": "^5.1.0",
     "react-dom": "^18.3.1",
     "react-native": "^0.76.3",
     "react-query": "^3.39.3",
+    "recharts": "^2.15.3",
     "sib-api-v3-sdk": "^8.5.0"
   },
   "devDependencies": {

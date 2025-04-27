@@ -1,82 +1,138 @@
 :root {
   --primary-color: #cbc3e3;
-  --primary-color-light: #dcd4f0;
+  --primary-color-light: #e1daf3;
   --text-color: black;
-  --text-light: #333;
-  --border-radius: 12px;
+  --input-bg: #b9b0d1;
+  --input-text: #333333;
 }
 
-body, html {
+body {
   background-color: var(--primary-color);
   margin: 0;
-  padding: 0;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Arial', sans-serif;
+  color: var(--text-color);
 }
 
 .mainContainer {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  align-items: center;
   padding: 16px;
+  min-height: 100vh;
 }
 
-.contentContainer {
-  background: var(--primary-color-light);
-  padding: 16px;
-  margin: 16px 0;
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 .welcomeText {
-  text-align: center;
-  color: var(--text-color);
+  font-size: 24px;
   font-weight: bold;
+  text-align: center;
+}
+
+.contentContainer {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.boxContainer {
+  background-color: var(--primary-color-light);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quotesContainer {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.quotesHeader {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.quote {
+  font-style: italic;
 }
 
 .addButton {
-  background: var(--primary-color-light);
+  background-color: var(--primary-color-light);
   color: var(--text-color);
+  border-radius: 12px;
+  padding: 10px;
   font-weight: bold;
-  border-radius: var(--border-radius);
-  padding: 12px;
-  margin-top: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .addButton:hover {
-  background: #e0d9f5;
+  background-color: var(--primary-color);
 }
 
 .bottomNav {
   position: fixed;
   bottom: 0;
-  width: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--primary-color-light);
   display: flex;
   justify-content: space-around;
-  background: var(--primary-color-light);
-  padding: 12px;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  padding: 8px 0;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 
 .navItem {
   color: var(--text-color);
+  text-align: center;
+  font-weight: bold;
+}
+
+.navItem:hover {
+  color: #555;
+}
+
+/* Progress Cards - Mood & Tasks */
+.statsContainer {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+  width: 100%;
+  max-width: 500px;
   align-items: center;
 }
 
-input, textarea, .MuiInputBase-root {
-  background-color: rgba(0, 0, 0, 0.1) !important;
-  color: #333 !important;
-  border-radius: var(--border-radius);
+.statsCard {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: black;
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.MuiInputLabel-root {
-  color: #555 !important;
+.statsCard h4 {
+  margin-bottom: 8px;
+  font-weight: bold;
 }
 
-.MuiOutlinedInput-notchedOutline {
-  border-color: rgba(0, 0, 0, 0.2) !important;
+.statsCard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.statsCard li {
+  margin-bottom: 6px;
 }

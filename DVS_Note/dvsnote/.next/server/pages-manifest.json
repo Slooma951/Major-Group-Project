@@ -2,8 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/todo": "pages/api/todo.js",
   "/api/checkSession": "pages/api/checkSession.js",
   "/api/getJournal": "pages/api/getJournal.js",
-  "/api/getMotivationalQuotes": "pages/api/getMotivationalQuotes.js"
+  "/api/getMotivationalQuotes": "pages/api/getMotivationalQuotes.js",
+  "/api/moodStats": "pages/api/moodStats.js",
+  "/api/taskStats": "pages/api/taskStats.js"
 }

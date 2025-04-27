@@ -30,6 +30,7 @@ export default async function handler(req, res) {
                 description,
                 date,
                 time,
+                completed: false, // Default to incomplete
                 createdAt: new Date(),
             };
 
@@ -38,15 +39,20 @@ export default async function handler(req, res) {
         }
 
         if (req.method === "PUT") {
-            const { taskId, title, description, date, time } = req.body;
+            const { taskId, title, description, date, time, completed } = req.body;
 
             if (!ObjectId.isValid(taskId)) {
                 return res.status(400).json({ success: false, message: "Invalid task ID." });
             }
 
+            const updateData = { title, description, date, time };
+            if (completed !== undefined) {
+                updateData.completed = completed;
+            }
+
             const updateResult = await todoCollection.updateOne(
                 { _id: new ObjectId(taskId), userId },
-                { $set: { title, description, date, time } }
+                { $set: updateData }
             );
 
             if (updateResult.matchedCount === 0) {

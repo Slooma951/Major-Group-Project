@@ -8,7 +8,7 @@ let dbConnection;
 export async function connectToDatabase() {
     if (!dbConnection) {
         const clientConnection = await client.connect();
-        dbConnection = clientConnection.db('DVSDB'); // Ensure 'DVSDB' is your actual database name
+        dbConnection = clientConnection.db('DVSDB');
     }
     return dbConnection;
 }
