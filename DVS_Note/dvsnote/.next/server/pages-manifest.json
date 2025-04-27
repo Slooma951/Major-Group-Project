@@ -2,5 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/checkSession": "pages/api/checkSession.js"
+  "/api/checkSession": "pages/api/checkSession.js",
+  "/api/getJournal": "pages/api/getJournal.js",
+  "/api/todo": "pages/api/todo.js",
+  "/api/logout": "pages/api/logout.js"
 }

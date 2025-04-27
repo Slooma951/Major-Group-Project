@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Button, TextField, Typography, Link } from '@mui/material';
 import Image from 'next/image';
-import styles from './register.module.css';
+import '../globals.css';
 
 export default function Register() {
     const [username, setUsername] = useState('');
@@ -14,7 +14,6 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    // Check session on component mount
     useEffect(() => {
         const checkSession = async () => {
             try {
@@ -24,7 +23,6 @@ export default function Register() {
                 });
 
                 if (response.ok) {
-
                     router.push('/dashboard');
                 }
             } catch (error) {
@@ -43,9 +41,7 @@ export default function Register() {
         try {
             const response = await fetch('/api/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password }),
             });
 
@@ -67,19 +63,19 @@ export default function Register() {
     };
 
     return (
-        <Box className={styles.container}>
+        <Box className="mainContainer">
             <Image
                 src="/images/logo.png"
                 alt="DVS Note logo"
-                width={260}
-                height={200}
+                width={200}
+                height={150}
                 priority
-                className={styles.logo}
+                className="logo"
             />
-            <Typography variant="h5" className={styles.title}>
+            <Typography variant="h5" className="welcomeText">
                 Create Your Account
             </Typography>
-            <Box component="form" onSubmit={handleSubmit} className={styles.form}>
+            <Box component="form" onSubmit={handleSubmit} className="contentContainer">
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -87,7 +83,8 @@ export default function Register() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     margin="normal"
-                    className={styles.input}
+                    InputProps={{ style: { color: 'white' } }}
+                    InputLabelProps={{ style: { color: '#ccc' } }}
                 />
                 <TextField
                     fullWidth
@@ -96,7 +93,8 @@ export default function Register() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     margin="normal"
-                    className={styles.input}
+                    InputProps={{ style: { color: 'white' } }}
+                    InputLabelProps={{ style: { color: '#ccc' } }}
                 />
                 <TextField
                     fullWidth
@@ -106,32 +104,32 @@ export default function Register() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     margin="normal"
-                    className={styles.input}
+                    InputProps={{ style: { color: 'white' } }}
+                    InputLabelProps={{ style: { color: '#ccc' } }}
                 />
                 <Button
                     fullWidth
                     type="submit"
                     variant="contained"
                     disabled={loading}
-                    className={styles.registerButton}
+                    className="addButton"
                 >
                     {loading ? 'Registering...' : 'Register'}
                 </Button>
                 {message && (
                     <Typography
                         variant="body2"
-                        className={
-                            message.includes('successful')
-                                ? styles.successMessage
-                                : styles.errorMessage
-                        }
+                        style={{
+                            color: message.includes('successful') ? '#4caf50' : '#f44336',
+                            marginTop: '10px'
+                        }}
                     >
                         {message}
                     </Typography>
                 )}
-                <Typography variant="body2" className={styles.loginText}>
+                <Typography variant="body2" style={{ marginTop: '16px', color: '#ccc' }}>
                     Already have an account?{' '}
-                    <Link href="/login" underline="hover" className={styles.loginLink}>
+                    <Link href="/login" underline="hover" style={{ color: '#8D5EF2' }}>
                         Login here
                     </Link>
                 </Typography>

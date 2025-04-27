@@ -11,7 +11,7 @@ import {
     Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import styles from './todo.module.css';
+import '../globals.css';
 
 export default function ToDoList() {
     const router = useRouter();
@@ -24,7 +24,7 @@ export default function ToDoList() {
 
     useEffect(() => {
         fetchTasks();
-        }, []);
+    }, []);
 
     const fetchTasks = async () => {
         const response = await fetch('/api/todo');
@@ -36,7 +36,7 @@ export default function ToDoList() {
 
     const addTask = async () => {
         if (!task.trim() || !description.trim() || !date.trim() || !time.trim()) return;
-        
+
         const response = await fetch('/api/todo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -99,39 +99,36 @@ export default function ToDoList() {
     ];
 
     return (
-        <Box className={styles.mainContainer}>
+        <Box className="mainContainer">
             {/* Header */}
-            <Box className={styles.header}>
-                <Typography variant="h6" className={styles.promptText}>
-                    Your To-Do List
-                </Typography>
-            </Box>
+            <Typography variant="h5" className="title">Your To-Do List</Typography>
 
             {/* Add Task Section */}
-            <Box className={styles.centerContent}>
-                <Typography variant="h6" className={styles.promptText}>
+            <Box className="contentContainer">
+                <Typography variant="h6" className="title">
                     {editingTask ? "Edit Task" : "Add a Task"}
                 </Typography>
                 <TextField
-                    className={styles.taskInput}
                     label="Task"
                     variant="outlined"
                     value={task}
                     onChange={(e) => setTask(e.target.value)}
                     fullWidth
                     margin="normal"
+                    InputProps={{ style: { color: 'white' } }}
+                    InputLabelProps={{ style: { color: '#ccc' } }}
                 />
                 <TextField
-                    className={styles.taskInput}
                     label="Description"
                     variant="outlined"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     fullWidth
                     margin="normal"
+                    InputProps={{ style: { color: 'white' } }}
+                    InputLabelProps={{ style: { color: '#ccc' } }}
                 />
                 <TextField
-                    className={styles.taskInput}
                     label="Date"
                     type="date"
                     variant="outlined"
@@ -139,10 +136,10 @@ export default function ToDoList() {
                     onChange={(e) => setDate(e.target.value)}
                     fullWidth
                     margin="normal"
-                    InputLabelProps={{ shrink: true }}
+                    InputLabelProps={{ shrink: true, style: { color: '#ccc' } }}
+                    InputProps={{ style: { color: 'white' } }}
                 />
                 <TextField
-                    className={styles.taskInput}
                     label="Time"
                     type="time"
                     variant="outlined"
@@ -150,34 +147,33 @@ export default function ToDoList() {
                     onChange={(e) => setTime(e.target.value)}
                     fullWidth
                     margin="normal"
-                    InputLabelProps={{ shrink: true }}
+                    InputLabelProps={{ shrink: true, style: { color: '#ccc' } }}
+                    InputProps={{ style: { color: 'white' } }}
                 />
-                <Button 
-                    className={styles.addButton} 
-                    onClick={editingTask ? updateTask : addTask} 
-                    variant="contained"
-                >
+                <Button className="addButton" onClick={editingTask ? updateTask : addTask}>
                     {editingTask ? "Update Task" : "Add Task"}
                 </Button>
             </Box>
 
             {/* Task List */}
-            <Box className={styles.taskList}>
-                <Typography variant="h6" className={styles.promptText}>
-                    Your Tasks
-                </Typography>
+            <Box className="contentContainer">
+                <Typography variant="h6" className="title">Your Tasks</Typography>
                 <List>
                     {tasks.map((task) => (
-                        <ListItem key={task._id} divider>
+                        <ListItem key={task._id} divider className="taskCard">
                             <ListItemText
-                                primary={task.title}
-                                secondary={`${task.description} | ${task.date} at ${task.time}`}
+                                primary={<span className="taskCardTitle">{task.title}</span>}
+                                secondary={
+                                    <span className="taskCardDistance">
+                                        {task.description} | {task.date} at {task.time}
+                                    </span>
+                                }
                             />
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" onClick={() => editTask(task)}>
+                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'white' }}>
                                     <EditIcon />
                                 </IconButton>
-                                <IconButton edge="end" onClick={() => deleteTask(task._id)}>
+                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'white' }}>
                                     <DeleteIcon />
                                 </IconButton>
                             </ListItemSecondaryAction>
@@ -187,11 +183,11 @@ export default function ToDoList() {
             </Box>
 
             {/* Bottom Navigation */}
-            <Box className={styles.bottomNav}>
+            <Box className="bottomNav">
                 {navItems.map((item) => (
                     <Button
                         key={item.text}
-                        className={styles.navItem}
+                        className="navItem"
                         onClick={() => router.push(item.link)}
                     >
                         {item.icon}
