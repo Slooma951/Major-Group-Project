@@ -1,78 +1,51 @@
 :root {
   --primary-color: #cbc3e3;
-  --primary-light: #ded7f0;
-  --background-color: #cbc3e3;
-  --box-bg: transparent;
-  --text-color: #000000;
-  --text-light: #ffffff;
-  --font-family: 'Nunito', sans-serif;
-  --border-radius: 16px;
+  --primary-color-light: #dcd4f0;
+  --text-color: black;
+  --text-light: #333;
+  --border-radius: 12px;
 }
 
-body {
-  background: var(--background-color);
-  color: var(--text-color);
-  font-family: var(--font-family);
+body, html {
+  background-color: var(--primary-color);
   margin: 0;
   padding: 0;
+  font-family: 'Nunito', sans-serif;
 }
 
 .mainContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--background-color);
-  padding-bottom: 80px;
-  align-items: center;
-  text-align: center;
   padding: 16px;
 }
 
 .contentContainer {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+  background: var(--primary-color-light);
   padding: 16px;
-   background: var(--box-bg);
+  margin: 16px 0;
   border-radius: var(--border-radius);
-  color: var(--text-light);
-}
-
-.logo {
-  width: 150px;
-  margin: 20px auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .welcomeText {
-  font-weight: bold;
-  font-size: 1.5rem;
-  margin: 20px 0;
+  text-align: center;
   color: var(--text-color);
+  font-weight: bold;
 }
 
 .addButton {
-  background: var(--primary-light);
+  background: var(--primary-color-light);
   color: var(--text-color);
+  font-weight: bold;
   border-radius: var(--border-radius);
   padding: 12px;
-  margin-top: 12px;
-  font-weight: bold;
-  width: 100%;
-  max-width: 300px;
-  border: none;
-  font-size: 1rem;
+  margin-top: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .addButton:hover {
-  background: var(--primary-color);
-}
-
-.boxContainer {
-  background: var(--box-bg);
-  border-radius: var(--border-radius);
-  padding: 16px;
-  margin: 12px 0;
-  color: var(--text-light);
+  background: #e0d9f5;
 }
 
 .bottomNav {
@@ -81,16 +54,29 @@ body {
   width: 100%;
   display: flex;
   justify-content: space-around;
-  padding: 12px 0;
-  background: var(--primary-light);
+  background: var(--primary-color-light);
+  padding: 12px;
   border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .navItem {
+  color: var(--text-color);
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: var(--text-color);
-  font-weight: bold;
-  font-size: 0.8rem;
+}
+
+input, textarea, .MuiInputBase-root {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  color: #333 !important;
+  border-radius: var(--border-radius);
+}
+
+.MuiInputLabel-root {
+  color: #555 !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0, 0, 0, 0.2) !important;
 }
