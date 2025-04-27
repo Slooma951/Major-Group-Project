@@ -91,7 +91,6 @@ export default function ToDoList() {
         <Box className="mainContainer">
             <Typography variant="h5" className="welcomeText">Your To-Do List</Typography>
 
-            {/* Add/Edit Task Section */}
             <Box className="contentContainer">
                 <Typography variant="h6" className="welcomeText">{editingTask ? "Edit Task" : "Add a Task"}</Typography>
                 <TextField
@@ -100,8 +99,6 @@ export default function ToDoList() {
                     value={task}
                     onChange={(e) => setTask(e.target.value)}
                     fullWidth margin="normal"
-                    InputProps={{ style: { color: 'white' } }}
-                    InputLabelProps={{ style: { color: '#ccc' } }}
                 />
                 <TextField
                     label="Description"
@@ -109,8 +106,6 @@ export default function ToDoList() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     fullWidth margin="normal"
-                    InputProps={{ style: { color: 'white' } }}
-                    InputLabelProps={{ style: { color: '#ccc' } }}
                 />
                 <TextField
                     label="Date"
@@ -119,8 +114,7 @@ export default function ToDoList() {
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     fullWidth margin="normal"
-                    InputLabelProps={{ shrink: true, style: { color: '#ccc' } }}
-                    InputProps={{ style: { color: 'white' } }}
+                    InputLabelProps={{ shrink: true }}
                 />
                 <TextField
                     label="Time"
@@ -129,29 +123,27 @@ export default function ToDoList() {
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     fullWidth margin="normal"
-                    InputLabelProps={{ shrink: true, style: { color: '#ccc' } }}
-                    InputProps={{ style: { color: 'white' } }}
+                    InputLabelProps={{ shrink: true }}
                 />
                 <Button className="addButton" onClick={editingTask ? updateTask : addTask}>
                     {editingTask ? "Update Task" : "Add Task"}
                 </Button>
             </Box>
 
-            {/* Task List */}
             <Box className="contentContainer">
                 <Typography variant="h6" className="welcomeText">Your Tasks</Typography>
                 <List>
                     {tasks.map((task) => (
                         <ListItem key={task._id} divider className="boxContainer">
                             <ListItemText
-                                primary={<span style={{ color: 'white', fontWeight: 'bold' }}>{task.title}</span>}
-                                secondary={<span style={{ color: '#ccc' }}>{task.description} | {task.date} at {task.time}</span>}
+                                primary={<span style={{ color: 'black', fontWeight: 'bold' }}>{task.title}</span>}
+                                secondary={<span style={{ color: '#555' }}>{task.description} | {task.date} at {task.time}</span>}
                             />
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'var(--primary-color)' }}>
+                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'black' }}>
                                     <EditIcon />
                                 </IconButton>
-                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'var(--primary-color)' }}>
+                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'black' }}>
                                     <DeleteIcon />
                                 </IconButton>
                             </ListItemSecondaryAction>
@@ -160,7 +152,6 @@ export default function ToDoList() {
                 </List>
             </Box>
 
-            {/* Bottom Navigation */}
             <Box className="bottomNav">
                 {navItems.map((item) => (
                     <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
