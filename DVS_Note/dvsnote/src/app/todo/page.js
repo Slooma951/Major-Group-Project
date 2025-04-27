@@ -2,14 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
-import {
-    Home as HomeIcon,
-    Book as BookIcon,
-    Checklist as ChecklistIcon,
-    Person as PersonIcon,
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import '../globals.css';
 
@@ -36,19 +29,39 @@ export default function ToDoList() {
 
     const addTask = async () => {
         if (!task.trim() || !description.trim() || !date.trim() || !time.trim()) return;
-
         const response = await fetch('/api/todo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title: task, description, date, time }),
         });
-
         if (response.ok) {
             fetchTasks();
-            setTask('');
-            setDescription('');
-            setDate('');
-            setTime('');
+            clearInputs();
+        }
+    };
+
+    const updateTask = async () => {
+        if (!editingTask) return;
+        const response = await fetch('/api/todo', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ taskId: editingTask, title: task, description, date, time }),
+        });
+        if (response.ok) {
+            setEditingTask(null);
+            clearInputs();
+            fetchTasks();
+        }
+    };
+
+    const deleteTask = async (taskId) => {
+        const response = await fetch('/api/todo', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ taskId }),
+        });
+        if (response.ok) {
+            fetchTasks();
         }
     };
 
@@ -60,35 +73,11 @@ export default function ToDoList() {
         setTime(task.time);
     };
 
-    const updateTask = async () => {
-        if (!editingTask) return;
-
-        const response = await fetch('/api/todo', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ taskId: editingTask, title: task, description, date, time }),
-        });
-
-        if (response.ok) {
-            setEditingTask(null);
-            setTask('');
-            setDescription('');
-            setDate('');
-            setTime('');
-            fetchTasks();
-        }
-    };
-
-    const deleteTask = async (taskId) => {
-        const response = await fetch('/api/todo', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ taskId }),
-        });
-
-        if (response.ok) {
-            fetchTasks();
-        }
+    const clearInputs = () => {
+        setTask('');
+        setDescription('');
+        setDate('');
+        setTime('');
     };
 
     const navItems = [
@@ -100,21 +89,17 @@ export default function ToDoList() {
 
     return (
         <Box className="mainContainer">
-            {/* Header */}
-            <Typography variant="h5" className="title">Your To-Do List</Typography>
+            <Typography variant="h5" className="welcomeText">Your To-Do List</Typography>
 
-            {/* Add Task Section */}
+            {/* Add/Edit Task Section */}
             <Box className="contentContainer">
-                <Typography variant="h6" className="title">
-                    {editingTask ? "Edit Task" : "Add a Task"}
-                </Typography>
+                <Typography variant="h6" className="welcomeText">{editingTask ? "Edit Task" : "Add a Task"}</Typography>
                 <TextField
                     label="Task"
                     variant="outlined"
                     value={task}
                     onChange={(e) => setTask(e.target.value)}
-                    fullWidth
-                    margin="normal"
+                    fullWidth margin="normal"
                     InputProps={{ style: { color: 'white' } }}
                     InputLabelProps={{ style: { color: '#ccc' } }}
                 />
@@ -123,8 +108,7 @@ export default function ToDoList() {
                     variant="outlined"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    fullWidth
-                    margin="normal"
+                    fullWidth margin="normal"
                     InputProps={{ style: { color: 'white' } }}
                     InputLabelProps={{ style: { color: '#ccc' } }}
                 />
@@ -134,8 +118,7 @@ export default function ToDoList() {
                     variant="outlined"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    fullWidth
-                    margin="normal"
+                    fullWidth margin="normal"
                     InputLabelProps={{ shrink: true, style: { color: '#ccc' } }}
                     InputProps={{ style: { color: 'white' } }}
                 />
@@ -145,8 +128,7 @@ export default function ToDoList() {
                     variant="outlined"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    fullWidth
-                    margin="normal"
+                    fullWidth margin="normal"
                     InputLabelProps={{ shrink: true, style: { color: '#ccc' } }}
                     InputProps={{ style: { color: 'white' } }}
                 />
@@ -157,23 +139,19 @@ export default function ToDoList() {
 
             {/* Task List */}
             <Box className="contentContainer">
-                <Typography variant="h6" className="title">Your Tasks</Typography>
+                <Typography variant="h6" className="welcomeText">Your Tasks</Typography>
                 <List>
                     {tasks.map((task) => (
-                        <ListItem key={task._id} divider className="taskCard">
+                        <ListItem key={task._id} divider className="boxContainer">
                             <ListItemText
-                                primary={<span className="taskCardTitle">{task.title}</span>}
-                                secondary={
-                                    <span className="taskCardDistance">
-                                        {task.description} | {task.date} at {task.time}
-                                    </span>
-                                }
+                                primary={<span style={{ color: 'white', fontWeight: 'bold' }}>{task.title}</span>}
+                                secondary={<span style={{ color: '#ccc' }}>{task.description} | {task.date} at {task.time}</span>}
                             />
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'white' }}>
+                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'var(--primary-color)' }}>
                                     <EditIcon />
                                 </IconButton>
-                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'white' }}>
+                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'var(--primary-color)' }}>
                                     <DeleteIcon />
                                 </IconButton>
                             </ListItemSecondaryAction>
@@ -185,11 +163,7 @@ export default function ToDoList() {
             {/* Bottom Navigation */}
             <Box className="bottomNav">
                 {navItems.map((item) => (
-                    <Button
-                        key={item.text}
-                        className="navItem"
-                        onClick={() => router.push(item.link)}
-                    >
+                    <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
                         {item.icon}
                         <Typography variant="caption">{item.text}</Typography>
                     </Button>

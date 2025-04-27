@@ -21,7 +21,6 @@ export default function Register() {
                     method: 'GET',
                     credentials: 'include',
                 });
-
                 if (response.ok) {
                     router.push('/dashboard');
                 }
@@ -29,7 +28,6 @@ export default function Register() {
                 console.error('Error checking session:', error);
             }
         };
-
         checkSession();
     }, [router]);
 
@@ -113,6 +111,7 @@ export default function Register() {
                     variant="contained"
                     disabled={loading}
                     className="addButton"
+                    style={{ marginTop: '16px' }}
                 >
                     {loading ? 'Registering...' : 'Register'}
                 </Button>
@@ -121,7 +120,7 @@ export default function Register() {
                         variant="body2"
                         style={{
                             color: message.includes('successful') ? '#4caf50' : '#f44336',
-                            marginTop: '10px'
+                            marginTop: '12px'
                         }}
                     >
                         {message}
@@ -129,7 +128,7 @@ export default function Register() {
                 )}
                 <Typography variant="body2" style={{ marginTop: '16px', color: '#ccc' }}>
                     Already have an account?{' '}
-                    <Link href="/login" underline="hover" style={{ color: '#8D5EF2' }}>
+                    <Link href="/login" underline="hover" style={{ color: 'var(--primary-color)' }}>
                         Login here
                     </Link>
                 </Typography>

@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import PersonIcon from '@mui/icons-material/Person';
 import EditIcon from '@mui/icons-material/Edit';
-import styles from './profile.module.css';
+import '../globals.css';
 
 export default function Profile() {
     const router = useRouter();
@@ -42,8 +42,6 @@ export default function Profile() {
             const response = await fetch('/api/logout', { method: 'POST' });
             if (response.ok) {
                 router.push('/login');
-            } else {
-                console.log('Logout failed!');
             }
         } catch (error) {
             console.error('Error during logout:', error);
@@ -67,9 +65,7 @@ export default function Profile() {
     const saveEdit = async () => {
         setErrorMessage('');
         try {
-            let action;
-            let payload;
-
+            let action, payload;
             if (editingField === 'email') {
                 action = 'updateEmail';
                 payload = { newEmail: editValue };
@@ -83,116 +79,100 @@ export default function Profile() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action, ...payload }),
             });
+
             const data = await response.json();
             if (response.ok) {
                 if (action === 'updateEmail') {
                     setUserData({ ...userData, email: editValue });
                 }
-                setEditingField(null);
-                setEditValue('');
-                setCurrentPassword('');
-                setNewPassword('');
+                cancelEdit();
             } else {
-                setErrorMessage(data.message || 'An error occurred. Please try again.');
+                setErrorMessage(data.message || 'An error occurred.');
             }
         } catch (error) {
-            console.error(`Error saving ${editingField}:`, error);
-            setErrorMessage('An error occurred. Please try again.');
+            setErrorMessage('An error occurred.');
         }
     };
 
     const navItems = [
-        { text: 'Home', icon: <HomeIcon className={styles.navIcon} />, link: '/dashboard' },
-        { text: 'Journal', icon: <BookIcon className={styles.navIcon} />, link: '/journal' },
-        { text: 'To-Do List', icon: <ChecklistIcon className={styles.navIcon} />, link: '/todo' },
-        { text: 'Profile', icon: <PersonIcon className={styles.navIcon} />, link: '/profile' },
+        { text: 'Home', icon: <HomeIcon />, link: '/dashboard' },
+        { text: 'Journal', icon: <BookIcon />, link: '/journal' },
+        { text: 'To-Do List', icon: <ChecklistIcon />, link: '/todo' },
+        { text: 'Profile', icon: <PersonIcon />, link: '/profile' },
     ];
 
     return (
-        <Box className={styles.container}>
-            <Typography className={styles.title}>Profile</Typography>
-            <Box className={styles.infoCard}>
-                <div className={styles.infoRow}>
-                    <span className={styles.infoLabel}>Username</span>
-                    <span className={styles.infoValue}>{userData.username}</span>
-                </div>
+        <Box className="mainContainer">
+            <Typography variant="h5" className="welcomeText">Profile</Typography>
 
-                <div className={styles.infoRow}>
-                    <span className={styles.infoLabel}>Email</span>
-                    {editingField === 'email' ? (
-                        <div className={styles.inlineEditor}>
-                            <input
-                                className={styles.inputField}
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                            />
-                            <button className={styles.saveButton} onClick={saveEdit}>Save</button>
-                            <button className={styles.cancelButton} onClick={cancelEdit}>Cancel</button>
-                        </div>
-                    ) : (
-                        <>
-                            <span className={styles.infoValue}>{userData.email}</span>
-                            <EditIcon
-                                className={styles.editIcon}
-                                onClick={() => startEditing('email', userData.email)}
-                            />
-                        </>
-                    )}
-                </div>
-                {editingField === 'email' && errorMessage && (
-                    <div className={styles.errorMessage}>{errorMessage}</div>
+            <Box className="boxContainer">
+                <Typography className="quotesHeader">Username</Typography>
+                <Typography style={{ color: '#ccc', marginBottom: '16px' }}>{userData.username}</Typography>
+
+                <Typography className="quotesHeader">Email</Typography>
+                {editingField === 'email' ? (
+                    <Box>
+                        <input
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+                        />
+                        <Button className="addButton" onClick={saveEdit}>Save</Button>
+                        <Button onClick={cancelEdit} style={{ color: '#ccc', marginLeft: '10px' }}>Cancel</Button>
+                    </Box>
+                ) : (
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <Typography style={{ color: '#ccc' }}>{userData.email}</Typography>
+                        <EditIcon onClick={() => startEditing('email', userData.email)} style={{ cursor: 'pointer', color: 'var(--primary-color)' }} />
+                    </Box>
                 )}
 
-                <div className={styles.infoRow}>
-                    <span className={styles.infoLabel}>Password</span>
-                    {editingField === 'password' ? (
-                        <div className={styles.inlineEditor}>
-                            <input
-                                className={styles.inputField}
-                                type="password"
-                                placeholder="Current Password"
-                                value={currentPassword}
-                                onChange={(e) => setCurrentPassword(e.target.value)}
-                            />
-                            <input
-                                className={styles.inputField}
-                                type="password"
-                                placeholder="New Password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                            />
-                            <button className={styles.saveButton} onClick={saveEdit}>Save</button>
-                            <button className={styles.cancelButton} onClick={cancelEdit}>Cancel</button>
-                        </div>
-                    ) : (
-                        <>
-                            <span className={styles.infoValue}>********</span>
-                            <EditIcon
-                                className={styles.editIcon}
-                                onClick={() => startEditing('password', '')}
-                            />
-                        </>
-                    )}
-                </div>
+                {editingField === 'email' && errorMessage && (
+                    <Typography style={{ color: '#f44336', marginTop: '8px' }}>{errorMessage}</Typography>
+                )}
+
+                <Typography className="quotesHeader" style={{ marginTop: '24px' }}>Password</Typography>
+                {editingField === 'password' ? (
+                    <Box>
+                        <input
+                            type="password"
+                            placeholder="Current Password"
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+                        />
+                        <input
+                            type="password"
+                            placeholder="New Password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+                        />
+                        <Button className="addButton" onClick={saveEdit}>Save</Button>
+                        <Button onClick={cancelEdit} style={{ color: '#ccc', marginLeft: '10px' }}>Cancel</Button>
+                    </Box>
+                ) : (
+                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                        <Typography style={{ color: '#ccc' }}>********</Typography>
+                        <EditIcon onClick={() => startEditing('password', '')} style={{ cursor: 'pointer', color: 'var(--primary-color)' }} />
+                    </Box>
+                )}
+
                 {editingField === 'password' && errorMessage && (
-                    <div className={styles.errorMessage}>{errorMessage}</div>
+                    <Typography style={{ color: '#f44336', marginTop: '8px' }}>{errorMessage}</Typography>
                 )}
             </Box>
 
-            <button className={`${styles.button} ${styles.logout}`} onClick={handleLogout}>
+            <Button className="addButton" onClick={handleLogout} style={{ marginTop: '24px' }}>
                 Logout
-            </button>
+            </Button>
 
-            <Box className={styles.bottomNav}>
-                {navItems.map((item, index) => (
-                    <Box
-                        key={index}
-                        className={styles.navItem}
-                        onClick={() => router.push(item.link)}
-                    >
+            <Box className="bottomNav">
+                {navItems.map((item) => (
+                    <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
                         {item.icon}
-                        <Typography className={styles.navText}>{item.text}</Typography>
-                    </Box>
+                        <Typography variant="caption">{item.text}</Typography>
+                    </Button>
                 ))}
             </Box>
         </Box>

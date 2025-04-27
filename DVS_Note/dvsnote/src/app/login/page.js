@@ -20,7 +20,6 @@ export default function AuthPage() {
                     method: 'GET',
                     credentials: 'include',
                 });
-
                 if (response.ok) {
                     router.push('/dashboard');
                 }
@@ -28,7 +27,6 @@ export default function AuthPage() {
                 console.error('Error checking session:', error);
             }
         };
-
         checkSession();
     }, [router]);
 
@@ -70,7 +68,7 @@ export default function AuthPage() {
                 priority
                 className="logo"
             />
-            <Typography variant="h4" component="h1" className="welcomeText">
+            <Typography variant="h4" className="welcomeText">
                 Login
             </Typography>
             <Box component="form" onSubmit={handleLogin} className="contentContainer">
@@ -101,6 +99,7 @@ export default function AuthPage() {
                     variant="contained"
                     disabled={loading}
                     className="addButton"
+                    style={{ marginTop: '16px' }}
                 >
                     {loading ? 'Logging in...' : 'Login'}
                 </Button>
@@ -109,7 +108,7 @@ export default function AuthPage() {
                         variant="body2"
                         style={{
                             color: message === 'Login successful' ? '#4caf50' : '#f44336',
-                            marginTop: '10px'
+                            marginTop: '12px'
                         }}
                     >
                         {message}
@@ -117,7 +116,7 @@ export default function AuthPage() {
                 )}
                 <Typography variant="body2" style={{ marginTop: '16px', color: '#ccc' }}>
                     Don't have an account?{' '}
-                    <Link href="/register" underline="hover" style={{ color: '#8D5EF2' }}>
+                    <Link href="/register" underline="hover" style={{ color: 'var(--primary-color)' }}>
                         Sign Up here
                     </Link>
                 </Typography>
