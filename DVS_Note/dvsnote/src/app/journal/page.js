@@ -12,10 +12,11 @@ import {
 import {
   Home as HomeIcon,
   Book as BookIcon,
-  Favorite as HeartIcon,
+  Checklist as ChecklistIcon,
   Person as PersonIcon,
   ArrowBackIos as ArrowBackIosIcon,
   ArrowForwardIos as ArrowForwardIosIcon,
+  Favorite as FavoriteIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
@@ -110,16 +111,22 @@ export default function Journal() {
     if (!selectedDate.isSame(dayjs(), 'day')) setSelectedDate(selectedDate.add(1, 'day'));
   };
 
+  const navItems = [
+    { text: 'Home', icon: <HomeIcon />, link: '/dashboard' },
+    { text: 'Journal', icon: <BookIcon />, link: '/journal' },
+    { text: 'To-Do List', icon: <ChecklistIcon />, link: '/todo' },
+    { text: 'Profile', icon: <PersonIcon />, link: '/profile' },
+  ];
+
   return (
     <Box className="mainContainer">
-      {/* Header with Date Navigation */}
       <Typography variant="h5" className="welcomeText">Journal</Typography>
       <Box className="contentContainer">
         <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
           <IconButton onClick={goToPreviousDay}>
             <ArrowBackIosIcon style={{ color: 'var(--primary-color)' }} />
           </IconButton>
-          <Typography style={{ color: '#ccc', margin: '0 10px' }}>
+          <Typography style={{ color: '#000', margin: '0 10px', fontWeight: 'bold' }}>
             {selectedDate.format('MMMM D, YYYY')}
           </Typography>
           <IconButton onClick={goToNextDay} disabled={selectedDate.isSame(dayjs(), 'day')}>
@@ -127,7 +134,6 @@ export default function Journal() {
           </IconButton>
         </Box>
 
-        {/* Gratitude Section */}
         <Box className="boxContainer">
           <Typography className="quotesHeader">Today I'm grateful for...</Typography>
           <TextareaAutosize
@@ -135,11 +141,10 @@ export default function Journal() {
             placeholder="Write your thoughts here..."
             value={gratitudeEntry}
             onChange={(e) => setGratitudeEntry(e.target.value)}
-            style={{ width: '100%', background: 'transparent', color: '#ccc', border: 'none', resize: 'none' }}
+            style={{ width: '100%', background: '#bfb3d3', color: '#222', borderRadius: '12px', padding: '8px', border: '1px solid #ccc', resize: 'none' }}
           />
         </Box>
 
-        {/* Goals Section */}
         <Box className="boxContainer">
           <Typography className="quotesHeader">What would make today great?</Typography>
           <TextareaAutosize
@@ -147,11 +152,10 @@ export default function Journal() {
             placeholder="List 3 things that would make today great..."
             value={goalsEntry}
             onChange={(e) => setGoalsEntry(e.target.value)}
-            style={{ width: '100%', background: 'transparent', color: '#ccc', border: 'none', resize: 'none' }}
+            style={{ width: '100%', background: '#bfb3d3', color: '#222', borderRadius: '12px', padding: '8px', border: '1px solid #ccc', resize: 'none' }}
           />
         </Box>
 
-        {/* Mood Section */}
         <Box className="boxContainer">
           <Typography className="quotesHeader">How are you feeling today?</Typography>
           <Box style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' }}>
@@ -163,7 +167,6 @@ export default function Journal() {
           </Box>
         </Box>
 
-        {/* Save Button */}
         <Button className="addButton" onClick={saveJournalAndEmotions} disabled={loading}>
           {loading ? (
             <>
@@ -176,24 +179,14 @@ export default function Journal() {
         </Button>
       </Box>
 
-      {/* Bottom Navigation */}
+      {/* Fixed Bottom Navigation */}
       <Box className="bottomNav">
-        <Button className="navItem" onClick={() => router.push('/dashboard')}>
-          <HomeIcon />
-          <Typography variant="caption">Home</Typography>
-        </Button>
-        <Button className="navItem" onClick={() => router.push('/journal')}>
-          <BookIcon />
-          <Typography variant="caption">Journal</Typography>
-        </Button>
-        <Button className="navItem" onClick={() => router.push('/todo')}>
-          <HeartIcon />
-          <Typography variant="caption">ToDo</Typography>
-        </Button>
-        <Button className="navItem" onClick={() => router.push('/profile')}>
-          <PersonIcon />
-          <Typography variant="caption">Profile</Typography>
-        </Button>
+        {navItems.map((item) => (
+          <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
+            {item.icon}
+            <Typography variant="caption">{item.text}</Typography>
+          </Button>
+        ))}
       </Box>
     </Box>
   );
