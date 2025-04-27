@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import { useRouter } from 'next/navigation';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
@@ -18,6 +20,8 @@ export default function Profile() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [journalEntry, setJournalEntry] = useState({ content: '', goals: '' });
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -36,6 +40,33 @@ export default function Profile() {
         };
         fetchUserData();
     }, [router]);
+
+    const fetchJournalForDate = async (date) => {
+        try {
+            const res = await fetch('/api/getJournal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: userData.username,
+                    date: date.toISOString().split('T')[0],
+                }),
+            });
+
+            const data = await res.json();
+            if (res.ok && data.journal) {
+                setJournalEntry({ content: data.journal.content, goals: data.journal.goals });
+            } else {
+                setJournalEntry({ content: 'No entry found.', goals: '' });
+            }
+        } catch (error) {
+            console.error('Error fetching journal:', error);
+        }
+    };
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+        fetchJournalForDate(date);
+    };
 
     const handleLogout = async () => {
         try {
@@ -160,6 +191,21 @@ export default function Profile() {
 
                 {editingField === 'password' && errorMessage && (
                     <Typography style={{ color: '#f44336', marginTop: '8px' }}>{errorMessage}</Typography>
+                )}
+            </Box>
+
+            {/* Calendar for Viewing Past Journals */}
+            <Box className="boxContainer" style={{ marginTop: '24px' }}>
+                <Typography className="quotesHeader">View Past Journals</Typography>
+                <Calendar onChange={handleDateChange} value={selectedDate} />
+                {journalEntry.content && (
+                    <Box style={{ marginTop: '16px' }}>
+                        <Typography style={{ fontWeight: 'bold' }}>Entry for {selectedDate.toDateString()}:</Typography>
+                        <Typography style={{ color: '#ccc', marginTop: '8px' }}>{journalEntry.content}</Typography>
+                        {journalEntry.goals && (
+                            <Typography style={{ color: '#ccc', marginTop: '8px' }}>Goals: {journalEntry.goals}</Typography>
+                        )}
+                    </Box>
                 )}
             </Box>
 

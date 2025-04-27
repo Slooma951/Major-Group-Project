@@ -16,7 +16,6 @@ import {
   Person as PersonIcon,
   ArrowBackIos as ArrowBackIosIcon,
   ArrowForwardIos as ArrowForwardIosIcon,
-  Favorite as FavoriteIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
@@ -29,6 +28,7 @@ export default function Journal() {
   const [goalsEntry, setGoalsEntry] = useState('');
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [loading, setLoading] = useState(false);
+  const [selectedMood, setSelectedMood] = useState('');
 
   const feelings = ['Great', 'Good', 'Okay', 'Not so good'];
 
@@ -65,9 +65,11 @@ export default function Journal() {
       if (res.ok && data.journal) {
         setGratitudeEntry(data.journal.content || '');
         setGoalsEntry(data.journal.goals || '');
+        setSelectedMood(data.journal.mood || '');
       } else {
         setGratitudeEntry('');
         setGoalsEntry('');
+        setSelectedMood('');
       }
     } catch (error) {
       console.error('Error fetching journal:', error);
@@ -77,7 +79,7 @@ export default function Journal() {
   };
 
   const saveJournalAndEmotions = async () => {
-    if (!username || (!gratitudeEntry && !goalsEntry) || !selectedDate) return;
+    if (!username || (!gratitudeEntry && !goalsEntry && !selectedMood) || !selectedDate) return;
 
     setLoading(true);
     try {
@@ -91,12 +93,18 @@ export default function Journal() {
             content: gratitudeEntry.trim() || '',
             goals: goalsEntry.trim() || '',
             date: selectedDate.format('YYYY-MM-DD'),
+            mood: selectedMood
           }),
         }),
         fetch('/api/saveJournalEntry', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, content: gratitudeEntry, date: selectedDate.format('YYYY-MM-DD') }),
+          body: JSON.stringify({
+            username,
+            content: gratitudeEntry,
+            date: selectedDate.format('YYYY-MM-DD'),
+            mood: selectedMood
+          }),
         }),
       ]);
     } catch (error) {
@@ -160,7 +168,18 @@ export default function Journal() {
           <Typography className="quotesHeader">How are you feeling today?</Typography>
           <Box style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' }}>
             {feelings.map((feeling, index) => (
-              <Button key={index} className="addButton" style={{ margin: '5px', padding: '8px 12px', minWidth: '100px' }}>
+              <Button
+                key={index}
+                onClick={() => setSelectedMood(feeling)}
+                className="addButton"
+                style={{
+                  margin: '5px',
+                  padding: '8px 12px',
+                  minWidth: '100px',
+                  backgroundColor: selectedMood === feeling ? '#6045E2' : '',
+                  color: selectedMood === feeling ? '#fff' : ''
+                }}
+              >
                 {feeling}
               </Button>
             ))}
@@ -179,7 +198,6 @@ export default function Journal() {
         </Button>
       </Box>
 
-      {/* Fixed Bottom Navigation */}
       <Box className="bottomNav">
         {navItems.map((item) => (
           <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
