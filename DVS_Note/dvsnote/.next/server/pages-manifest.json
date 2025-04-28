@@ -6,5 +6,6 @@
   "/api/getJournal": "pages/api/getJournal.js",
   "/api/getMotivationalQuotes": "pages/api/getMotivationalQuotes.js",
   "/api/taskStats": "pages/api/taskStats.js",
-  "/api/moodStats": "pages/api/moodStats.js"
+  "/api/moodStats": "pages/api/moodStats.js",
+  "/api/todo": "pages/api/todo.js"
 }
