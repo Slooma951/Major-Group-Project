@@ -1,3 +1,7 @@
 node_modules
 /DVS_Note/dvsnote/.next/
 /DVS_Note/dvsnote/.next/
+/DVS_Note/dvsnote/.next/cache/
+/DVS_Note/dvsnote/.next/server/
+/DVS_Note/dvsnote/.next/static/
+/DVS_Note/dvsnote/.next/types/

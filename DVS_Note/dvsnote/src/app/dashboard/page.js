@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import '../globals.css';
 
 const TASK_COLORS = ['#6045E2', '#cbc3e3'];
-const MOOD_COLORS = ['#4CAF50', '#8BC34A', '#FFEB3B', '#F44336']; // Green, Light Green, Yellow, Red
+const MOOD_COLORS = ['#4CAF50', '#8BC34A', '#FFEB3B', '#F44336'];
 
 export default function Dashboard() {
   const router = useRouter();
