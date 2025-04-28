@@ -1,19 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Typography, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction, Checkbox } from '@mui/material';
-import { Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Box, Button, TextField, Typography, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
+import { Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon, Edit as EditIcon, Delete as DeleteIcon, Mic as MicIcon } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import '../globals.css';
+import dayjs from 'dayjs';
 
 export default function ToDoList() {
     const router = useRouter();
     const [tasks, setTasks] = useState([]);
     const [task, setTask] = useState('');
-    const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
     const [editingTask, setEditingTask] = useState(null);
+    const [isListening, setIsListening] = useState(false);
 
     useEffect(() => {
         fetchTasks();
@@ -27,15 +28,79 @@ export default function ToDoList() {
         }
     };
 
-    const addTask = async () => {
-        if (!task.trim() || !description.trim() || !date.trim() || !time.trim()) return;
+    const parseVoiceInput = (text) => {
+        let lowerText = text.toLowerCase();
+        let parsedDate = '';
+        let parsedTime = '';
 
+        lowerText = lowerText.replace(/\bat\b/g, '');
+
+        if (lowerText.includes('today')) {
+            parsedDate = dayjs().format('YYYY-MM-DD');
+            lowerText = lowerText.replace('today', '');
+        } else if (lowerText.includes('tomorrow')) {
+            parsedDate = dayjs().add(1, 'day').format('YYYY-MM-DD');
+            lowerText = lowerText.replace('tomorrow', '');
+        } else {
+            const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            const todayIndex = dayjs().day();
+            weekdays.forEach((day, idx) => {
+                if (lowerText.includes(day)) {
+                    let daysToAdd = (idx + 1) - todayIndex;
+                    if (daysToAdd <= 0) daysToAdd += 7;
+                    parsedDate = dayjs().add(daysToAdd, 'day').format('YYYY-MM-DD');
+                    lowerText = lowerText.replace(day, '');
+                }
+            });
+        }
+
+        const timeMatch = lowerText.match(/(\d{1,2})(:\d{2})?\s*([ap]\.?m\.?)/i);
+        if (timeMatch) {
+            const hour = timeMatch[1];
+            const minute = timeMatch[2] ? timeMatch[2].replace(':', '') : '00';
+            const ampm = timeMatch[3].toLowerCase().replace(/\./g, '');
+            let hourNum = parseInt(hour, 10);
+            if (ampm === 'pm' && hourNum < 12) hourNum += 12;
+            if (ampm === 'am' && hourNum === 12) hourNum = 0;
+            parsedTime = `${hourNum.toString().padStart(2, '0')}:${minute}`;
+            lowerText = lowerText.replace(timeMatch[0], '');
+        }
+
+        const finalTask = lowerText.replace('set', '').replace('task', '').replace('for', '').trim();
+        return { parsedDate, parsedTime, finalTask };
+    };
+
+    const startListening = () => {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert('Voice recognition not supported.');
+            return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript;
+            const { parsedDate, parsedTime, finalTask } = parseVoiceInput(spokenText);
+
+            if (finalTask) setTask(finalTask);
+            if (parsedDate) setDate(parsedDate);
+            if (parsedTime) setTime(parsedTime);
+        };
+
+        recognition.start();
+    };
+
+    const addTask = async () => {
+        if (!task.trim() || !date.trim() || !time.trim()) return;
         const response = await fetch('/api/todo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: task, description, date, time }),
+            body: JSON.stringify({ title: task, date, time }),
         });
-
         if (response.ok) {
             fetchTasks();
             clearInputs();
@@ -44,27 +109,16 @@ export default function ToDoList() {
 
     const updateTask = async () => {
         if (!editingTask) return;
-
         const response = await fetch('/api/todo', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ taskId: editingTask, title: task, description, date, time }),
+            body: JSON.stringify({ taskId: editingTask, title: task, date, time }),
         });
-
         if (response.ok) {
             setEditingTask(null);
             clearInputs();
             fetchTasks();
         }
-    };
-
-    const toggleTaskCompletion = async (taskId, completed) => {
-        await fetch('/api/todo', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ taskId, completed: !completed }),
-        });
-        fetchTasks();
     };
 
     const deleteTask = async (taskId) => {
@@ -73,7 +127,6 @@ export default function ToDoList() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ taskId }),
         });
-
         if (response.ok) {
             fetchTasks();
         }
@@ -82,14 +135,12 @@ export default function ToDoList() {
     const editTask = (task) => {
         setEditingTask(task._id);
         setTask(task.title);
-        setDescription(task.description);
         setDate(task.date);
         setTime(task.time);
     };
 
     const clearInputs = () => {
         setTask('');
-        setDescription('');
         setDate('');
         setTime('');
     };
@@ -105,72 +156,33 @@ export default function ToDoList() {
         <Box className="mainContainer">
             <Typography variant="h5" className="welcomeText">Your To-Do List</Typography>
 
-            {/* Add/Edit Task Section */}
             <Box className="contentContainer">
                 <Typography variant="h6" className="welcomeText">{editingTask ? "Edit Task" : "Add a Task"}</Typography>
-                <TextField
-                    label="Task"
-                    variant="outlined"
-                    value={task}
-                    onChange={(e) => setTask(e.target.value)}
-                    fullWidth margin="normal"
-                    InputProps={{ style: { color: 'black' } }}
-                    InputLabelProps={{ style: { color: '#555' } }}
-                />
-                <TextField
-                    label="Description"
-                    variant="outlined"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    fullWidth margin="normal"
-                    InputProps={{ style: { color: 'black' } }}
-                    InputLabelProps={{ style: { color: '#555' } }}
-                />
-                <TextField
-                    label="Date"
-                    type="date"
-                    variant="outlined"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    fullWidth margin="normal"
-                    InputLabelProps={{ shrink: true, style: { color: '#555' } }}
-                    InputProps={{ style: { color: 'black' } }}
-                />
-                <TextField
-                    label="Time"
-                    type="time"
-                    variant="outlined"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    fullWidth margin="normal"
-                    InputLabelProps={{ shrink: true, style: { color: '#555' } }}
-                    InputProps={{ style: { color: 'black' } }}
-                />
+                <TextField label="Task" variant="outlined" value={task} onChange={(e) => setTask(e.target.value)} fullWidth margin="normal" />
+                <TextField label="Date" type="date" variant="outlined" value={date} onChange={(e) => setDate(e.target.value)} fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
+                <TextField label="Time" type="time" variant="outlined" value={time} onChange={(e) => setTime(e.target.value)} fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
+                <Button startIcon={<MicIcon />} onClick={startListening} className="addButton">
+                    {isListening ? "Listening..." : "Voice Input"}
+                </Button>
                 <Button className="addButton" onClick={editingTask ? updateTask : addTask}>
                     {editingTask ? "Update Task" : "Add Task"}
                 </Button>
             </Box>
 
-            {/* Task List */}
             <Box className="contentContainer">
                 <Typography variant="h6" className="welcomeText">Your Tasks</Typography>
                 <List>
                     {tasks.map((task) => (
                         <ListItem key={task._id} divider className="boxContainer">
-                            <Checkbox
-                                checked={task.completed}
-                                onChange={() => toggleTaskCompletion(task._id, task.completed)}
-                                style={{ color: 'var(--primary-color)' }}
-                            />
                             <ListItemText
-                                primary={<span style={{ color: 'black', fontWeight: 'bold', textDecoration: task.completed ? 'line-through' : 'none' }}>{task.title}</span>}
-                                secondary={<span style={{ color: '#555' }}>{task.description} | {task.date} at {task.time}</span>}
+                                primary={<span style={{ color: 'black', fontWeight: 'bold' }}>{task.title}</span>}
+                                secondary={<span style={{ color: '#555' }}>{task.date} at {task.time}</span>}
                             />
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'var(--primary-color)' }}>
+                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'black' }}>
                                     <EditIcon />
                                 </IconButton>
-                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'var(--primary-color)' }}>
+                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'black' }}>
                                     <DeleteIcon />
                                 </IconButton>
                             </ListItemSecondaryAction>
@@ -179,7 +191,6 @@ export default function ToDoList() {
                 </List>
             </Box>
 
-            {/* Bottom Navigation */}
             <Box className="bottomNav">
                 {navItems.map((item) => (
                     <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
