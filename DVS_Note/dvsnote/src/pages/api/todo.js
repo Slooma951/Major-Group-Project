@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         }
 
         if (req.method === "POST") {
-            const { title, date, time } = req.body;
+            const { title, date, time, status = "Pending" } = req.body;
             if (!title || !date || !time) {
                 return res.status(400).json({ success: false, message: "Title, date, and time are required." });
             }
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
                 title,
                 date,
                 time,
+                status,
                 createdAt: new Date(),
             };
 
@@ -37,7 +38,7 @@ export default async function handler(req, res) {
         }
 
         if (req.method === "PUT") {
-            const { taskId, title, date, time } = req.body;
+            const { taskId, title, date, time, status = "Pending" } = req.body;
 
             if (!ObjectId.isValid(taskId)) {
                 return res.status(400).json({ success: false, message: "Invalid task ID." });
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
 
             const updateResult = await todoCollection.updateOne(
                 { _id: new ObjectId(taskId), userId },
-                { $set: { title, date, time } }
+                { $set: { title, date, time, status } }
             );
 
             if (updateResult.matchedCount === 0) {

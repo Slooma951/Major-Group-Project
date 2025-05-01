@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
-import { Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon, Edit as EditIcon, Delete as DeleteIcon, Mic as MicIcon } from '@mui/icons-material';
+import { Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon, Edit as EditIcon, Delete as DeleteIcon, Mic as MicIcon, Check as CheckIcon, Undo as UndoIcon } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import '../globals.css';
 import dayjs from 'dayjs';
@@ -13,6 +13,7 @@ export default function ToDoList() {
     const [task, setTask] = useState('');
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
+    const [status, setStatus] = useState('Pending');
     const [editingTask, setEditingTask] = useState(null);
     const [isListening, setIsListening] = useState(false);
 
@@ -99,7 +100,7 @@ export default function ToDoList() {
         const response = await fetch('/api/todo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: task, date, time }),
+            body: JSON.stringify({ title: task, date, time, status }),
         });
         if (response.ok) {
             fetchTasks();
@@ -112,11 +113,29 @@ export default function ToDoList() {
         const response = await fetch('/api/todo', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ taskId: editingTask, title: task, date, time }),
+            body: JSON.stringify({ taskId: editingTask, title: task, date, time, status }),
         });
         if (response.ok) {
             setEditingTask(null);
             clearInputs();
+            fetchTasks();
+        }
+    };
+
+    const toggleStatus = async (task) => {
+        const newStatus = task.status === 'Pending' ? 'Completed' : 'Pending';
+        const response = await fetch('/api/todo', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                taskId: task._id,
+                title: task.title,
+                date: task.date,
+                time: task.time,
+                status: newStatus,
+            }),
+        });
+        if (response.ok) {
             fetchTasks();
         }
     };
@@ -137,12 +156,14 @@ export default function ToDoList() {
         setTask(task.title);
         setDate(task.date);
         setTime(task.time);
+        setStatus(task.status || 'Pending');
     };
 
     const clearInputs = () => {
         setTask('');
         setDate('');
         setTime('');
+        setStatus('Pending');
     };
 
     const navItems = [
@@ -175,16 +196,23 @@ export default function ToDoList() {
                     {tasks.map((task) => (
                         <ListItem key={task._id} divider className="boxContainer">
                             <ListItemText
-                                primary={<span style={{ color: 'black', fontWeight: 'bold' }}>{task.title}</span>}
-                                secondary={<span style={{ color: '#555' }}>{task.date} at {task.time}</span>}
+                                primary={
+                                    <span style={{ fontWeight: 'bold', color: task.status === 'Completed' ? 'green' : 'black' }}>
+                                        {task.title}
+                                    </span>
+                                }
+                                secondary={
+                                    <span style={{ color: '#555' }}>
+                                        {task.date} at {task.time} | Status: {task.status}
+                                    </span>
+                                }
                             />
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" onClick={() => editTask(task)} style={{ color: 'black' }}>
-                                    <EditIcon />
+                                <IconButton onClick={() => toggleStatus(task)} title="Toggle Status">
+                                    {task.status === 'Completed' ? <UndoIcon /> : <CheckIcon />}
                                 </IconButton>
-                                <IconButton edge="end" onClick={() => deleteTask(task._id)} style={{ color: 'black' }}>
-                                    <DeleteIcon />
-                                </IconButton>
+                                <IconButton onClick={() => editTask(task)}><EditIcon /></IconButton>
+                                <IconButton onClick={() => deleteTask(task._id)}><DeleteIcon /></IconButton>
                             </ListItemSecondaryAction>
                         </ListItem>
                     ))}
