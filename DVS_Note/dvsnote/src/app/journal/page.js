@@ -1,34 +1,34 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
-  TextareaAutosize,
+  TextField,
   Typography,
-  CircularProgress,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import {
   Home as HomeIcon,
   Book as BookIcon,
   Checklist as ChecklistIcon,
   Person as PersonIcon,
-  ArrowBackIos as ArrowBackIosIcon,
-  ArrowForwardIos as ArrowForwardIosIcon,
+  Mic as MicIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 import '../globals.css';
 
-export default function Journal() {
+export default function JournalPage() {
   const router = useRouter();
+  const [gratitude, setGratitude] = useState('');
+  const [goals, setGoals] = useState('');
+  const [mood, setMood] = useState('');
   const [username, setUsername] = useState('');
-  const [gratitudeEntry, setGratitudeEntry] = useState('');
-  const [goalsEntry, setGoalsEntry] = useState('');
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [isListening, setIsListening] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedMood, setSelectedMood] = useState('');
+  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   const feelings = ['Great', 'Good', 'Okay', 'Not so good'];
 
@@ -44,42 +44,43 @@ export default function Journal() {
     })();
   }, [router]);
 
-  useEffect(() => {
-    if (!username) return;
-    fetchJournalEntry();
-  }, [selectedDate, username]);
+  const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
-  const fetchJournalEntry = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/getJournal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username,
-          date: selectedDate.format('YYYY-MM-DD'),
-        }),
-      });
+  const parseVoiceInput = (text) => {
+    const lower = text.toLowerCase();
 
-      const data = await res.json();
-      if (res.ok && data.journal) {
-        setGratitudeEntry(data.journal.content || '');
-        setGoalsEntry(data.journal.goals || '');
-        setSelectedMood(data.journal.mood || '');
-      } else {
-        setGratitudeEntry('');
-        setGoalsEntry('');
-        setSelectedMood('');
-      }
-    } catch (error) {
-      console.error('Error fetching journal:', error);
-    } finally {
-      setLoading(false);
-    }
+    const moodMatch = feelings.find(f => lower.includes(f.toLowerCase()));
+    if (moodMatch) setMood(moodMatch);
+
+    const gratitudeMatch = lower.match(/(?:grateful for|thankful for)\s(.+?)(\.|$)/i);
+    if (gratitudeMatch) setGratitude(prev => prev ? `${prev} ${capitalize(gratitudeMatch[1])}` : capitalize(gratitudeMatch[1]));
+
+    const goalMatch = lower.match(/(?:goal is|i want to|i plan to)\s(.+?)(\.|$)/i);
+    if (goalMatch) setGoals(prev => prev ? `${prev} ${capitalize(goalMatch[1])}` : capitalize(goalMatch[1]));
   };
 
-  const saveJournalAndEmotions = async () => {
-    if (!username || (!gratitudeEntry && !goalsEntry && !selectedMood) || !selectedDate) return;
+  const startListening = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert('Voice recognition not supported.');
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onresult = (event) => {
+      const spokenText = event.results[0][0].transcript;
+      parseVoiceInput(spokenText);
+    };
+
+    recognition.start();
+  };
+
+  const saveJournal = async () => {
+    if (!username || (!gratitude && !goals && !mood)) return;
 
     setLoading(true);
     try {
@@ -89,22 +90,17 @@ export default function Journal() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             username,
-            title: "Journal Entry",
-            content: gratitudeEntry.trim() || '',
-            goals: goalsEntry.trim() || '',
-            date: selectedDate.format('YYYY-MM-DD'),
-            mood: selectedMood
+            title: 'Journal Entry',
+            content: gratitude,
+            goals,
+            date,
+            mood,
           }),
         }),
         fetch('/api/saveJournalEntry', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username,
-            content: gratitudeEntry,
-            date: selectedDate.format('YYYY-MM-DD'),
-            mood: selectedMood
-          }),
+          body: JSON.stringify({ username, content: gratitude, date, mood }),
         }),
       ]);
     } catch (error) {
@@ -112,11 +108,6 @@ export default function Journal() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const goToPreviousDay = () => setSelectedDate(selectedDate.subtract(1, 'day'));
-  const goToNextDay = () => {
-    if (!selectedDate.isSame(dayjs(), 'day')) setSelectedDate(selectedDate.add(1, 'day'));
   };
 
   const navItems = [
@@ -127,85 +118,65 @@ export default function Journal() {
   ];
 
   return (
-    <Box className="mainContainer">
-      <Typography variant="h5" className="welcomeText">Journal</Typography>
-      <Box className="contentContainer">
-        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-          <IconButton onClick={goToPreviousDay}>
-            <ArrowBackIosIcon style={{ color: 'var(--primary-color)' }} />
-          </IconButton>
-          <Typography style={{ color: '#000', margin: '0 10px', fontWeight: 'bold' }}>
-            {selectedDate.format('MMMM D, YYYY')}
-          </Typography>
-          <IconButton onClick={goToNextDay} disabled={selectedDate.isSame(dayjs(), 'day')}>
-            <ArrowForwardIosIcon style={{ color: 'var(--primary-color)' }} />
-          </IconButton>
-        </Box>
+      <Box className="mainContainer">
+        <Typography variant="h5" className="welcomeText">Your Journal</Typography>
 
-        <Box className="boxContainer">
-          <Typography className="quotesHeader">Today I'm grateful for...</Typography>
-          <TextareaAutosize
-            minRows={3}
-            placeholder="Write your thoughts here..."
-            value={gratitudeEntry}
-            onChange={(e) => setGratitudeEntry(e.target.value)}
-            style={{ width: '100%', background: '#bfb3d3', color: '#222', borderRadius: '12px', padding: '8px', border: '1px solid #ccc', resize: 'none' }}
+        <Box className="contentContainer">
+          <TextField
+              label="Gratitude"
+              value={gratitude}
+              onChange={(e) => setGratitude(e.target.value)}
+              fullWidth
+              multiline
+              margin="normal"
           />
-        </Box>
-
-        <Box className="boxContainer">
-          <Typography className="quotesHeader">What would make today great?</Typography>
-          <TextareaAutosize
-            minRows={3}
-            placeholder="List 3 things that would make today great..."
-            value={goalsEntry}
-            onChange={(e) => setGoalsEntry(e.target.value)}
-            style={{ width: '100%', background: '#bfb3d3', color: '#222', borderRadius: '12px', padding: '8px', border: '1px solid #ccc', resize: 'none' }}
+          <TextField
+              label="Goals"
+              value={goals}
+              onChange={(e) => setGoals(e.target.value)}
+              fullWidth
+              multiline
+              margin="normal"
           />
-        </Box>
+          <TextField
+              label="Mood"
+              value={mood}
+              onChange={(e) => setMood(e.target.value)}
+              select
+              SelectProps={{ native: true }}
+              fullWidth
+              margin="normal"
+          >
+            <option value="">Select mood</option>
+            {feelings.map((f, idx) => <option key={idx} value={f}>{f}</option>)}
+          </TextField>
+          <TextField
+              label="Date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+          />
 
-        <Box className="boxContainer">
-          <Typography className="quotesHeader">How are you feeling today?</Typography>
-          <Box style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' }}>
-            {feelings.map((feeling, index) => (
-              <Button
-                key={index}
-                onClick={() => setSelectedMood(feeling)}
-                className="addButton"
-                style={{
-                  margin: '5px',
-                  padding: '8px 12px',
-                  minWidth: '100px',
-                  backgroundColor: selectedMood === feeling ? '#6045E2' : '',
-                  color: selectedMood === feeling ? '#fff' : ''
-                }}
-              >
-                {feeling}
-              </Button>
-            ))}
-          </Box>
-        </Box>
-
-        <Button className="addButton" onClick={saveJournalAndEmotions} disabled={loading}>
-          {loading ? (
-            <>
-              <CircularProgress size={20} style={{ marginRight: 8, color: 'white' }} />
-              Saving...
-            </>
-          ) : (
-            'Save Journal'
-          )}
-        </Button>
-      </Box>
-
-      <Box className="bottomNav">
-        {navItems.map((item) => (
-          <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
-            {item.icon}
-            <Typography variant="caption">{item.text}</Typography>
+          <Button startIcon={<MicIcon />} onClick={startListening} className="addButton">
+            {isListening ? "Listening..." : "Voice Input"}
           </Button>
-        ))}
+          <Button className="addButton" onClick={saveJournal} disabled={loading} style={{ marginTop: 10 }}>
+            {loading ? <CircularProgress size={20} style={{ marginRight: 8, color: 'white' }} /> : null}
+            {loading ? "Saving..." : "Save Journal"}
+          </Button>
+        </Box>
+
+        <Box className="bottomNav">
+          {navItems.map((item) => (
+              <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
+                {item.icon}
+                <Typography variant="caption">{item.text}</Typography>
+              </Button>
+          ))}
+        </Box>
       </Box>
-    </Box>
   );
 }

@@ -34,7 +34,7 @@ export default function ToDoList() {
         let lowerText = text.toLowerCase();
         let parsedDate = '';
         let parsedTime = '';
-        let parsedImportance = 'Low'; // Default if not said
+        let parsedImportance = 'Low';
 
         if (lowerText.includes('high priority')) {
             parsedImportance = 'High';
