@@ -1,14 +1,38 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography, CircularProgress } from '@mui/material';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Typography,
+  MenuItem,
+  Select,
+  CircularProgress,
+} from '@mui/material';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
+import {
+  Home as HomeIcon,
+  Book as BookIcon,
+  Checklist as ChecklistIcon,
+  Person as PersonIcon,
+} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import '../globals.css';
 
-const TASK_COLORS = ['#6045E2', '#cbc3e3'];
 const MOOD_COLORS = ['#4CAF50', '#8BC34A', '#FFEB3B', '#F44336'];
+const MOODS = ['Great', 'Good', 'Okay', 'Not so good'];
 
 export default function Dashboard() {
   const router = useRouter();
@@ -17,7 +41,8 @@ export default function Dashboard() {
   const [emotion, setEmotion] = useState('');
   const [loading, setLoading] = useState(true);
   const [taskStats, setTaskStats] = useState({ totalTasks: 0, completedTasks: 0, pendingTasks: 0 });
-  const [moodCount, setMoodCount] = useState({ Great: 0, Good: 0, Okay: 0, 'Not so good': 0 });
+  const [moodStats, setMoodStats] = useState({});
+  const [filter, setFilter] = useState('monthly');
 
   useEffect(() => {
     (async () => {
@@ -40,30 +65,35 @@ export default function Dashboard() {
           setTaskStats(taskStatsData);
         }
 
-        const moodStatsRes = await fetch('/api/moodStats', { method: 'POST' });
-        if (moodStatsRes.ok) {
-          const moodStatsData = await moodStatsRes.json();
-          setMoodCount(moodStatsData.moodCount);
-        }
-
+        await fetchMoodData(filter);
       } catch {
-        // Keep defaults if error
+        // fail silently
       } finally {
         setLoading(false);
       }
     })();
-  }, [router]);
+  }, [router, filter]);
+
+  const fetchMoodData = async (range) => {
+    const res = await fetch('/api/moodStats', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ range }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setMoodStats(data.moodCount || {});
+    }
+  };
+
+  const moodBarData = MOODS.map((mood) => ({
+    name: mood,
+    value: moodStats[mood] || 0,
+  }));
 
   const taskPieData = [
     { name: 'Completed', value: taskStats.completedTasks },
     { name: 'Pending', value: taskStats.pendingTasks },
-  ];
-
-  const moodPieData = [
-    { name: 'Great', value: moodCount.Great },
-    { name: 'Good', value: moodCount.Good },
-    { name: 'Okay', value: moodCount.Okay },
-    { name: 'Not so good', value: moodCount['Not so good'] },
   ];
 
   const navItems = [
@@ -76,36 +106,25 @@ export default function Dashboard() {
   return (
     <Box className="mainContainer">
       <img src="/images/logo.png" alt="Logo" className="logo" />
-
       {loading ? (
         <CircularProgress style={{ color: 'var(--primary-color)', marginTop: '20px' }} />
       ) : (
         <>
-          <Typography variant="h5" className="welcomeText">
-            Welcome, {userName}
-          </Typography>
+          <Typography variant="h5" className="welcomeText">Welcome, {userName}</Typography>
 
           <Box className="quotesContainer">
             <Typography className="quotesHeader">Today's Quote ({emotion}):</Typography>
             <Typography className="quote">"{motivationalQuote}"</Typography>
           </Box>
 
-          {/* Task Overview - Pie Chart */}
+          {/* Task Overview Pie Chart */}
           <Box className="statsCard">
             <Typography className="quotesHeader">Task Overview</Typography>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
-                <Pie
-                  data={taskPieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {taskPieData.map((entry, index) => (
-                    <Cell key={`task-cell-${index}`} fill={TASK_COLORS[index % TASK_COLORS.length]} />
+                <Pie data={taskPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                  {taskPieData.map((entry, i) => (
+                    <Cell key={i} fill={i === 0 ? '#6045E2' : '#cbc3e3'} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -114,27 +133,30 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </Box>
 
-          {/* Mood Overview - Pie Chart */}
+          {/* Mood Overview Bar Chart */}
           <Box className="statsCard">
-            <Typography className="quotesHeader">Mood Overview</Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography className="quotesHeader">Mood Overview</Typography>
+              <Select value={filter} onChange={(e) => setFilter(e.target.value)} size="small">
+                <MenuItem value="daily">Daily</MenuItem>
+                <MenuItem value="weekly">Weekly</MenuItem>
+                <MenuItem value="monthly">Monthly</MenuItem>
+                <MenuItem value="yearly">Yearly</MenuItem>
+              </Select>
+            </Box>
             <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={moodPieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {moodPieData.map((entry, index) => (
-                    <Cell key={`mood-cell-${index}`} fill={MOOD_COLORS[index % MOOD_COLORS.length]} />
-                  ))}
-                </Pie>
+              <BarChart data={moodBarData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-              </PieChart>
+                <Bar dataKey="value">
+                  {moodBarData.map((_, index) => (
+                    <Cell key={index} fill={MOOD_COLORS[index % MOOD_COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </Box>
         </>
