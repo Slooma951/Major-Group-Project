@@ -1,5 +1,4 @@
 {
-  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/profile/page": "app/profile/page.js",
   "/todo/page": "app/todo/page.js",

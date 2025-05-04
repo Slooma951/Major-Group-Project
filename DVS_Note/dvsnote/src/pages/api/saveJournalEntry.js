@@ -52,21 +52,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { username, content, date } = req.body;
+    const { username, content, date, mood } = req.body;
 
-    if (!username || !date || !content) {
-      console.error('Missing required fields:', { username, date, content });
+    if (!username || !date || !content || !mood) {
+      console.error('Missing required fields:', { username, date, content, mood });
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
     const db = await connectToDatabase();
 
-    // Analyze emotions, keywords, and sentiment
     const detectedEmotions = detectEmotions(content);
     const keywords = extractKeywords(content);
     const sentimentScore = calculateSentimentScore(content);
 
-    // Save the analysis to the 'journalEntries' collection
     const updateResult = await db.collection('journalEntries').updateOne(
       { username, date },
       {
@@ -75,6 +73,7 @@ export default async function handler(req, res) {
           detectedEmotions,
           keywords,
           sentimentScore,
+          mood,
           updatedAt: new Date(),
         },
       },
@@ -82,25 +81,25 @@ export default async function handler(req, res) {
     );
 
     if (updateResult.acknowledged) {
-      console.log('Journal entry saved with emotion analysis:', {
+      console.log('Journal entry saved with emotion and mood:', {
         username,
         date,
+        mood,
         detectedEmotions,
         sentimentScore,
       });
       return res.status(200).json({
         success: true,
-        message: 'Emotion analysis saved successfully!',
+        message: 'Entry saved with mood and emotion analysis!',
       });
     } else {
-      console.error('Failed to update journal entry in journalEntries collection');
       return res.status(500).json({
         success: false,
-        message: 'Failed to save journal entry with emotion analysis',
+        message: 'Failed to save journal entry.',
       });
     }
   } catch (error) {
-    console.error('Error saving emotion analysis:', error);
-    return res.status(500).json({ success: false, message: 'Error saving journal entry' });
+    console.error('Error saving journal entry:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }
