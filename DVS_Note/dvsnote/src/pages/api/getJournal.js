@@ -1,6 +1,4 @@
-import { getCustomSession } from '../../lib/session';
-import connectToDatabase from '../../lib/mongoUtil';
-import dayjs from 'dayjs';
+import { connectToDatabase } from '../../lib/mongoUtil';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -8,51 +6,34 @@ export default async function handler(req, res) {
   }
 
   try {
-    const session = await getCustomSession(req, res);
-    if (!session.user) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    const { username, date } = req.body;
+
+    if (!username || !date) {
+      return res.status(400).json({ success: false, message: 'Missing username or date' });
     }
 
-    const { range = 'yearly' } = req.body;
     const db = await connectToDatabase();
-    const todoCollection = db.collection('todo');
-    const userId = session.user.email;
+    const stringDate = typeof date === 'string' ? date : new Date(date).toISOString().split('T')[0];
 
-    const now = dayjs();
-    let startDate;
+    let journal = await db.collection('journals').findOne({ username, date: stringDate });
 
-    switch (range) {
-      case 'daily':
-        startDate = now.startOf('day').toDate();
-        break;
-      case 'weekly':
-        startDate = now.startOf('week').toDate();
-        break;
-      case 'monthly':
-        startDate = now.startOf('month').toDate();
-        break;
-      case 'yearly':
-      default:
-        startDate = now.startOf('year').toDate();
+    if (!journal) {
+      journal = await db.collection('journalEntries').findOne({ username, date: stringDate });
     }
 
-    const tasks = await todoCollection.find({
-      userId,
-      createdAt: { $gte: startDate }
-    }).toArray();
-
-    // If you support `completed: true/false`, you can use this:
-    const completedTasks = tasks.filter(t => t.completed === true).length;
-    const pendingTasks = tasks.length - completedTasks;
-
-    return res.status(200).json({
-      success: true,
-      totalTasks: tasks.length,
-      completedTasks,
-      pendingTasks
-    });
+    if (journal) {
+      return res.status(200).json({
+        success: true,
+        journal: {
+          content: journal.content || '',
+          mood: journal.mood || '',
+        },
+      });
+    } else {
+      return res.status(404).json({ success: false, message: 'Journal entry not found' });
+    }
   } catch (error) {
-    console.error('Error getting task stats:', error);
-    return res.status(500).json({ success: false, message: 'Error retrieving stats' });
+    console.error('Error retrieving journal:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }

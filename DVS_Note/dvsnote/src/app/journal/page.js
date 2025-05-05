@@ -7,6 +7,7 @@ import {
     TextField,
     Typography,
     CircularProgress,
+    IconButton,
 } from '@mui/material';
 import {
     Home as HomeIcon,
@@ -14,6 +15,8 @@ import {
     Checklist as ChecklistIcon,
     Person as PersonIcon,
     Mic as MicIcon,
+    ArrowBackIos,
+    ArrowForwardIos,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
@@ -26,34 +29,42 @@ export default function JournalPage() {
     const [username, setUsername] = useState('');
     const [isListening, setIsListening] = useState(false);
     const [loading, setLoading] = useState(false);
-    const date = dayjs().format('YYYY-MM-DD');
+    const [selectedDate, setSelectedDate] = useState(dayjs());
     const feelings = ['Great', 'Good', 'Okay', 'Not so good'];
 
-    // Check session and fetch today's journal on load
     useEffect(() => {
         (async () => {
             const res = await fetch('/api/checkSession');
             if (res.ok) {
                 const data = await res.json();
                 setUsername(data.user.username);
-                await fetchJournal(data.user.username);
+                await fetchJournal(data.user.username, selectedDate.format('YYYY-MM-DD'));
             } else {
                 router.push('/login');
             }
         })();
     }, [router]);
 
-    const fetchJournal = async (uname) => {
+    useEffect(() => {
+        if (username) {
+            fetchJournal(username, selectedDate.format('YYYY-MM-DD'));
+        }
+    }, [selectedDate, username]);
+
+    const fetchJournal = async (uname, dateStr) => {
         try {
             const res = await fetch('/api/getJournal', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: uname, date }),
+                body: JSON.stringify({ username: uname, date: dateStr }),
             });
             const data = await res.json();
             if (res.ok && data.journal) {
                 setEntry(data.journal.content || '');
                 setMood(data.journal.mood || '');
+            } else {
+                setEntry('');
+                setMood('');
             }
         } catch (err) {
             console.error('Error fetching journal:', err);
@@ -74,7 +85,7 @@ export default function JournalPage() {
         recognition.onend = () => setIsListening(false);
         recognition.onresult = (event) => {
             const spokenText = event.results[0][0].transcript;
-            setEntry(prev => prev ? `${prev} ${spokenText}` : spokenText);
+            setEntry((prev) => (prev ? `${prev} ${spokenText}` : spokenText));
         };
 
         recognition.start();
@@ -84,6 +95,7 @@ export default function JournalPage() {
         if (!username || !entry.trim()) return;
         setLoading(true);
         try {
+            const dateStr = selectedDate.format('YYYY-MM-DD');
             await Promise.all([
                 fetch('/api/saveJournal', {
                     method: 'POST',
@@ -93,13 +105,13 @@ export default function JournalPage() {
                         title: 'Journal Entry',
                         content: entry,
                         mood,
-                        date,
+                        date: dateStr,
                     }),
                 }),
                 fetch('/api/saveJournalEntry', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, content: entry, date, mood }),
+                    body: JSON.stringify({ username, content: entry, date: dateStr, mood }),
                 }),
             ]);
         } catch (error) {
@@ -107,6 +119,14 @@ export default function JournalPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const changeDate = (direction) => {
+        setSelectedDate((prev) =>
+            direction === 'back'
+                ? prev.subtract(1, 'day')
+                : prev.add(1, 'day')
+        );
     };
 
     const navItems = [
@@ -122,9 +142,19 @@ export default function JournalPage() {
                 Journal Entry
             </Typography>
 
+            <Box display="flex" justifyContent="center" alignItems="center" mb={2} gap={2}>
+                <IconButton onClick={() => changeDate('back')}>
+                    <ArrowBackIos />
+                </IconButton>
+                <Typography variant="h6">{selectedDate.format('MMMM D, YYYY')}</Typography>
+                <IconButton onClick={() => changeDate('forward')}>
+                    <ArrowForwardIos />
+                </IconButton>
+            </Box>
+
             <Box className="contentContainer" sx={{ maxWidth: '500px', margin: 'auto' }}>
                 <TextField
-                    label="What did you do today and how do you feel?"
+                    label="Write about your day."
                     value={entry}
                     onChange={(e) => setEntry(e.target.value)}
                     fullWidth
@@ -135,8 +165,8 @@ export default function JournalPage() {
                         '& .MuiInputBase-root': {
                             borderRadius: '12px',
                             background: '#fffaf0',
-                            fontFamily: 'Georgia, serif'
-                        }
+                            fontFamily: 'Georgia, serif',
+                        },
                     }}
                 />
 
@@ -161,8 +191,8 @@ export default function JournalPage() {
                                 backgroundColor: mood === f ? '#6045E2' : '#f3f0ff',
                                 color: mood === f ? '#fff' : '#333',
                                 '&:hover': {
-                                    backgroundColor: mood === f ? '#503bd9' : '#e0dbff'
-                                }
+                                    backgroundColor: mood === f ? '#503bd9' : '#e0dbff',
+                                },
                             }}
                         >
                             {f}
@@ -189,11 +219,11 @@ export default function JournalPage() {
                         '&:hover': { backgroundColor: '#c2b3f3' },
                         '&:active': {
                             backgroundColor: '#b09ae9',
-                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-                        }
+                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
+                        },
                     }}
                 >
-                    {isListening ? "Listening..." : "Speak Journal Entry"}
+                    {isListening ? 'Listening...' : 'Speak Journal Entry'}
                 </Button>
 
                 <Button
@@ -213,8 +243,8 @@ export default function JournalPage() {
                         '&:hover': { backgroundColor: '#c2b3f3' },
                         '&:active': {
                             backgroundColor: '#b09ae9',
-                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-                        }
+                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
+                        },
                     }}
                 >
                     {loading ? (
@@ -222,7 +252,9 @@ export default function JournalPage() {
                             <CircularProgress size={20} sx={{ mr: 1 }} />
                             Saving...
                         </>
-                    ) : 'Save Journal'}
+                    ) : (
+                        'Save Journal'
+                    )}
                 </Button>
             </Box>
 

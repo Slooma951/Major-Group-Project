@@ -2,29 +2,28 @@ import { connectToDatabase } from '../../lib/mongoUtil';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
-    const { username, title, content, goals, date, mood } = req.body;
+    const { username, title, content, mood, date } = req.body;
 
-    if (!username || !date || (!content && !goals)) {
-      console.error('Missing required fields:', { username, date, content, goals, mood });
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    if (!username || !content) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const db = await connectToDatabase();
+    const stringDate = typeof date === 'string' ? date : new Date(date).toISOString().split('T')[0];
 
     await db.collection('journals').updateOne(
-      { username, date },
-      { $set: { title, content, goals, mood } },
-      { upsert: true }
+        { username, date: stringDate },
+        { $set: { title, content, mood } },
+        { upsert: true }
     );
 
-    console.log('Journal saved successfully:', { username, title, content, goals, mood, date });
-    return res.status(200).json({ success: true, message: 'Journal saved successfully' });
+    res.status(200).json({ message: 'Journal saved successfully' });
   } catch (error) {
     console.error('Error saving journal:', error);
-    return res.status(500).json({ success: false, message: 'Error saving journal' });
+    res.status(500).json({ message: 'Internal server error' });
   }
 }

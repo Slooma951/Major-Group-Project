@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 import { useRouter } from 'next/navigation';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
@@ -20,8 +18,6 @@ export default function Profile() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [journalEntry, setJournalEntry] = useState({ content: '', goals: '' });
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -40,33 +36,6 @@ export default function Profile() {
         };
         fetchUserData();
     }, [router]);
-
-    const fetchJournalForDate = async (date) => {
-        try {
-            const res = await fetch('/api/getJournal', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: userData.username,
-                    date: date.toISOString().split('T')[0],
-                }),
-            });
-
-            const data = await res.json();
-            if (res.ok && data.journal) {
-                setJournalEntry({ content: data.journal.content, goals: data.journal.goals });
-            } else {
-                setJournalEntry({ content: 'No entry found.', goals: '' });
-            }
-        } catch (error) {
-            console.error('Error fetching journal:', error);
-        }
-    };
-
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-        fetchJournalForDate(date);
-    };
 
     const handleLogout = async () => {
         try {
@@ -133,28 +102,45 @@ export default function Profile() {
     ];
 
     return (
-        <Box className="mainContainer">
+        <Box className="mainContainer" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px' }}>
             <Typography variant="h5" className="welcomeText">Profile</Typography>
 
-            <Box className="boxContainer">
-                <Typography className="quotesHeader">Username</Typography>
-                <Typography style={{ color: '#ccc', marginBottom: '16px' }}>{userData.username}</Typography>
+            <Box
+                className="boxContainer"
+                style={{
+                    marginTop: '32px',
+                    maxWidth: '700px',
+                    padding: '24px 48px',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    backgroundColor: '#f1e6ff',
+                }}
+            >
+                <Typography className="quotesHeader" style={{ marginBottom: '4px' }}>Username</Typography>
+                <Typography style={{ color: '#555', fontSize: '1rem', marginBottom: '16px' }}>{userData.username}</Typography>
 
-                <Typography className="quotesHeader">Email</Typography>
+                <Typography className="quotesHeader" style={{ marginBottom: '4px' }}>Email</Typography>
                 {editingField === 'email' ? (
                     <Box>
                         <input
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
-                            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                marginBottom: '8px',
+                                borderRadius: '8px',
+                                border: '1px solid #ccc',
+                                fontSize: '1rem'
+                            }}
                         />
                         <Button className="addButton" onClick={saveEdit}>Save</Button>
-                        <Button onClick={cancelEdit} style={{ color: '#ccc', marginLeft: '10px' }}>Cancel</Button>
+                        <Button onClick={cancelEdit} style={{ color: '#aaa', marginLeft: '10px' }}>Cancel</Button>
                     </Box>
                 ) : (
                     <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Typography style={{ color: '#ccc' }}>{userData.email}</Typography>
-                        <EditIcon onClick={() => startEditing('email', userData.email)} style={{ cursor: 'pointer', color: 'var(--primary-color)' }} />
+                        <Typography style={{ color: '#888' }}>{userData.email}</Typography>
+                        <EditIcon onClick={() => startEditing('email', userData.email)} style={{ cursor: 'pointer', color: '#7d5ba6' }} />
                     </Box>
                 )}
 
@@ -162,7 +148,7 @@ export default function Profile() {
                     <Typography style={{ color: '#f44336', marginTop: '8px' }}>{errorMessage}</Typography>
                 )}
 
-                <Typography className="quotesHeader" style={{ marginTop: '24px' }}>Password</Typography>
+                <Typography className="quotesHeader" style={{ marginTop: '24px', marginBottom: '4px' }}>Password</Typography>
                 {editingField === 'password' ? (
                     <Box>
                         <input
@@ -170,22 +156,36 @@ export default function Profile() {
                             placeholder="Current Password"
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
-                            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                marginBottom: '8px',
+                                borderRadius: '8px',
+                                border: '1px solid #ccc',
+                                fontSize: '1rem'
+                            }}
                         />
                         <input
                             type="password"
                             placeholder="New Password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                marginBottom: '8px',
+                                borderRadius: '8px',
+                                border: '1px solid #ccc',
+                                fontSize: '1rem'
+                            }}
                         />
                         <Button className="addButton" onClick={saveEdit}>Save</Button>
-                        <Button onClick={cancelEdit} style={{ color: '#ccc', marginLeft: '10px' }}>Cancel</Button>
+                        <Button onClick={cancelEdit} style={{ color: '#aaa', marginLeft: '10px' }}>Cancel</Button>
                     </Box>
                 ) : (
                     <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Typography style={{ color: '#ccc' }}>********</Typography>
-                        <EditIcon onClick={() => startEditing('password', '')} style={{ cursor: 'pointer', color: 'var(--primary-color)' }} />
+                        <Typography style={{ color: '#888' }}>********</Typography>
+                        <EditIcon onClick={() => startEditing('password', '')} style={{ cursor: 'pointer', color: '#7d5ba6' }} />
                     </Box>
                 )}
 
@@ -194,26 +194,11 @@ export default function Profile() {
                 )}
             </Box>
 
-            {/* Calendar for Viewing Past Journals */}
-            <Box className="boxContainer" style={{ marginTop: '24px' }}>
-                <Typography className="quotesHeader">View Past Journals</Typography>
-                <Calendar onChange={handleDateChange} value={selectedDate} />
-                {journalEntry.content && (
-                    <Box style={{ marginTop: '16px' }}>
-                        <Typography style={{ fontWeight: 'bold' }}>Entry for {selectedDate.toDateString()}:</Typography>
-                        <Typography style={{ color: '#ccc', marginTop: '8px' }}>{journalEntry.content}</Typography>
-                        {journalEntry.goals && (
-                            <Typography style={{ color: '#ccc', marginTop: '8px' }}>Goals: {journalEntry.goals}</Typography>
-                        )}
-                    </Box>
-                )}
-            </Box>
-
             <Button className="addButton" onClick={handleLogout} style={{ marginTop: '24px' }}>
                 Logout
             </Button>
 
-            <Box className="bottomNav">
+            <Box className="bottomNav" style={{ marginTop: '40px' }}>
                 {navItems.map((item) => (
                     <Button key={item.text} className="navItem" onClick={() => router.push(item.link)}>
                         {item.icon}
