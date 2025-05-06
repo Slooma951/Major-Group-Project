@@ -1,6 +1,8 @@
 import connectToDatabase from '../../lib/mongoUtil';
 import { ObjectId } from "mongodb";
 import { getCustomSession } from '../../lib/session';
+const brevo = require('@getbrevo/brevo');
+
 
 export default async function handler(req, res) {
     try {
@@ -32,9 +34,48 @@ export default async function handler(req, res) {
                 status,
                 importance,
                 createdAt: new Date(),
+                notified: false, // needed for future tracking
             };
 
             const result = await todoCollection.insertOne(newTask);
+
+            //  Send Email Immediately (from sendEmailTasks.js)
+            try {
+                const apiInstance = new brevo.TransactionalEmailsApi();
+                apiInstance.setApiKey(
+                    brevo.TransactionalEmailsApiApiKeys.apiKey,
+                    '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'
+                );
+
+                const sendSmtpEmail = new brevo.SendSmtpEmail();
+                sendSmtpEmail.subject = ' Your Task is due in DVSNOTE';
+                sendSmtpEmail.htmlContent = `
+                    <html>
+                      <body>
+                        <h2>Hello ${userId},</h2>
+                        <p>Your task is now due:</p>
+                        <p><strong>Title:</strong> ${title}</p>
+                        <p><strong>Date:</strong> ${date}</p>
+                        <p><strong>Time:</strong> ${time}</p>
+                        <p><strong>Status:</strong> ${status}</p>
+                        <p><strong>Importance:</strong> ${importance}</p>
+                        <br>
+                        <p></p>
+                        <p>Best regards,<br>DVS Team</p>
+                      </body>
+                    </html>
+                `;
+                sendSmtpEmail.sender = { name: 'DVS', email: 'dannyaigbe4@gmail.com' };
+                sendSmtpEmail.to = [{ email: userId }];
+                sendSmtpEmail.replyTo = { email: 'dannyaigbe4@gmail.com', name: 'DVS Notifications' };
+
+                await apiInstance.sendTransacEmail(sendSmtpEmail);
+                console.log(` Email sent for task "${title}" to ${userId}`);
+            } catch (emailErr) {
+                console.error(` Failed to send email for "${title}":`);
+                console.error(emailErr.response?.body || emailErr);
+            }
+
             return res.status(201).json({ success: true, task: { _id: result.insertedId, ...newTask } });
         }
 
