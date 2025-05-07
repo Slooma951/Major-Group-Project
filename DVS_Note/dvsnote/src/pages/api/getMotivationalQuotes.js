@@ -2,12 +2,53 @@ import { connectToDatabase } from '../../lib/mongoUtil';
 import { getCustomSession } from '../../lib/session';
 
 const quotesDatabase = {
-  Happy: [ "Keep smiling, it makes people wonder what you’re up to.", "Happiness is the highest form of health."],
-  Sad: [ "The sun will rise, and we will try again.","Tough times don’t last, but tough people do."],
-  Angry: ["Don’t let anger control you; channel it into progress.","Patience is the art of keeping calm under stress."],
-  Fearful: ["Courage is not the absence of fear, but the triumph over it.","Fear is temporary. Regret is forever."],
-  Calm: [ "Keep calm and carry on.","Inner peace begins the moment you let go of negativity." ],
-  Neutral: ["Every day is a new beginning. Take a deep breath and start again.", "Stay positive, work hard, and make it happen." ],
+  Happy: [
+    "Keep smiling, it makes people wonder what you’re up to.",
+    "Happiness is the highest form of health.",
+    "A joyful heart is the inevitable result of a heart burning with love.",
+    "Do more of what makes you happy.",
+    "Choose happiness daily and let it shine through."
+  ],
+
+  Sad: [
+    "The sun will rise, and we will try again.",
+    "Tough times don’t last, but tough people do.",
+    "Crying is not a sign of weakness. It’s a sign of being human.",
+    "Sometimes it's okay if the only thing you did today was breathe.",
+    "Your current situation is not your final destination."
+  ],
+
+  Angry: [
+    "Don’t let anger control you; channel it into progress.",
+    "Patience is the art of keeping calm under stress.",
+    "Speak when you are angry and you will make the best speech you will ever regret.",
+    "Let go of anger before it takes hold of you.",
+    "Every storm runs out of rain."
+  ],
+
+  Fearful: [
+    "Courage is not the absence of fear, but the triumph over it.",
+    "Fear is temporary. Regret is forever.",
+    "Feel the fear and do it anyway.",
+    "Don’t let your fear decide your future.",
+    "You gain strength, courage and confidence by every experience in which you stop to look fear in the face."
+  ],
+
+  Calm: [
+    "Keep calm and carry on.",
+    "Inner peace begins the moment you let go of negativity.",
+    "Be like water — calm, patient, yet powerful.",
+    "Peace is not the absence of conflict, but the ability to cope with it.",
+    "Sometimes the most productive thing you can do is relax."
+  ],
+
+  Neutral: [
+    "Every day is a new beginning. Take a deep breath and start again.",
+    "Stay positive, work hard, and make it happen.",
+    "Progress, not perfection.",
+    "You are doing better than you think.",
+    "Small steps every day lead to big results."
+  ],
 };
 
 export default async function handler(req, res) {
@@ -17,7 +58,6 @@ export default async function handler(req, res) {
 
   const session = await getCustomSession(req, res);
 
-  // If no session or no username found, return neutral fallback
   if (!session || !session.user || !session.user.username) {
     return res.status(200).json({
       success: true,
@@ -31,7 +71,6 @@ export default async function handler(req, res) {
   try {
     const db = await connectToDatabase();
 
-    // Fetch the user's latest journal entry by username
     const [latestEntry] = await db
       .collection('journalEntries')
       .find({ username })
@@ -40,7 +79,6 @@ export default async function handler(req, res) {
       .toArray();
 
     if (!latestEntry) {
-      // No entries found, neutral fallback
       return res.status(200).json({
         success: true,
         quote: "Today is a fresh start. Embrace it with optimism.",
