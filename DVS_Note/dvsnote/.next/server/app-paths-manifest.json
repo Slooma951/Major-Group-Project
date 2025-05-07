@@ -1,11 +1,5 @@
 {
-<<<<<<< HEAD
-  "/dashboard/page": "app/dashboard/page.js"
-=======
+  "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/todo/page": "app/todo/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/journal/page": "app/journal/page.js"
->>>>>>> 2e09ea54d4753fefeb28ca2c1ba006fd47f58ad3
+  "/dashboard/page": "app/dashboard/page.js"
 }
