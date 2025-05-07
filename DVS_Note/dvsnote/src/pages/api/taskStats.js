@@ -32,8 +32,8 @@ export default async function handler(req, res) {
       date: { $gte: fromDate.format('YYYY-MM-DD') },
     }).toArray();
 
-    const completedTasks = allTasks.filter(task => task.completed === true).length;
-    const pendingTasks = allTasks.length - completedTasks;
+    const completedTasks = allTasks.filter(task => task.status === 'Completed').length;
+    const pendingTasks = allTasks.filter(task => task.status === 'Pending').length;
 
     return res.status(200).json({
       success: true,
