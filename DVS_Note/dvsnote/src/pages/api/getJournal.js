@@ -13,25 +13,24 @@ export default async function handler(req, res) {
     }
 
     const db = await connectToDatabase();
-    const stringDate = typeof date === 'string' ? date : new Date(date).toISOString().split('T')[0];
+    const formattedDate =
+      typeof date === 'string' ? date : new Date(date).toISOString().split('T')[0];
 
-    let journal = await db.collection('journals').findOne({ username, date: stringDate });
+    // Try journals collection first
+    const journal = await db.collection('journals').findOne({ username, date: formattedDate })
+      || await db.collection('journalEntries').findOne({ username, date: formattedDate });
 
     if (!journal) {
-      journal = await db.collection('journalEntries').findOne({ username, date: stringDate });
-    }
-
-    if (journal) {
-      return res.status(200).json({
-        success: true,
-        journal: {
-          content: journal.content || '',
-          mood: journal.mood || '',
-        },
-      });
-    } else {
       return res.status(404).json({ success: false, message: 'Journal entry not found' });
     }
+
+    return res.status(200).json({
+      success: true,
+      journal: {
+        content: journal.content || journal.journalEntry || '',
+        mood: journal.mood || (journal.detectedEmotions?.[0] || ''),
+      },
+    });
   } catch (error) {
     console.error('Error retrieving journal:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
