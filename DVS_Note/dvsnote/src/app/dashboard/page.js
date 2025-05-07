@@ -1,100 +1,124 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Box, Button, Typography, MenuItem, Select, CircularProgress, IconButton, Fab
+  Box, Button, TextField, Typography, CircularProgress, IconButton, Fab
 } from '@mui/material';
 import {
-  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid
-} from 'recharts';
-import {
-  Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon,
-  Person as PersonIcon, Help as HelpIcon
+  Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon,
+  Mic as MicIcon, ArrowBackIos, ArrowForwardIos, Help as HelpIcon
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import dayjs from 'dayjs';
 import '../globals.css';
 
-const MOOD_COLORS = ['#4CAF50', '#8BC34A', '#FF9800', '#F44336'];
-const MOODS = ['Motivated', 'Content', 'Reflective', 'Stressed'];
-
-export default function Dashboard() {
+export default function JournalPage() {
   const router = useRouter();
-  const [userName, setUserName] = useState('User');
-  const [motivationalQuote, setMotivationalQuote] = useState('');
-  const [emotion, setEmotion] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [taskStats, setTaskStats] = useState({ totalTasks: 0, completedTasks: 0, pendingTasks: 0 });
-  const [moodStats, setMoodStats] = useState({});
-  const [taskFilter, setTaskFilter] = useState('monthly');
-  const [moodFilter, setMoodFilter] = useState('monthly');
+  const [entry, setEntry] = useState('');
+  const [mood, setMood] = useState('');
+  const [username, setUsername] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
   const [showTip, setShowTip] = useState(false);
   const [tipModalOpen, setTipModalOpen] = useState(false);
+  const feelings = ['Motivated', 'Content', 'Reflective', 'Stressed'];
+  const isFutureDate = selectedDate.isAfter(dayjs(), 'day');
 
   useEffect(() => {
-    const tipSeen = localStorage.getItem('seenDashboardTip');
+    const tipSeen = localStorage.getItem('seenJournalTip');
     if (!tipSeen) {
       setShowTip(true);
-      localStorage.setItem('seenDashboardTip', 'true');
+      localStorage.setItem('seenJournalTip', 'true');
     }
 
     (async () => {
-      try {
-        const userRes = await fetch('/api/checkSession');
-        if (!userRes.ok) return router.push('/login');
-        const userData = await userRes.json();
-        setUserName(userData.user.username);
-
-        const quoteRes = await fetch('/api/getMotivationalQuotes');
-        if (quoteRes.ok) {
-          const quoteData = await quoteRes.json();
-          setMotivationalQuote(quoteData.quote);
-          setEmotion(quoteData.emotion);
-        }
-
-        await fetchTaskData(taskFilter);
-        await fetchMoodData(moodFilter);
-      } catch {
-        // fail silently
-      } finally {
-        setLoading(false);
+      const res = await fetch('/api/checkSession');
+      if (res.ok) {
+        const data = await res.json();
+        setUsername(data.user.username);
+        await fetchJournal(data.user.username, selectedDate.format('YYYY-MM-DD'));
+      } else {
+        router.push('/login');
       }
     })();
-  }, [router, taskFilter, moodFilter]);
+  }, [router]);
 
-  const fetchTaskData = async (range) => {
-    const res = await fetch('/api/taskStats', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ range }),
-    });
-    if (res.ok) {
+  useEffect(() => {
+    if (username) {
+      fetchJournal(username, selectedDate.format('YYYY-MM-DD'));
+    }
+  }, [selectedDate, username]);
+
+  const fetchJournal = async (uname, dateStr) => {
+    try {
+      const res = await fetch('/api/getJournal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: uname, date: dateStr }),
+      });
       const data = await res.json();
-      setTaskStats(data);
+      if (res.ok && data.journal) {
+        setEntry(data.journal.content || '');
+        setMood(data.journal.mood || '');
+      } else {
+        setEntry('');
+        setMood('');
+      }
+    } catch (err) {
+      console.error('Error fetching journal:', err);
     }
   };
 
-  const fetchMoodData = async (range) => {
-    const res = await fetch('/api/moodStats', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ range }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setMoodStats(data.moodCount || {});
+  const startListening = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert('Voice recognition not supported.');
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onresult = (event) => {
+      const spokenText = event.results[0][0].transcript;
+      setEntry((prev) => (prev ? `${prev} ${spokenText}` : spokenText));
+    };
+
+    recognition.start();
+  };
+
+  const saveJournal = async () => {
+    if (!username || !entry.trim() || isFutureDate) return;
+    setLoading(true);
+    try {
+      const dateStr = selectedDate.format('YYYY-MM-DD');
+      await Promise.all([
+        fetch('/api/saveJournal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, title: 'Journal Entry', content: entry, mood, date: dateStr }),
+        }),
+        fetch('/api/saveJournalEntry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, content: entry, date: dateStr, mood }),
+        }),
+      ]);
+    } catch (error) {
+      console.error('Error saving journal:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const moodBarData = MOODS.map((mood) => ({
-    name: mood,
-    value: moodStats[mood] || 0,
-  }));
-
-  const taskPieData = [
-    { name: 'Completed', value: taskStats.completedTasks },
-    { name: 'Pending', value: taskStats.pendingTasks },
-  ];
+  const changeDate = (direction) => {
+    setSelectedDate((prev) =>
+        direction === 'back' ? prev.subtract(1, 'day') : prev.add(1, 'day')
+    );
+  };
 
   const navItems = [
     { text: 'Home', icon: <HomeIcon />, link: '/dashboard' },
@@ -104,8 +128,10 @@ export default function Dashboard() {
   ];
 
   return (
-      <Box className="mainContainer">
-        <img src="/images/logo.png" alt="Logo" className="logo" />
+      <Box className="mainContainer" sx={{ p: { xs: 2, sm: 4 } }}>
+        <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
+          Journal Entry
+        </Typography>
 
         {showTip && (
             <Box sx={{
@@ -117,11 +143,11 @@ export default function Dashboard() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              maxWidth: '700px',
+              maxWidth: '500px',
               margin: '8px auto',
               boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
             }}>
-              <span>💡 Your dashboard helps you track your moods and tasks. Use the filters to explore trends over time.</span>
+              <span>💡 You can write, use voice input, and pick a mood that fits you best.</span>
               <IconButton size="small" onClick={() => setShowTip(false)}>×</IconButton>
             </Box>
         )}
@@ -138,73 +164,120 @@ export default function Dashboard() {
               boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
             }}>
               <Typography variant="body2">
-                📊 Use this page to see your task progress and mood trends. The filters help you zoom in by time period.
+                ✨ Feel free to jot down your thoughts, speak them aloud, and select your mood.
               </Typography>
               <Button size="small" onClick={() => setTipModalOpen(false)} sx={{ mt: 1 }}>Close</Button>
             </Box>
         )}
 
-        {loading ? (
-            <CircularProgress style={{ color: 'var(--primary-color)', marginTop: '20px' }} />
-        ) : (
-            <>
-              <Typography variant="h5" className="welcomeText">Welcome, {userName}</Typography>
+        <Box display="flex" justifyContent="center" alignItems="center" mb={2} gap={2}>
+          <IconButton onClick={() => changeDate('back')}><ArrowBackIos /></IconButton>
+          <Typography variant="h6">{selectedDate.format('MMMM D, YYYY')}</Typography>
+          <IconButton onClick={() => changeDate('forward')}><ArrowForwardIos /></IconButton>
+        </Box>
 
-              <Box className="quotesContainer">
-                <Typography className="quotesHeader">Today's Quote ({emotion}):</Typography>
-                <Typography className="quote">"{motivationalQuote}"</Typography>
-              </Box>
-
-              <Box className="statsCard">
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography className="quotesHeader">Task Overview</Typography>
-                  <Select value={taskFilter} onChange={(e) => setTaskFilter(e.target.value)} size="small">
-                    <MenuItem value="daily">Daily</MenuItem>
-                    <MenuItem value="weekly">Weekly</MenuItem>
-                    <MenuItem value="monthly">Monthly</MenuItem>
-                    <MenuItem value="yearly">Yearly</MenuItem>
-                  </Select>
-                </Box>
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie data={taskPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80}>
-                      {taskPieData.map((entry, i) => (
-                          <Cell key={i} fill={i === 0 ? '#6045E2' : '#cbc3e3'} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Box>
-
-              <Box className="statsCard">
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography className="quotesHeader">Mood Overview</Typography>
-                  <Select value={moodFilter} onChange={(e) => setMoodFilter(e.target.value)} size="small">
-                    <MenuItem value="daily">Daily</MenuItem>
-                    <MenuItem value="weekly">Weekly</MenuItem>
-                    <MenuItem value="monthly">Monthly</MenuItem>
-                    <MenuItem value="yearly">Yearly</MenuItem>
-                  </Select>
-                </Box>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={moodBarData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value">
-                      {moodBarData.map((_, index) => (
-                          <Cell key={index} fill={MOOD_COLORS[index % MOOD_COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </Box>
-            </>
+        {isFutureDate && (
+            <Typography color="error" align="center" sx={{ mb: 2 }}>
+              🚫 You cannot write journal entries for future dates.
+            </Typography>
         )}
+
+        <Box className="contentContainer" sx={{ maxWidth: '500px', mx: 'auto' }}>
+          <TextField
+              label="Write about your day."
+              value={entry}
+              onChange={(e) => setEntry(e.target.value)}
+              fullWidth
+              multiline
+              margin="normal"
+              rows={8}
+              disabled={isFutureDate}
+              sx={{
+                '& .MuiInputBase-root': {
+                  borderRadius: '12px',
+                  background: '#fffaf0',
+                  fontFamily: 'Georgia, serif',
+                },
+              }}
+          />
+
+          <Typography variant="subtitle1" fontWeight="medium" sx={{ mt: 2, mb: 1 }}>
+            How are you feeling today?
+          </Typography>
+
+          <Box display="flex" justifyContent="center" flexWrap="wrap" gap={1} sx={{ mb: 2 }}>
+            {feelings.map((f, i) => (
+                <Button
+                    key={i}
+                    onClick={() => setMood(f)}
+                    sx={{
+                      px: 3, py: 1, minWidth: '100px',
+                      fontSize: '14px', fontWeight: '500',
+                      borderRadius: '25px',
+                      textTransform: 'capitalize',
+                      backgroundColor: mood === f ? '#6045E2' : '#f3f0ff',
+                      color: mood === f ? '#fff' : '#333',
+                      '&:hover': { backgroundColor: mood === f ? '#503bd9' : '#e0dbff' },
+                      boxShadow: mood === f ? '0 4px 10px rgba(96,69,226,0.3)' : 'none',
+                    }}
+                >{f}</Button>
+            ))}
+          </Box>
+
+          <Button
+              fullWidth
+              startIcon={<MicIcon />}
+              onClick={startListening}
+              sx={{
+                py: 1.2, mt: 1, mb: 1,
+                fontSize: '15px', fontWeight: 600,
+                borderRadius: '25px',
+                backgroundColor: '#dcd0ff',
+                color: '#111',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
+                '&:hover': { backgroundColor: '#c2b3f3' },
+                '&:active': {
+                  backgroundColor: '#b09ae9',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
+                },
+              }}
+          >
+            {isListening ? 'Listening...' : 'Speak Journal Entry'}
+          </Button>
+
+          <Button
+              fullWidth
+              onClick={saveJournal}
+              disabled={loading || isFutureDate}
+              sx={{
+                py: 1.2,
+                fontSize: '15px',
+                fontWeight: 600,
+                borderRadius: '25px',
+                backgroundColor: '#dcd0ff',
+                color: '#111',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
+                '&:hover': { backgroundColor: '#c2b3f3' },
+                '&:active': {
+                  backgroundColor: '#b09ae9',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
+                },
+              }}
+          >
+            {loading ? (
+                <>
+                  <CircularProgress size={20} sx={{ mr: 1 }} />
+                  Saving...
+                </>
+            ) : (
+                'Save Journal'
+            )}
+          </Button>
+        </Box>
 
         <Fab
             size="small"
