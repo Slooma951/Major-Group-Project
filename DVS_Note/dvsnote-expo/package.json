@@ -10,12 +10,11 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "eas-cli": "^15.0.10",
-    "expo": "^53.0.0",
-    "expo-status-bar": "~2.2.3",
+    "expo": "~53.0.0",
     "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-native": "0.79.2",
-    "react-native-webview": "13.13.5"
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0"
