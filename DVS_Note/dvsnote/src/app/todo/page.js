@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Button, TextField, Typography, IconButton, List,
   ListItem, ListItemText, ListItemSecondaryAction, Fab, useMediaQuery
@@ -27,6 +27,9 @@ export default function ToDoList() {
   const [isListening, setIsListening] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [tipModalOpen, setTipModalOpen] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const streamRef = useRef(null);
 
   useEffect(() => {
     const tipSeen = localStorage.getItem('seenTodoTip');
@@ -92,32 +95,68 @@ export default function ToDoList() {
     }
 
     const finalTask = lowerText.replace('set', '').replace('task', '').replace('for', '').trim();
-
     return { parsedDate, parsedTime, finalTask, parsedImportance };
   };
 
-  const startListening = () => {
-    if (!('webkitSpeechRecognition' in window)) {
-      alert('Voice recognition not supported.');
-      return;
+  const startListening = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('audio', blob, 'task.webm');
+
+        const res = await fetch('/api/transcribe', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.transcript) {
+          const cleanedTranscript = data.transcript
+              .replace(/\s+([.,!?])/g, '$1')
+              .replace(/\s{2,}/g, ' ')
+              .trim();
+
+          const { parsedDate, parsedTime, finalTask, parsedImportance } = parseVoiceInput(cleanedTranscript);
+
+          if (finalTask) {
+            const cleanTask = capitalizeFirst(finalTask.replace(/[.,!?]+$/, '').trim());
+            setTask(cleanTask);
+          }
+
+          if (parsedDate) setDate(parsedDate);
+          if (parsedTime) setTime(parsedTime);
+          if (parsedImportance) setImportance(parsedImportance);
+        }
+
+        setIsListening(false);
+        mediaRecorderRef.current = null;
+        streamRef.current = null;
+      };
+
+      mediaRecorderRef.current = recorder;
+      streamRef.current = stream;
+      recorder.start();
+      setIsListening(true);
+    } catch (err) {
+      console.error('Recording error:', err);
+      alert('Microphone access failed.');
     }
+  };
 
-    const recognition = new webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.lang = 'en-US';
-
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onresult = (event) => {
-      const spokenText = event.results[0][0].transcript;
-      const { parsedDate, parsedTime, finalTask, parsedImportance } = parseVoiceInput(spokenText);
-      if (finalTask) setTask(capitalizeFirst(finalTask));
-      if (parsedDate) setDate(parsedDate);
-      if (parsedTime) setTime(parsedTime);
-      if (parsedImportance) setImportance(parsedImportance);
-    };
-
-    recognition.start();
+  const stopListening = () => {
+    if (mediaRecorderRef.current) {
+      streamRef.current?.getTracks().forEach(track => track.stop());
+      mediaRecorderRef.current.stop();
+    }
   };
 
   const capitalizeFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -247,11 +286,53 @@ export default function ToDoList() {
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
           </TextField>
-          <Button startIcon={<MicIcon />} onClick={startListening} className="addButton">
-            {isListening ? "Listening..." : "Voice Input"}
+          <Button
+              fullWidth
+              startIcon={<MicIcon />}
+              onClick={isListening ? stopListening : startListening}
+              sx={{
+                py: 1.2,
+                mt: 1,
+                mb: 1,
+                fontSize: 15,
+                fontWeight: 600,
+                borderRadius: '25px',
+                backgroundColor: '#dcd0ff',
+                color: '#111',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
+                '&:hover': { backgroundColor: '#c2b3f3' },
+                '&:active': {
+                  backgroundColor: '#b09ae9',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
+                },
+              }}
+          >
+            {isListening ? 'Stop Recording' : 'Voice Input'}
           </Button>
-          <Button className="addButton" onClick={editingTask ? updateTask : addTask}>
-            {editingTask ? "Update Task" : "Add Task"}
+
+          <Button
+              fullWidth
+              onClick={editingTask ? updateTask : addTask}
+              sx={{
+                py: 1.2,
+                fontSize: 15,
+                fontWeight: 600,
+                borderRadius: '25px',
+                backgroundColor: '#dcd0ff',
+                color: '#111',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
+                '&:hover': { backgroundColor: '#c2b3f3' },
+                '&:active': {
+                  backgroundColor: '#b09ae9',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
+                },
+              }}
+          >
+            {editingTask ? 'Update Task' : 'Add Task'}
           </Button>
         </Box>
 

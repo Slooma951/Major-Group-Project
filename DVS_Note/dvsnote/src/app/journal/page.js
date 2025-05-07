@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Box, Button, TextField, Typography, CircularProgress, IconButton, Fab, useMediaQuery
 } from '@mui/material';
@@ -18,17 +18,19 @@ export default function JournalPage() {
     const [entry, setEntry] = useState('');
     const [mood, setMood] = useState('');
     const [username, setUsername] = useState('');
-    const [isListening, setIsListening] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
     const [loading, setLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [showTip, setShowTip] = useState(false);
     const [tipModalOpen, setTipModalOpen] = useState(false);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+    const streamRef = useRef(null);
     const feelings = ['Motivated', 'Content', 'Reflective', 'Stressed'];
     const isFutureDate = selectedDate.isAfter(dayjs(), 'day');
 
     useEffect(() => {
-        const tipSeen = localStorage.getItem('seenJournalTip');
-        if (!tipSeen) {
+        if (!localStorage.getItem('seenJournalTip')) {
             setShowTip(true);
             localStorage.setItem('seenJournalTip', 'true');
         }
@@ -71,24 +73,51 @@ export default function JournalPage() {
         }
     };
 
-    const startListening = () => {
-        if (!('webkitSpeechRecognition' in window)) {
-            alert('Voice recognition not supported.');
-            return;
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream);
+            audioChunksRef.current = [];
+
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) audioChunksRef.current.push(e.data);
+            };
+
+            recorder.onstop = async () => {
+                const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                const formData = new FormData();
+                formData.append('audio', blob, 'entry.webm');
+
+                const res = await fetch('/api/transcribe', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await res.json();
+                if (data.transcript) {
+                    setEntry((prev) => prev ? `${prev} ${data.transcript}` : data.transcript);
+                }
+
+                setIsRecording(false);
+                mediaRecorderRef.current = null;
+                streamRef.current = null;
+            };
+
+            mediaRecorderRef.current = recorder;
+            streamRef.current = stream;
+            recorder.start();
+            setIsRecording(true);
+        } catch (err) {
+            console.error('Recording error:', err);
+            alert('Recording failed. Make sure your microphone is allowed.');
         }
+    };
 
-        const recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = () => setIsListening(true);
-        recognition.onend = () => setIsListening(false);
-        recognition.onresult = (event) => {
-            const spokenText = event.results[0][0].transcript;
-            setEntry((prev) => (prev ? `${prev} ${spokenText}` : spokenText));
-        };
-
-        recognition.start();
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
+            streamRef.current?.getTracks().forEach(track => track.stop()); // stop audio stream
+            mediaRecorderRef.current.stop();
+        }
     };
 
     const saveJournal = async () => {
@@ -116,7 +145,7 @@ export default function JournalPage() {
     };
 
     const changeDate = (direction) => {
-        setSelectedDate((prev) =>
+        setSelectedDate(prev =>
             direction === 'back' ? prev.subtract(1, 'day') : prev.add(1, 'day')
         );
     };
@@ -136,11 +165,11 @@ export default function JournalPage() {
 
             {showTip && (
                 <Box sx={{
-                    backgroundColor: '#eef6f9', padding: '10px 16px', borderRadius: '8px',
+                    backgroundColor: '#eef6f9', p: '10px 16px', borderRadius: '8px',
                     fontSize: '14px', display: 'flex', justifyContent: 'space-between',
                     maxWidth: '500px', margin: '8px auto', boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
                 }}>
-                    <span>💡 You can write, use voice input, and pick a mood that fits you best.</span>
+                    <span>💡 You can write, speak, and log your feelings below.</span>
                     <IconButton size="small" onClick={() => setShowTip(false)}>×</IconButton>
                 </Box>
             )}
@@ -152,7 +181,7 @@ export default function JournalPage() {
                     boxShadow: '0 2px 6px rgba(0,0,0,0.15)', zIndex: 1300
                 }}>
                     <Typography variant="body2">
-                        ✨ Feel free to jot down your thoughts, speak them aloud, and select your mood.
+                        ✨ You can write or record your journal. Tap the mic to begin.
                     </Typography>
                     <Button size="small" onClick={() => setTipModalOpen(false)} sx={{ mt: 1 }}>Close</Button>
                 </Box>
@@ -195,27 +224,25 @@ export default function JournalPage() {
 
                 <Box display="flex" justifyContent="center" flexWrap="wrap" gap={1} sx={{ mb: 2 }}>
                     {feelings.map((f, i) => (
-                        <Button
-                            key={i}
-                            onClick={() => setMood(f)}
-                            sx={{
-                                px: 3, py: 1, minWidth: 100,
-                                fontSize: 14, fontWeight: 500,
-                                borderRadius: 25,
-                                textTransform: 'capitalize',
-                                backgroundColor: mood === f ? '#6045E2' : '#f3f0ff',
-                                color: mood === f ? '#fff' : '#333',
-                                '&:hover': { backgroundColor: mood === f ? '#503bd9' : '#e0dbff' },
-                                boxShadow: mood === f ? '0 4px 10px rgba(96,69,226,0.3)' : 'none',
-                            }}
-                        >{f}</Button>
+                        <Button key={i} onClick={() => setMood(f)}
+                                sx={{
+                                    px: 3, py: 1, minWidth: 100,
+                                    fontSize: 14, fontWeight: 500,
+                                    borderRadius: 25, textTransform: 'capitalize',
+                                    backgroundColor: mood === f ? '#6045E2' : '#f3f0ff',
+                                    color: mood === f ? '#fff' : '#333',
+                                    '&:hover': { backgroundColor: mood === f ? '#503bd9' : '#e0dbff' },
+                                    boxShadow: mood === f ? '0 4px 10px rgba(96,69,226,0.3)' : 'none',
+                                }}>
+                            {f}
+                        </Button>
                     ))}
                 </Box>
 
                 <Button
                     fullWidth
                     startIcon={<MicIcon />}
-                    onClick={startListening}
+                    onClick={isRecording ? stopRecording : startRecording}
                     sx={{
                         py: 1.2, mt: 1, mb: 1,
                         fontSize: 15, fontWeight: 600,
@@ -227,9 +254,8 @@ export default function JournalPage() {
                         boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
                         '&:hover': { backgroundColor: '#c2b3f3' },
                         '&:active': { backgroundColor: '#b09ae9', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' },
-                    }}
-                >
-                    {isListening ? 'Listening...' : 'Speak Journal Entry'}
+                    }}>
+                    {isRecording ? 'Stop Recording' : 'Record Journal Entry'}
                 </Button>
 
                 <Button
@@ -246,8 +272,7 @@ export default function JournalPage() {
                         boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
                         '&:hover': { backgroundColor: '#c2b3f3' },
                         '&:active': { backgroundColor: '#b09ae9', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' },
-                    }}
-                >
+                    }}>
                     {loading ? (
                         <>
                             <CircularProgress size={20} sx={{ mr: 1 }} />
@@ -270,8 +295,7 @@ export default function JournalPage() {
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     '&:hover': { bgcolor: '#ddd' },
                     zIndex: 1301
-                }}
-            >
+                }}>
                 <HelpIcon fontSize="small" />
             </Fab>
 
