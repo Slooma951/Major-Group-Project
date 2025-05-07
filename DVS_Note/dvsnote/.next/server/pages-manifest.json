@@ -2,8 +2,12 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+<<<<<<< HEAD
   "/api/checkSession": "pages/api/checkSession.js",
   "/api/getMotivationalQuotes": "pages/api/getMotivationalQuotes.js",
   "/api/taskStats": "pages/api/taskStats.js",
   "/api/moodStats": "pages/api/moodStats.js"
+=======
+  "/api/todo": "pages/api/todo.js"
+>>>>>>> 2e09ea54d4753fefeb28ca2c1ba006fd47f58ad3
 }
