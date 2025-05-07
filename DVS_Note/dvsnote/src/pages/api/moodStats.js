@@ -9,35 +9,27 @@ export default async function handler(req, res) {
 
   try {
     const session = await getCustomSession(req, res);
-    if (!session.user) {
+    const username = session?.user?.username;
+
+    if (!username) {
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
 
-    const db = await connectToDatabase();
-    const username = session.user.username;
     const { range } = req.body;
+    const db = await connectToDatabase();
 
     const today = dayjs();
-    let fromDate;
+    const fromDate = (() => {
+      switch (range) {
+        case 'daily': return today.startOf('day');
+        case 'weekly': return today.startOf('week');
+        case 'monthly': return today.startOf('month');
+        case 'yearly': return today.startOf('year');
+        default: return today.subtract(1, 'month');
+      }
+    })();
 
-    switch (range) {
-      case 'daily':
-        fromDate = today.startOf('day');
-        break;
-      case 'weekly':
-        fromDate = today.startOf('week');
-        break;
-      case 'monthly':
-        fromDate = today.startOf('month');
-        break;
-      case 'yearly':
-        fromDate = today.startOf('year');
-        break;
-      default:
-        fromDate = today.subtract(1, 'month');
-    }
-
-    const docs = await db.collection('journalEntries').find({
+    const entries = await db.collection('journalEntries').find({
       username,
       date: { $gte: fromDate.format('YYYY-MM-DD') },
     }).toArray();
@@ -49,16 +41,16 @@ export default async function handler(req, res) {
       Stressed: 0,
     };
 
-    for (const entry of docs) {
+    for (const entry of entries) {
       const mood = entry.mood;
-      if (moodCount.hasOwnProperty(mood)) {
+      if (mood && moodCount.hasOwnProperty(mood)) {
         moodCount[mood]++;
       }
     }
 
     return res.status(200).json({ success: true, moodCount });
-  } catch (err) {
-    console.error('Error fetching mood stats:', err);
+  } catch (error) {
+    console.error('Error fetching mood stats:', error);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 }

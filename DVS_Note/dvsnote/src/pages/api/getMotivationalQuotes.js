@@ -9,7 +9,6 @@ const quotesDatabase = {
     "Do more of what makes you happy.",
     "Choose happiness daily and let it shine through."
   ],
-
   Sad: [
     "The sun will rise, and we will try again.",
     "Tough times don’t last, but tough people do.",
@@ -17,7 +16,6 @@ const quotesDatabase = {
     "Sometimes it's okay if the only thing you did today was breathe.",
     "Your current situation is not your final destination."
   ],
-
   Angry: [
     "Don’t let anger control you; channel it into progress.",
     "Patience is the art of keeping calm under stress.",
@@ -25,7 +23,6 @@ const quotesDatabase = {
     "Let go of anger before it takes hold of you.",
     "Every storm runs out of rain."
   ],
-
   Fearful: [
     "Courage is not the absence of fear, but the triumph over it.",
     "Fear is temporary. Regret is forever.",
@@ -33,7 +30,6 @@ const quotesDatabase = {
     "Don’t let your fear decide your future.",
     "You gain strength, courage and confidence by every experience in which you stop to look fear in the face."
   ],
-
   Calm: [
     "Keep calm and carry on.",
     "Inner peace begins the moment you let go of negativity.",
@@ -41,7 +37,6 @@ const quotesDatabase = {
     "Peace is not the absence of conflict, but the ability to cope with it.",
     "Sometimes the most productive thing you can do is relax."
   ],
-
   Neutral: [
     "Every day is a new beginning. Take a deep breath and start again.",
     "Stay positive, work hard, and make it happen.",
@@ -56,21 +51,19 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
-  const session = await getCustomSession(req, res);
-
-  if (!session || !session.user || !session.user.username) {
-    return res.status(200).json({
-      success: true,
-      quote: "Keep pushing forward and believe in yourself!",
-      emotion: "Neutral",
-    });
-  }
-
-  const username = session.user.username;
-
   try {
-    const db = await connectToDatabase();
+    const session = await getCustomSession(req, res);
+    const username = session?.user?.username;
 
+    if (!username) {
+      return res.status(200).json({
+        success: true,
+        quote: "Keep pushing forward and believe in yourself!",
+        emotion: "Neutral",
+      });
+    }
+
+    const db = await connectToDatabase();
     const [latestEntry] = await db
       .collection('journalEntries')
       .find({ username })
@@ -78,29 +71,17 @@ export default async function handler(req, res) {
       .limit(1)
       .toArray();
 
-    if (!latestEntry) {
-      return res.status(200).json({
-        success: true,
-        quote: "Today is a fresh start. Embrace it with optimism.",
-        emotion: "Neutral",
-      });
-    }
+    const rawEmotion = latestEntry?.detectedEmotions?.[0] || 'Neutral';
+    const normalizedEmotion =
+      rawEmotion.charAt(0).toUpperCase() + rawEmotion.slice(1).toLowerCase();
 
-    let primaryEmotion = 'Neutral';
+    const emotion = quotesDatabase[normalizedEmotion] ? normalizedEmotion : 'Neutral';
+    const quotes = quotesDatabase[emotion];
+    const quote = quotes[Math.floor(Math.random() * quotes.length)];
 
-    if (Array.isArray(latestEntry.detectedEmotions) && latestEntry.detectedEmotions.length > 0) {
-      const rawEmotion = latestEntry.detectedEmotions[0];
-      const normalizedEmotion = rawEmotion.charAt(0).toUpperCase() + rawEmotion.slice(1).toLowerCase();
-      primaryEmotion = quotesDatabase[normalizedEmotion] ? normalizedEmotion : 'Neutral';
-    }
-
-    const quotes = quotesDatabase[primaryEmotion] || quotesDatabase.Neutral;
-    const motivationalQuote = quotes[Math.floor(Math.random() * quotes.length)] || "Keep going, you're doing great!";
-
-    return res.status(200).json({ success: true, quote: motivationalQuote, emotion: primaryEmotion });
+    return res.status(200).json({ success: true, quote, emotion });
   } catch (error) {
     console.error('Error fetching motivational quote:', error);
-    // If error occurs, neutral fallback
     return res.status(200).json({
       success: true,
       quote: "No matter what happens, you are strong and capable.",

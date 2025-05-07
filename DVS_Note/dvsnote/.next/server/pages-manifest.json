@@ -5,5 +5,7 @@
   "/api/checkSession": "pages/api/checkSession.js",
   "/api/getMotivationalQuotes": "pages/api/getMotivationalQuotes.js",
   "/api/taskStats": "pages/api/taskStats.js",
-  "/api/moodStats": "pages/api/moodStats.js"
+  "/api/moodStats": "pages/api/moodStats.js",
+  "/api/getJournal": "pages/api/getJournal.js",
+  "/api/todo": "pages/api/todo.js"
 }

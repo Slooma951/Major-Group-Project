@@ -1,36 +1,49 @@
 :root {
   --primary-color: #cbc3e3;
   --primary-color-light: #e1daf3;
-  --text-color: black;
-  --input-bg: #b9b0d1;
-  --input-text: #333333;
+  --text-color: #222;
+  --input-bg: #f3f0ff;
+  --input-text: #333;
+  --accent: #6045E2;
+}
+
+/* Global Reset & Typography */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   background-color: var(--primary-color);
-  margin: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
   color: var(--text-color);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Layout */
 .mainContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px;
+  padding: 20px 16px 80px;
   min-height: 100vh;
+  width: 100%;
 }
 
 .logo {
-  width: 200px;
-  height: auto;
-  margin-bottom: 20px;
+  width: 160px;
+  max-width: 80%;
+  margin-bottom: 24px;
 }
 
+/* Typography */
 .welcomeText {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 1.8rem;
+  font-weight: 700;
   text-align: center;
+  color: var(--text-color);
 }
 
 .contentContainer {
@@ -42,41 +55,50 @@ body {
   margin-top: 16px;
 }
 
-.boxContainer {
+/* Containers & Cards */
+.boxContainer,
+.statsCard {
   background-color: var(--primary-color-light);
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .quotesContainer {
   margin-top: 24px;
   text-align: center;
+  padding: 0 16px;
 }
 
 .quotesHeader {
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
 }
 
 .quote {
   font-style: italic;
+  color: #444;
 }
 
+/* Buttons */
 .addButton {
-  background-color: var(--primary-color-light);
-  color: var(--text-color);
-  border-radius: 12px;
-  padding: 10px;
-  font-weight: bold;
+  background-color: var(--accent);
+  color: white;
+  font-weight: 600;
+  border-radius: 25px;
+  padding: 10px 18px;
   text-transform: uppercase;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  transition: background-color 0.2s ease;
 }
 
 .addButton:hover {
-  background-color: var(--primary-color);
+  background-color: #503bd9;
 }
 
+/* Bottom Navigation */
 .bottomNav {
   position: fixed;
   bottom: 0;
@@ -86,45 +108,32 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 8px 0;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  padding: 10px 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+  z-index: 100;
 }
 
 .navItem {
   color: var(--text-color);
-  text-align: center;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
 }
 
 .navItem:hover {
-  color: #555;
+  color: var(--accent);
 }
 
-/* Progress Cards - Mood & Tasks */
-.statsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 24px;
-  width: 100%;
-  max-width: 500px;
-  align-items: center;
-}
-
-.statsCard {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: black;
-  border-radius: 16px;
-  padding: 16px;
-  width: 100%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
+/* Stats Card Specific */
 .statsCard h4 {
-  margin-bottom: 8px;
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .statsCard ul {
@@ -135,4 +144,24 @@ body {
 
 .statsCard li {
   margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .welcomeText {
+    font-size: 1.5rem;
+  }
+
+  .statsCard {
+    padding: 14px;
+  }
+
+  .quotesHeader {
+    font-size: 1rem;
+  }
+
+  .quote {
+    font-size: 0.95rem;
+  }
 }
