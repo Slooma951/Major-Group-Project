@@ -2,21 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Box,
-    Button,
-    TextField,
-    Typography,
-    CircularProgress,
-    IconButton,
+    Box, Button, TextField, Typography, CircularProgress, IconButton, Fab
 } from '@mui/material';
 import {
-    Home as HomeIcon,
-    Book as BookIcon,
-    Checklist as ChecklistIcon,
-    Person as PersonIcon,
-    Mic as MicIcon,
-    ArrowBackIos,
-    ArrowForwardIos,
+    Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon,
+    Person as PersonIcon, Mic as MicIcon, ArrowBackIos, ArrowForwardIos, Help as HelpIcon
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
@@ -29,10 +19,18 @@ export default function JournalPage() {
     const [username, setUsername] = useState('');
     const [isListening, setIsListening] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showTip, setShowTip] = useState(false);
+    const [tipModalOpen, setTipModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const feelings = ['Motivated', 'Content', 'Reflective', 'Stressed'];
 
     useEffect(() => {
+        const tipSeen = localStorage.getItem('seenJournalTip');
+        if (!tipSeen) {
+            setShowTip(true);
+            localStorage.setItem('seenJournalTip', 'true');
+        }
+
         (async () => {
             const res = await fetch('/api/checkSession');
             if (res.ok) {
@@ -100,13 +98,7 @@ export default function JournalPage() {
                 fetch('/api/saveJournal', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username,
-                        title: 'Journal Entry',
-                        content: entry,
-                        mood,
-                        date: dateStr,
-                    }),
+                    body: JSON.stringify({ username, title: 'Journal Entry', content: entry, mood, date: dateStr }),
                 }),
                 fetch('/api/saveJournalEntry', {
                     method: 'POST',
@@ -123,9 +115,7 @@ export default function JournalPage() {
 
     const changeDate = (direction) => {
         setSelectedDate((prev) =>
-            direction === 'back'
-                ? prev.subtract(1, 'day')
-                : prev.add(1, 'day')
+            direction === 'back' ? prev.subtract(1, 'day') : prev.add(1, 'day')
         );
     };
 
@@ -142,14 +132,47 @@ export default function JournalPage() {
                 Journal Entry
             </Typography>
 
+            {showTip && (
+                <Box sx={{
+                    backgroundColor: '#eef6f9',
+                    color: '#333',
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    maxWidth: '500px',
+                    margin: '8px auto',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
+                }}>
+                    <span>💡 You can write, use voice input, and pick a mood that fits you best.</span>
+                    <IconButton size="small" onClick={() => setShowTip(false)}>×</IconButton>
+                </Box>
+            )}
+
+            {tipModalOpen && (
+                <Box sx={{
+                    position: 'fixed',
+                    bottom: 70,
+                    right: 20,
+                    backgroundColor: '#fff',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+                }}>
+                    <Typography variant="body2">
+                        ✨ Feel free to jot down your thoughts, speak them aloud, and select your mood.
+                    </Typography>
+                    <Button size="small" onClick={() => setTipModalOpen(false)} sx={{ mt: 1 }}>Close</Button>
+                </Box>
+            )}
+
             <Box display="flex" justifyContent="center" alignItems="center" mb={2} gap={2}>
-                <IconButton onClick={() => changeDate('back')}>
-                    <ArrowBackIos />
-                </IconButton>
+                <IconButton onClick={() => changeDate('back')}><ArrowBackIos /></IconButton>
                 <Typography variant="h6">{selectedDate.format('MMMM D, YYYY')}</Typography>
-                <IconButton onClick={() => changeDate('forward')}>
-                    <ArrowForwardIos />
-                </IconButton>
+                <IconButton onClick={() => changeDate('forward')}><ArrowForwardIos /></IconButton>
             </Box>
 
             <Box className="contentContainer" sx={{ maxWidth: '500px', margin: 'auto' }}>
@@ -180,19 +203,16 @@ export default function JournalPage() {
                             key={i}
                             onClick={() => setMood(f)}
                             sx={{
-                                px: 3,
-                                py: 1,
-                                minWidth: '100px',
-                                fontSize: '14px',
-                                fontWeight: '500',
+                                px: 3, py: 1, minWidth: '100px',
+                                fontSize: '14px', fontWeight: '500',
                                 borderRadius: '25px',
                                 textTransform: 'capitalize',
-                                boxShadow: mood === f ? '0 4px 10px rgba(96,69,226,0.3)' : 'none',
                                 backgroundColor: mood === f ? '#6045E2' : '#f3f0ff',
                                 color: mood === f ? '#fff' : '#333',
                                 '&:hover': {
                                     backgroundColor: mood === f ? '#503bd9' : '#e0dbff',
                                 },
+                                boxShadow: mood === f ? '0 4px 10px rgba(96,69,226,0.3)' : 'none',
                             }}
                         >
                             {f}
@@ -257,6 +277,23 @@ export default function JournalPage() {
                     )}
                 </Button>
             </Box>
+
+            <Fab
+                size="small"
+                color="default"
+                onClick={() => setTipModalOpen(true)}
+                sx={{
+                    position: 'fixed',
+                    bottom: 20,
+                    right: 20,
+                    bgcolor: '#f1f1f1',
+                    color: '#333',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    '&:hover': { bgcolor: '#ddd' }
+                }}
+            >
+                <HelpIcon fontSize="small" />
+            </Fab>
 
             <Box className="bottomNav">
                 {navItems.map((item) => (
