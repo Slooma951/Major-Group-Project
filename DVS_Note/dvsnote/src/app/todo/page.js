@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Button, TextField, Typography, IconButton, List,
-  ListItem, ListItemText, ListItemSecondaryAction, Fab
+  ListItem, ListItemText, ListItemSecondaryAction, Fab, useMediaQuery
 } from '@mui/material';
 import {
   Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon,
@@ -16,6 +16,7 @@ import '../globals.css';
 
 export default function ToDoList() {
   const router = useRouter();
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState('');
   const [date, setDate] = useState('');
@@ -214,21 +215,20 @@ export default function ToDoList() {
               margin: '10px auto',
               boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
             }}>
-                    <span>💡 Say: “Set buy groceries for tomorrow at 5 PM high priority.”
-
-                            🎤 Add tasks with voice or keyboard. Choose a date, time, and priority. Tap ✓ to complete.</span>
+              <span>💡 Say: “Set buy groceries for tomorrow at 5 PM high priority.” 🎤 Add tasks with voice or keyboard. Choose a date, time, and priority. Tap ✓ to complete.</span>
               <Button size="small" onClick={() => setShowTip(false)}>×</Button>
             </Box>
         )}
 
         {tipModalOpen && (
             <Box sx={{
-              position: 'fixed', bottom: 70, right: 20,
+              position: 'fixed', bottom: 80, right: 20,
               backgroundColor: '#fff',
               padding: '12px 16px',
               borderRadius: '8px',
               fontSize: '13px',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              zIndex: 1300
             }}>
               <Typography variant="body2">
                 🎤 To use voice input, say something like: “Set buy milk for tomorrow at 9 AM high priority.”
@@ -280,12 +280,13 @@ export default function ToDoList() {
             onClick={() => setTipModalOpen(true)}
             sx={{
               position: 'fixed',
-              bottom: 20,
-              right: 20,
+              bottom: isSmallScreen ? 70 : 20,
+              right: isSmallScreen ? 16 : 30,
               bgcolor: '#f1f1f1',
               color: '#333',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              '&:hover': { bgcolor: '#ddd' }
+              '&:hover': { bgcolor: '#ddd' },
+              zIndex: 1301
             }}
         >
           <HelpIcon fontSize="small" />

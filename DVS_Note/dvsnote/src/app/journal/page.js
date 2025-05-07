@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Box, Button, TextField, Typography, CircularProgress, IconButton, Fab
+    Box, Button, TextField, Typography, CircularProgress, IconButton, Fab, useMediaQuery
 } from '@mui/material';
 import {
     Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon,
@@ -14,6 +14,7 @@ import '../globals.css';
 
 export default function JournalPage() {
     const router = useRouter();
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
     const [entry, setEntry] = useState('');
     const [mood, setMood] = useState('');
     const [username, setUsername] = useState('');
@@ -128,24 +129,16 @@ export default function JournalPage() {
     ];
 
     return (
-        <Box className="mainContainer">
+        <Box className="mainContainer" sx={{ p: { xs: 2, sm: 4 } }}>
             <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
                 Journal Entry
             </Typography>
 
             {showTip && (
                 <Box sx={{
-                    backgroundColor: '#eef6f9',
-                    color: '#333',
-                    padding: '10px 16px',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    maxWidth: '500px',
-                    margin: '8px auto',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
+                    backgroundColor: '#eef6f9', padding: '10px 16px', borderRadius: '8px',
+                    fontSize: '14px', display: 'flex', justifyContent: 'space-between',
+                    maxWidth: '500px', margin: '8px auto', boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
                 }}>
                     <span>💡 You can write, use voice input, and pick a mood that fits you best.</span>
                     <IconButton size="small" onClick={() => setShowTip(false)}>×</IconButton>
@@ -154,14 +147,9 @@ export default function JournalPage() {
 
             {tipModalOpen && (
                 <Box sx={{
-                    position: 'fixed',
-                    bottom: 70,
-                    right: 20,
-                    backgroundColor: '#fff',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    fontSize: '13px',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+                    position: 'fixed', bottom: 80, right: 20, backgroundColor: '#fff',
+                    padding: '12px 16px', borderRadius: '8px', fontSize: '13px',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)', zIndex: 1300
                 }}>
                     <Typography variant="body2">
                         ✨ Feel free to jot down your thoughts, speak them aloud, and select your mood.
@@ -182,7 +170,7 @@ export default function JournalPage() {
                 </Typography>
             )}
 
-            <Box className="contentContainer" sx={{ maxWidth: '500px', margin: 'auto' }}>
+            <Box className="contentContainer" sx={{ maxWidth: 500, mx: 'auto' }}>
                 <TextField
                     label="Write about your day."
                     value={entry}
@@ -194,7 +182,7 @@ export default function JournalPage() {
                     disabled={isFutureDate}
                     sx={{
                         '& .MuiInputBase-root': {
-                            borderRadius: '12px',
+                            borderRadius: 2,
                             background: '#fffaf0',
                             fontFamily: 'Georgia, serif',
                         },
@@ -211,9 +199,9 @@ export default function JournalPage() {
                             key={i}
                             onClick={() => setMood(f)}
                             sx={{
-                                px: 3, py: 1, minWidth: '100px',
-                                fontSize: '14px', fontWeight: '500',
-                                borderRadius: '25px',
+                                px: 3, py: 1, minWidth: 100,
+                                fontSize: 14, fontWeight: 500,
+                                borderRadius: 25,
                                 textTransform: 'capitalize',
                                 backgroundColor: mood === f ? '#6045E2' : '#f3f0ff',
                                 color: mood === f ? '#fff' : '#333',
@@ -230,15 +218,15 @@ export default function JournalPage() {
                     onClick={startListening}
                     sx={{
                         py: 1.2, mt: 1, mb: 1,
-                        fontSize: '15px', fontWeight: 600,
-                        borderRadius: '25px', backgroundColor: '#dcd0ff', color: '#111',
-                        textTransform: 'uppercase', letterSpacing: '0.5px',
+                        fontSize: 15, fontWeight: 600,
+                        borderRadius: 25,
+                        backgroundColor: '#dcd0ff',
+                        color: '#111',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
                         boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
                         '&:hover': { backgroundColor: '#c2b3f3' },
-                        '&:active': {
-                            backgroundColor: '#b09ae9',
-                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
-                        },
+                        '&:active': { backgroundColor: '#b09ae9', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' },
                     }}
                 >
                     {isListening ? 'Listening...' : 'Speak Journal Entry'}
@@ -249,15 +237,15 @@ export default function JournalPage() {
                     onClick={saveJournal}
                     disabled={loading || isFutureDate}
                     sx={{
-                        py: 1.2, fontSize: '15px', fontWeight: 600,
-                        borderRadius: '25px', backgroundColor: '#dcd0ff', color: '#111',
-                        textTransform: 'uppercase', letterSpacing: '0.5px',
+                        py: 1.2, fontSize: 15, fontWeight: 600,
+                        borderRadius: 25,
+                        backgroundColor: '#dcd0ff',
+                        color: '#111',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
                         boxShadow: '0 4px 12px rgba(176,153,255,0.3)',
                         '&:hover': { backgroundColor: '#c2b3f3' },
-                        '&:active': {
-                            backgroundColor: '#b09ae9',
-                            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
-                        },
+                        '&:active': { backgroundColor: '#b09ae9', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' },
                     }}
                 >
                     {loading ? (
@@ -265,9 +253,7 @@ export default function JournalPage() {
                             <CircularProgress size={20} sx={{ mr: 1 }} />
                             Saving...
                         </>
-                    ) : (
-                        'Save Journal'
-                    )}
+                    ) : 'Save Journal'}
                 </Button>
             </Box>
 
@@ -277,12 +263,13 @@ export default function JournalPage() {
                 onClick={() => setTipModalOpen(true)}
                 sx={{
                     position: 'fixed',
-                    bottom: 20,
-                    right: 20,
+                    bottom: isSmallScreen ? 70 : 20,
+                    right: isSmallScreen ? 16 : 30,
                     bgcolor: '#f1f1f1',
                     color: '#333',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    '&:hover': { bgcolor: '#ddd' }
+                    '&:hover': { bgcolor: '#ddd' },
+                    zIndex: 1301
                 }}
             >
                 <HelpIcon fontSize="small" />
