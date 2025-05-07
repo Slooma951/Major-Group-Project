@@ -43,10 +43,10 @@ export default async function handler(req, res) {
     }).toArray();
 
     const moodCount = {
-      Great: 0,
-      Good: 0,
-      Okay: 0,
-      'Not so good': 0,
+      Motivated: 0,
+      Content: 0,
+      Reflective: 0,
+      Stressed: 0,
     };
 
     for (const entry of docs) {

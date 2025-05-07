@@ -30,7 +30,7 @@ export default function JournalPage() {
     const [isListening, setIsListening] = useState(false);
     const [loading, setLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs());
-    const feelings = ['Great', 'Good', 'Okay', 'Not so good'];
+    const feelings = ['Motivated', 'Content', 'Reflective', 'Stressed'];
 
     useEffect(() => {
         (async () => {

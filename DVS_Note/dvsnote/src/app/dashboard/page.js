@@ -7,8 +7,8 @@ import { Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person 
 import { useRouter } from 'next/navigation';
 import '../globals.css';
 
-const MOOD_COLORS = ['#4CAF50', '#8BC34A', '#FFEB3B', '#F44336'];
-const MOODS = ['Great', 'Good', 'Okay', 'Not so good'];
+const MOOD_COLORS = ['#4CAF50', '#8BC34A', '#FF9800', '#F44336'];
+const MOODS = ['Motivated', 'Content', 'Reflective', 'Stressed'];
 
 export default function Dashboard() {
   const router = useRouter();
