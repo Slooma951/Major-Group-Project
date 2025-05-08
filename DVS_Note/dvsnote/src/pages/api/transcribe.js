@@ -7,21 +7,24 @@ export const config = {
     api: { bodyParser: false }
 };
 
-const serviceAccount = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), 'google-service-key.json'), 'utf8')
-);
+let credentials = undefined;
+
+if (process.env.GOOGLE_SERVICE_KEY_BASE64) {
+    try {
+        const jsonString = Buffer.from(process.env.GOOGLE_SERVICE_KEY_BASE64, 'base64').toString('utf8');
+        credentials = JSON.parse(jsonString);
+    } catch (e) {
+        console.error('Failed to parse GOOGLE_SERVICE_KEY_BASE64:', e);
+    }
+}
 
 const client = new SpeechClient({
-    credentials: {
-        client_email: serviceAccount.client_email,
-        private_key: serviceAccount.private_key,
-    }
+    credentials
 });
 
 const parseForm = (req) =>
     new Promise((resolve, reject) => {
         const uploadDir = path.join(process.cwd(), '/tmp');
-
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
         }
