@@ -14,30 +14,33 @@ if (process.env.GOOGLE_SERVICE_KEY_BASE64) {
         const jsonString = Buffer.from(process.env.GOOGLE_SERVICE_KEY_BASE64, 'base64').toString('utf8');
         credentials = JSON.parse(jsonString);
     } catch (e) {
-        console.error('Failed to parse GOOGLE_SERVICE_KEY_BASE64:', e);
+        console.error('❌ Failed to decode GOOGLE_SERVICE_KEY_BASE64:', e);
     }
 }
 
-const client = new SpeechClient({
-    credentials
-});
+const client = new SpeechClient({ credentials });
 
 const parseForm = (req) =>
     new Promise((resolve, reject) => {
-        const uploadDir = path.join(process.cwd(), '/tmp');
-        if (!fs.existsSync(uploadDir)) {
+        const isVercel = process.env.VERCEL === '1';
+        const uploadDir = isVercel ? '/tmp' : path.join(process.cwd(), 'tmp');
+
+        if (!isVercel && !fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
         }
 
         const form = new IncomingForm({
             multiples: false,
             uploadDir,
-            keepExtensions: true
+            keepExtensions: true,
         });
 
         form.parse(req, (err, fields, files) => {
-            if (err) reject(err);
-            else resolve({ fields, files });
+            if (err) {
+                console.error('❌ Form parse error:', err);
+                return reject(err);
+            }
+            resolve({ fields, files });
         });
     });
 
@@ -71,7 +74,11 @@ export default async function handler(req, res) {
 
         return res.status(200).json({ transcript });
     } catch (error) {
-        console.error('Google Speech error:', error);
-        return res.status(500).json({ error: 'Transcription failed' });
+        console.error('❌ Google Speech error:', error);
+        return res.status(500).json({
+            error: 'Transcription failed',
+            message: error.message,
+            stack: error.stack,
+        });
     }
 }
