@@ -115,7 +115,7 @@ export default function JournalPage() {
 
     const stopRecording = () => {
         if (mediaRecorderRef.current) {
-            streamRef.current?.getTracks().forEach(track => track.stop()); // stop audio stream
+            streamRef.current?.getTracks().forEach(track => track.stop());
             mediaRecorderRef.current.stop();
         }
     };
@@ -158,8 +158,8 @@ export default function JournalPage() {
     ];
 
     return (
-        <Box className="mainContainer" sx={{ p: { xs: 2, sm: 4 } }}>
-            <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
+        <Box className="mainContainer">
+            <Typography variant="h4" align="center" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.6rem', sm: '2rem' } }}>
                 Journal Entry
             </Typography>
 
@@ -176,9 +176,15 @@ export default function JournalPage() {
 
             {tipModalOpen && (
                 <Box sx={{
-                    position: 'fixed', bottom: 80, right: 20, backgroundColor: '#fff',
-                    padding: '12px 16px', borderRadius: '8px', fontSize: '13px',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)', zIndex: 1300
+                    position: 'fixed',
+                    bottom: 'calc(env(safe-area-inset-bottom) + 80px)',
+                    right: 20,
+                    backgroundColor: '#fff',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                    zIndex: 1300
                 }}>
                     <Typography variant="body2">
                         ✨ You can write or record your journal. Tap the mic to begin.
@@ -199,7 +205,7 @@ export default function JournalPage() {
                 </Typography>
             )}
 
-            <Box className="contentContainer" sx={{ maxWidth: 500, mx: 'auto' }}>
+            <Box className="contentContainer">
                 <TextField
                     label="Write about your day."
                     value={entry}
@@ -288,8 +294,8 @@ export default function JournalPage() {
                 onClick={() => setTipModalOpen(true)}
                 sx={{
                     position: 'fixed',
-                    bottom: isSmallScreen ? 70 : 20,
-                    right: isSmallScreen ? 16 : 30,
+                    bottom: 'calc(env(safe-area-inset-bottom) + 70px)',
+                    right: 20,
                     bgcolor: '#f1f1f1',
                     color: '#333',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',

@@ -261,7 +261,9 @@ export default function ToDoList() {
 
         {tipModalOpen && (
             <Box sx={{
-              position: 'fixed', bottom: 80, right: 20,
+              position: 'fixed',
+              bottom: 'calc(env(safe-area-inset-bottom) + 80px)',
+              right: 20,
               backgroundColor: '#fff',
               padding: '12px 16px',
               borderRadius: '8px',
@@ -361,7 +363,7 @@ export default function ToDoList() {
             onClick={() => setTipModalOpen(true)}
             sx={{
               position: 'fixed',
-              bottom: isSmallScreen ? 70 : 20,
+              bottom: 'calc(env(safe-area-inset-bottom) + 70px)',
               right: isSmallScreen ? 16 : 30,
               bgcolor: '#f1f1f1',
               color: '#333',
