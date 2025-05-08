@@ -7,7 +7,16 @@ export const config = {
     api: { bodyParser: false }
 };
 
-const client = new SpeechClient();
+const serviceAccount = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), 'google-service-key.json'), 'utf8')
+);
+
+const client = new SpeechClient({
+    credentials: {
+        client_email: serviceAccount.client_email,
+        private_key: serviceAccount.private_key,
+    }
+});
 
 const parseForm = (req) =>
     new Promise((resolve, reject) => {
