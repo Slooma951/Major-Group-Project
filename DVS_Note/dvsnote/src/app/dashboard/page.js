@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import {
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList
 } from 'recharts';
 import {
   Home as HomeIcon, Book as BookIcon, Checklist as ChecklistIcon, Person as PersonIcon, Help as HelpIcon
@@ -144,7 +144,6 @@ export default function Dashboard() {
                 <Typography className="quote">"{motivationalQuote}"</Typography>
               </Box>
 
-              {/* Responsive chart layout */}
               <Box
                   display="flex"
                   flexDirection={isMobile ? 'column' : 'row'}
@@ -153,6 +152,7 @@ export default function Dashboard() {
                   flexWrap="wrap"
                   mt={3}
               >
+                {/* Task Chart */}
                 <Box className="statsCard" sx={{ flex: 1, minWidth: 280 }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Typography className="quotesHeader">Task Overview</Typography>
@@ -171,12 +171,13 @@ export default function Dashboard() {
                         ))}
                       </Pie>
                       <Tooltip />
-                      <Legend />
+                      <Legend wrapperStyle={{ fontSize: 14 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </Box>
 
-                <Box className="statsCard" sx={{ flex: 1, minWidth: 280 }}>
+                {/* Mood Chart */}
+                <Box className="statsCard" sx={{ flex: 1, minWidth: 300, minHeight: 480 }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Typography className="quotesHeader">Mood Overview</Typography>
                     <Select value={moodFilter} onChange={(e) => setMoodFilter(e.target.value)} size="small">
@@ -186,18 +187,30 @@ export default function Dashboard() {
                       <MenuItem value="yearly">Yearly</MenuItem>
                     </Select>
                   </Box>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={moodBarData}>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart
+                        data={moodBarData}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" tick={{ fontSize: isMobile ? 10 : 12 }} />
-                      <YAxis allowDecimals={false} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="value">
-                        {moodBarData.map((_, index) => (
+                      <XAxis
+                          dataKey="name"
+                          interval={0}
+                          tick={{ fontSize: 14, angle: -35, textAnchor: 'end' }}
+                      />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 14 }} />
+                      <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: 6, border: '1px solid #ccc' }} />
+                      <Bar dataKey="value" barSize={50}>
+                        {moodBarData.map((entry, index) => (
                             <Cell key={index} fill={MOOD_COLORS[index % MOOD_COLORS.length]} />
                         ))}
+                        <LabelList dataKey="value" position="top" style={{ fill: '#333', fontSize: 14 }} />
                       </Bar>
+                      <Legend
+                          verticalAlign="bottom"
+                          height={36}
+                          wrapperStyle={{ paddingTop: 20, fontSize: 16 }}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </Box>
